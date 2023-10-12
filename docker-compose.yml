@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    hostname: db
+    ports:
+      - "5432:5432"
+    networks:
+      - internal_network
+    environment:
+      POSTGRES_DB: "mydb"
+      POSTGRES_USER: "default"
+      POSTGRES_PASSWORD: password
+  app:
+    build:
+      dockerfile: ./Dockerfile
+    hostname: app
+    restart: always
+    volumes:
+      - .:/home/node/app
+    ports:
+      - "3000:3000"
+    networks:
+      - internal_network
+      - external_network
+    depends_on:
+      - db
+
+networks:
+  external_network:
+  internal_network:
+    internal: true
