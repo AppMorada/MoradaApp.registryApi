@@ -7,8 +7,6 @@ services:
     hostname: db
     ports:
       - "5432:5432"
-    networks:
-      - internal_network
     environment:
       POSTGRES_DB: "mydb"
       POSTGRES_USER: "default"
@@ -22,13 +20,6 @@ services:
       - .:/home/node/app
     ports:
       - "3000:3000"
-    networks:
-      - internal_network
-      - external_network
     depends_on:
       - db
 
-networks:
-  external_network:
-  internal_network:
-    internal: true
