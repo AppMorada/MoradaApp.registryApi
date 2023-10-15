@@ -13,7 +13,7 @@
 		"test": "dotenv -e .env.test -- jest --coverage",
 		"test:e2e": "dotenv -e .env.prod -- jest --config ./jest.e2e.config.ts --coverage",
 		"set-hooks": "husky install",
-		"pre-commit": "lint-staged"
+		"pre-commit": "pnpm test && lint-staged"
 	},
 	"config": {
 		"commitizen": {
