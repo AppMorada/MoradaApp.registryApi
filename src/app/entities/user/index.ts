@@ -8,7 +8,6 @@ import { PhoneNumber } from '../VO/phoneNumber';
 import { Level } from '../VO/level';
 
 interface IPropsUser {
-	id: string;
 	name: Name;
 	email: Email;
 	password: Password;
@@ -21,8 +20,8 @@ interface IPropsUser {
 }
 
 export type TInputPropsUser = TReplace<
-	TReplace<IPropsUser, { createdAt?: Date }>,
-	{ updatedAt?: Date }
+	TReplace<TReplace<IPropsUser, { createdAt?: Date }>, { updatedAt?: Date }>,
+	{ level?: Level }
 >;
 
 export class User {
@@ -32,10 +31,27 @@ export class User {
 	constructor(input: TInputPropsUser, id?: string) {
 		this.props = {
 			...input,
+			level: input.level ?? new Level(0),
 			createdAt: input.createdAt ?? new Date(),
 			updatedAt: input.updatedAt ?? new Date(),
 		};
 		this._id = id ?? randomUUID();
+	}
+
+	public equalTo(input: User) {
+		return (
+			input instanceof User &&
+			this._id === input.id &&
+			this.condominiumId === input.condominiumId &&
+			this.createdAt === input.createdAt &&
+			this.updatedAt === input.updatedAt &&
+			this.phoneNumber.equalTo(input.phoneNumber) &&
+			this.CPF.equalTo(input.CPF) &&
+			this.level.equalTo(input.level) &&
+			this.password.equalTo(input.password) &&
+			this.name.equalTo(input.name) &&
+			this.email.equalTo(input.email)
+		);
 	}
 
 	// Id
