@@ -2,6 +2,7 @@ import { PrismaService } from '../prisma.service';
 import { Injectable } from '@nestjs/common';
 import {
 	ICreateUserInput,
+	IDeleteUserParameters,
 	IUserSearchQuery,
 	UserRepo,
 } from '@app/repositories/user';
@@ -26,11 +27,26 @@ export class UserPrismaRepo implements UserRepo {
 				OR: [
 					{ email: input.email?.value() },
 					{ CPF: input.CPF?.value() },
-					{ id: input.id },
+					{ id: input?.id },
 				],
 			},
 		});
 
 		return user ? UserPrismaMapper.toClass(user) : undefined;
+	}
+
+	async delete(input: IDeleteUserParameters): Promise<undefined> {
+		if (input.email)
+			await this.prisma.user.delete({
+				where: {
+					email: input?.email?.value(),
+				},
+			});
+		else
+			await this.prisma.user.delete({
+				where: {
+					id: input.id,
+				},
+			});
 	}
 }

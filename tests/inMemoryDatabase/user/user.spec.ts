@@ -13,6 +13,28 @@ describe('InMemoryData test: User', () => {
 		expect(sut.create({ user })).resolves;
 	});
 
+	it('should be able to delete one user', async () => {
+		const user = userFactory();
+
+		await sut.create({ user });
+		await sut.delete({ id: user.id });
+
+		await sut.create({ user });
+		await sut.delete({ email: user.email });
+
+		expect(Boolean(sut.users[0])).toBeFalsy();
+	});
+
+	it('should be able to throw one error: user does not exist - delete operation', async () => {
+		const user = userFactory();
+		await expect(sut.delete({ id: user.id })).rejects.toThrowError(
+			new InMemoryError({
+				entity: EntitiesEnum.user,
+				message: 'User doesn\'t exist',
+			}),
+		);
+	});
+
 	it('should be able to throw one error: user already exist', async () => {
 		const user = userFactory();
 		expect(sut.create({ user })).resolves;

@@ -12,7 +12,13 @@ export interface IUserSearchQuery {
 	CPF?: CPF;
 }
 
+export interface IDeleteUserParameters {
+	id?: string;
+	email?: Email;
+}
+
 export abstract class UserRepo {
 	abstract create: (input: ICreateUserInput) => Promise<void>;
 	abstract find: (input: IUserSearchQuery) => Promise<User | undefined>;
+	abstract delete: (input: IDeleteUserParameters) => Promise<void>;
 }

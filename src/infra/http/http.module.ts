@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserController } from './controllers/user.controller';
 import { CreateUserService } from '@app/services/createUser.service';
 import { AuthService } from '@app/services/auth.service';
+import { DeleteUserService } from '@app/services/deleteUser.service';
 
 @Module({
 	imports: [PrismaModule, AdaptersModule],
@@ -16,6 +17,7 @@ import { AuthService } from '@app/services/auth.service';
 		CreateCondominiumService,
 		CreateUserService,
 		AuthService,
+		DeleteUserService,
 	],
 })
 export class HttpModule {}

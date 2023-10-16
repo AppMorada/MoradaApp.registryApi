@@ -8,7 +8,7 @@ import { randomUUID } from 'crypto';
 
 type TOverride = Partial<TInputPropsUser>;
 
-export function userFactory(input?: TOverride, id?: string) {
+export function userFactory(input: TOverride = {}, id?: string) {
 	return new User(
 		{
 			name: new Name('John Doe'),
@@ -19,6 +19,6 @@ export function userFactory(input?: TOverride, id?: string) {
 			condominiumId: randomUUID(),
 			...input,
 		},
-		id,
+		id ?? 'default id',
 	);
 }

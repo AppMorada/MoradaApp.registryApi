@@ -10,7 +10,7 @@ import { UserRepo } from '@app/repositories/user';
 import { Level } from '@app/entities/VO/level';
 
 @Injectable()
-export class AdminJwt implements CanActivate {
+export class SuperAdminJwt implements CanActivate {
 	constructor(
 		private readonly jwtService: JwtService,
 		private readonly userRepo: UserRepo,
