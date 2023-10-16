@@ -4,7 +4,7 @@ import { CreateCondominiumDTO } from '../DTO/createCondominium.DTO';
 import { CondominiumMapper } from '@app/mapper/condominium';
 import { Email } from '@app/entities/VO/email';
 
-@Controller()
+@Controller('/condominium')
 export class CondominiumController {
 	constructor(private readonly serv: CreateCondominiumService) {}
 
