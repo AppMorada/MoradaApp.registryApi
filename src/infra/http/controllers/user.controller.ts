@@ -59,7 +59,7 @@ export class UserController {
 	}
 
 	@UseGuards(SuperAdminJwt)
-	@Post('admin')
+	@Post('super-admin/create-simple-admin')
 	@HttpCode(204)
 	async createAdmin(@Req() req: Request, @Body() body: CreateUserDTO) {
 		const superAdminData = req.inMemoryData as User;
