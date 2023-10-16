@@ -2,6 +2,7 @@ import { Condominium } from '@app/entities/condominium';
 import { EntitiesEnum } from '@app/entities/entities';
 import {
 	CondominiumRepo,
+	ICondominiumSearchQuery,
 	ICreateCondominiumInput,
 } from '@app/repositories/condominium';
 import { InMemoryError } from '@tests/errors/inMemoryError';
@@ -21,5 +22,20 @@ export class InMemoryCondominium implements CondominiumRepo {
 			});
 
 		this.condominiums.push(input.condominium);
+	}
+
+	public async find(
+		input: ICondominiumSearchQuery,
+	): Promise<Condominium | undefined> {
+		const existentData = this.condominiums.find((item) => {
+			return (
+				(input.CNPJ && item.CNPJ.equalTo(input.CNPJ)) ||
+				(input.CEP && item.CEP.equalTo(input.CEP)) ||
+				(input.name && item.name.equalTo(input.name)) ||
+				(input.id && item.id === input.id)
+			);
+		});
+
+		return existentData;
 	}
 }

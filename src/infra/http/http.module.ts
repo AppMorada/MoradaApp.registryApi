@@ -6,10 +6,16 @@ import { PrismaModule } from '@infra/storages/db/prisma/prisma.module';
 import { JwtService } from '@nestjs/jwt';
 import { UserController } from './controllers/user.controller';
 import { CreateUserService } from '@app/services/createUser.service';
+import { AuthService } from '@app/services/auth.service';
 
 @Module({
 	imports: [PrismaModule, AdaptersModule],
 	controllers: [CondominiumController, UserController],
-	providers: [JwtService, CreateCondominiumService, CreateUserService],
+	providers: [
+		JwtService,
+		CreateCondominiumService,
+		CreateUserService,
+		AuthService,
+	],
 })
 export class HttpModule {}

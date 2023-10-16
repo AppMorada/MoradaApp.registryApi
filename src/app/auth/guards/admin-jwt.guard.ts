@@ -5,20 +5,21 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ICondominiumJwt } from '../tokenTypes';
-import { CondominiumRepo } from '@app/repositories/condominium';
+import { ICondominiumJwt, TAccessTokenJwt } from '../tokenTypes';
+import { UserRepo } from '@app/repositories/user';
+import { Level } from '@app/entities/VO/level';
 
 @Injectable()
-export class CondominiumJwt implements CanActivate {
+export class AdminJwt implements CanActivate {
 	constructor(
 		private readonly jwtService: JwtService,
-		private readonly condominiumRepo: CondominiumRepo,
+		private readonly userRepo: UserRepo,
 	) {}
 
 	private async checkToken(token: string) {
 		const tokenData: ICondominiumJwt = await this.jwtService
 			.verifyAsync(token, {
-				secret: process.env.CONDOMINIUM_TOKEN_KEY,
+				secret: process.env.ACCESS_TOKEN_KEY,
 			})
 			.catch(() => {
 				throw new UnauthorizedException();
@@ -34,12 +35,12 @@ export class CondominiumJwt implements CanActivate {
 		const token = rawToken?.split(' ')[1];
 		if (!token) throw new UnauthorizedException();
 
-		const data = (await this.checkToken(token)) as ICondominiumJwt;
+		const tokenData = (await this.checkToken(token)) as TAccessTokenJwt;
+		const user = await this.userRepo.find({ id: tokenData.sub });
+		if (!user || !user.level.equalTo(new Level(2)))
+			throw new UnauthorizedException();
 
-		const condominium = await this.condominiumRepo.find({ id: data.sub });
-		if (!condominium) throw new UnauthorizedException();
-
-		req.inMemoryData = data;
+		req.inMemoryData = user;
 
 		return true;
 	}

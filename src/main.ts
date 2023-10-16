@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaErrorFilter } from '@infra/http/filters/errors/prisma.filter';
+import { ServiceErrorFilter } from '@infra/http/filters/errors/services.filter';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -11,6 +12,7 @@ async function bootstrap() {
 
 	app.useGlobalPipes(new ValidationPipe());
 	app.useGlobalFilters(new PrismaErrorFilter());
+	app.useGlobalFilters(new ServiceErrorFilter());
 
 	app.enableCors({
 		origin: '*',

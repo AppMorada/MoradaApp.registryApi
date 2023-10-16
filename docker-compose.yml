@@ -11,6 +11,17 @@ services:
       POSTGRES_DB: "mydb"
       POSTGRES_USER: "default"
       POSTGRES_PASSWORD: password
+
+  redis_db:
+    image: redis:7.0.5-bullseye
+    restart: always
+    hostname: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --loglevel warning --requirepass password 
+    volumes:
+      - cache:/data
+
   app:
     build:
       dockerfile: ./Dockerfile
@@ -21,5 +32,9 @@ services:
     ports:
       - "3000:3000"
     depends_on:
+      - redis_db
       - db
 
+volumes:
+  cache:
+    driver: local

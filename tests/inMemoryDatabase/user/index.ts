@@ -1,6 +1,10 @@
 import { EntitiesEnum } from '@app/entities/entities';
 import { User } from '@app/entities/user';
-import { ICreateUserInput, UserRepo } from '@app/repositories/user';
+import {
+	ICreateUserInput,
+	IUserSearchQuery,
+	UserRepo,
+} from '@app/repositories/user';
 import { InMemoryError } from '@tests/errors/inMemoryError';
 
 export class InMemoryUser implements UserRepo {
@@ -18,5 +22,17 @@ export class InMemoryUser implements UserRepo {
 			});
 
 		this.users.push(input.user);
+	}
+
+	public async find(input: IUserSearchQuery): Promise<User | undefined> {
+		const existentData = this.users.find((item) => {
+			return (
+				(input.email && item.email.equalTo(input.email)) ||
+				(input.CPF && item.CPF.equalTo(input.CPF)) ||
+				(input.id && item.id === input.id)
+			);
+		});
+
+		return existentData;
 	}
 }

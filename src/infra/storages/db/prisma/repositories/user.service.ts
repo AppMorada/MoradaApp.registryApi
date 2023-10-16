@@ -1,7 +1,12 @@
 import { PrismaService } from '../prisma.service';
 import { Injectable } from '@nestjs/common';
-import { ICreateUserInput, UserRepo } from '@app/repositories/user';
+import {
+	ICreateUserInput,
+	IUserSearchQuery,
+	UserRepo,
+} from '@app/repositories/user';
 import { UserPrismaMapper } from '../mapper/user';
+import { User } from '@app/entities/user';
 
 @Injectable()
 export class UserPrismaRepo implements UserRepo {
@@ -13,5 +18,19 @@ export class UserPrismaRepo implements UserRepo {
 		await this.prisma.user.create({
 			data: { ...userInPrisma },
 		});
+	}
+
+	async find(input: IUserSearchQuery): Promise<User | undefined> {
+		const user = await this.prisma.user.findFirst({
+			where: {
+				OR: [
+					{ email: input.email?.value() },
+					{ CPF: input.CPF?.value() },
+					{ id: input.id },
+				],
+			},
+		});
+
+		return user ? UserPrismaMapper.toClass(user) : undefined;
 	}
 }
