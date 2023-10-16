@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './controllers/app.controller';
-import { AppService } from 'src/app/services/app.service';
+import { CondominiumController } from './controllers/condominium.controller';
+import { AdaptersModule } from '@app/adapters/adapter.module';
+import { CreateCondominiumService } from '@app/services/createCondominium.service';
 import { PrismaModule } from '@infra/storages/db/prisma/prisma.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
-	imports: [PrismaModule],
-	controllers: [AppController],
-	providers: [AppService],
+	imports: [PrismaModule, AdaptersModule],
+	controllers: [CondominiumController],
+	providers: [JwtService, CreateCondominiumService],
 })
 export class HttpModule {}

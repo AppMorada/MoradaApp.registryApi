@@ -3,12 +3,15 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { PrismaErrorFilter } from '@infra/http/filters/errors/prisma.filter';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
 	app.enableShutdownHooks();
 
 	app.useGlobalPipes(new ValidationPipe());
+	app.useGlobalFilters(new PrismaErrorFilter());
+
 	app.enableCors({
 		origin: '*',
 		methods: ['DELETE', 'POST', 'PATCH', 'PUT', 'GET'],
