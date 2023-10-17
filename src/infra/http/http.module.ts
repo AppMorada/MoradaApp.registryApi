@@ -8,9 +8,10 @@ import { UserController } from './controllers/user.controller';
 import { CreateUserService } from '@app/services/createUser.service';
 import { AuthService } from '@app/services/auth.service';
 import { DeleteUserService } from '@app/services/deleteUser.service';
+import { RedisModule } from '@infra/storages/cache/redis/redis.module';
 
 @Module({
-	imports: [PrismaModule, AdaptersModule],
+	imports: [RedisModule, PrismaModule, AdaptersModule],
 	controllers: [CondominiumController, UserController],
 	providers: [
 		JwtService,

@@ -16,6 +16,8 @@ interface IConvertToObject {
 	updatedAt?: Date;
 }
 
+type TClassTOObject = Required<IConvertToObject>;
+
 export class CondominiumMapper {
 	static toClass(input: IConvertToObject): Condominium {
 		return new Condominium(
@@ -32,7 +34,7 @@ export class CondominiumMapper {
 		);
 	}
 
-	static toObject(input: Condominium): IConvertToObject {
+	static toObject(input: Condominium): TClassTOObject {
 		return {
 			id: input.id,
 			num: input.num.value(),

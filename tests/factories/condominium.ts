@@ -7,7 +7,7 @@ import { Condominium, TInputPropsCondominium } from '@app/entities/condominium';
 
 type TOverride = Partial<TInputPropsCondominium>;
 
-export function condominiumFactory(input?: TOverride, id?: string) {
+export function condominiumFactory(input: TOverride = {}, id?: string) {
 	return new Condominium(
 		{
 			name: new Name('My condominium'),

@@ -19,6 +19,8 @@ interface IConvertToObject {
 	updatedAt?: Date;
 }
 
+type TClassTOObject = Required<IConvertToObject>;
+
 export class UserMapper {
 	static toClass(input: IConvertToObject): User {
 		return new User(
@@ -37,7 +39,7 @@ export class UserMapper {
 		);
 	}
 
-	static toObject(input: User): IConvertToObject {
+	static toObject(input: User): TClassTOObject {
 		return {
 			id: input.id,
 			name: input.name.value(),

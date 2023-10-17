@@ -13,8 +13,8 @@ export class EntitieError extends Error {
 
 		this.name =
 			input.entity === EntitiesEnum.vo
-				? 'Value Object error.'
-				: 'Entity error.';
+				? 'Value Object error'
+				: 'Entity error';
 		this.message = input.message;
 		this.entity = input.entity;
 	}
