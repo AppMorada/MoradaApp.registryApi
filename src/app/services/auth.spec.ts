@@ -5,18 +5,21 @@ import { userFactory } from '@tests/factories/user';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { Email } from '@app/entities/VO/email';
 import { Password } from '@app/entities/VO/password';
+import { CryptMock } from '@tests/adapters/cryptMock';
 
 describe('Authenticate users test', () => {
 	let authService: AuthService;
 
 	let userRepo: InMemoryUser;
 	let tokenService: JwtService;
+	let cryptMock: CryptMock;
 
 	beforeEach(() => {
 		userRepo = new InMemoryUser();
 		tokenService = new JwtService();
+		cryptMock = new CryptMock();
 
-		authService = new AuthService(userRepo, tokenService);
+		authService = new AuthService(userRepo, tokenService, cryptMock);
 	});
 
 	it('should be able to authenticate users', async () => {

@@ -1,6 +1,8 @@
+import { CryptAdapter } from '@app/adapters/crypt';
 import { IAccessTokenBody, TokenType } from '@app/auth/tokenTypes';
 import { Email } from '@app/entities/VO/email';
 import { Password } from '@app/entities/VO/password';
+import { User } from '@app/entities/user';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { UserRepo } from '@app/repositories/user';
 import { Injectable } from '@nestjs/common';
@@ -16,12 +18,20 @@ export class AuthService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly jwtService: JwtService,
+		private readonly crypt: CryptAdapter,
 	) {}
+
+	async comparePassword(user: User, password: Password): Promise<boolean> {
+		return await this.crypt.compare({
+			data: password.value(),
+			hashedData: user.password.value(),
+		});
+	}
 
 	async exec(input: IProps) {
 		const user = await this.userRepo.find({ email: input.email });
 
-		if (!user || !user.password.equalTo(input.password))
+		if (!user || !(await this.comparePassword(user, input.password)))
 			throw new ServiceErrors({
 				message: 'Unauthorized',
 				tag: ServiceErrorsTags.unauthorized,
