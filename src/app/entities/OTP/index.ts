@@ -3,7 +3,8 @@ import { Code } from '../VO/code';
 import { TReplace } from '@utils/replace';
 
 interface IOTPProps {
-	userId: string;
+	userId?: string;
+	condominiumId: string;
 	code: Code;
 	ttl: number;
 	createdAt: Date;
@@ -22,7 +23,7 @@ export class OTP {
 		this._id = id ?? randomUUID();
 		this.props = {
 			...input,
-			ttl: 1000 * 60 * 2,
+			ttl: input.ttl ?? 1000 * 60 * 2,
 			createdAt: input.createdAt ?? new Date(),
 		};
 	}
@@ -31,13 +32,18 @@ export class OTP {
 		return (
 			this._id === input._id &&
 			this.props.ttl === input.ttl &&
+			this.props.condominiumId === input.condominiumId &&
 			this.props.userId === input.userId &&
 			this.props.code.equalTo(input.code) &&
 			this.props.createdAt === input.createdAt
 		);
 	}
 
-	get userId(): string {
+	get condominiumId(): string {
+		return this.props.condominiumId;
+	}
+
+	get userId(): string | undefined {
 		return this.props.userId;
 	}
 

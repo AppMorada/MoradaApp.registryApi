@@ -9,12 +9,11 @@ import {
 import { InMemoryError } from '@tests/errors/inMemoryError';
 
 export class InMemoryOTP implements OTPRepo {
-	public otps: OTP[] = [];
+	public otps: Array<{ key: string; value: OTP }> = [];
 
 	public async create(input: ICreateOTPInput): Promise<void> {
 		const existentData = this.otps.find(
-			(item) =>
-				input.otp.id === item.id || input.otp.userId === item.userId,
+			(item) => `mockOTP:${input.email.value()}` === item.key,
 		);
 
 		if (existentData)
@@ -23,21 +22,24 @@ export class InMemoryOTP implements OTPRepo {
 				message: 'OTP already exist',
 			});
 
-		this.otps.push(input.otp);
+		this.otps.push({
+			key: `mockOTP:${input.email.value()}`,
+			value: input.otp,
+		});
 	}
 
 	public async find(input: IFindOTPInput): Promise<OTP | undefined> {
-		const existentData = this.otps.find((item) => {
-			return input.userId && item.userId;
-		});
+		const existentData = this.otps.find(
+			(item) => `mockOTP:${input.email.value()}` === item.key,
+		);
 
-		return existentData;
+		return existentData?.value;
 	}
 
 	public async delete(input: IDeleteOTPInput): Promise<void> {
-		const existentDataIndex = this.otps.findIndex((item) => {
-			return input.userId && item.userId;
-		});
+		const existentDataIndex = this.otps.findIndex(
+			(item) => `mockOTP:${input.email.value()}` === item.key,
+		);
 
 		if (existentDataIndex < 0)
 			throw new InMemoryError({

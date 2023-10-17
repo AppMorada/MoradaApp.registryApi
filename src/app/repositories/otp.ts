@@ -1,15 +1,17 @@
 import { OTP } from '@app/entities/OTP';
+import { Email } from '@app/entities/VO/email';
 
 export interface ICreateOTPInput {
 	otp: OTP;
+	email: Email;
 }
 
 export interface IFindOTPInput {
-	userId: string;
+	email: Email;
 }
 
 export interface IDeleteOTPInput {
-	userId: string;
+	email: Email;
 }
 
 export abstract class OTPRepo {

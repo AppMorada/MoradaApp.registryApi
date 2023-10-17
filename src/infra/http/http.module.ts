@@ -9,6 +9,7 @@ import { CreateUserService } from '@app/services/createUser.service';
 import { AuthService } from '@app/services/auth.service';
 import { DeleteUserService } from '@app/services/deleteUser.service';
 import { RedisModule } from '@infra/storages/cache/redis/redis.module';
+import { GenInviteService } from '@app/services/genInvite.service';
 
 @Module({
 	imports: [RedisModule, PrismaModule, AdaptersModule],
@@ -19,6 +20,7 @@ import { RedisModule } from '@infra/storages/cache/redis/redis.module';
 		CreateUserService,
 		AuthService,
 		DeleteUserService,
+		GenInviteService,
 	],
 })
 export class HttpModule {}

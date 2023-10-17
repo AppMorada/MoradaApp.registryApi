@@ -7,6 +7,7 @@ export function otpFactory(input: TOverride = {}, id?: string) {
 	return new OTP(
 		{
 			userId: 'user id',
+			condominiumId: 'condominium id',
 			code: new Code('123456'),
 			ttl: 1000,
 			...input,

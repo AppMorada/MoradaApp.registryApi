@@ -7,9 +7,10 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ICondominiumJwt, TAccessTokenJwt } from '../tokenTypes';
 import { UserRepo } from '@app/repositories/user';
+import { Level } from '@app/entities/VO/level';
 
 @Injectable()
-export class AdminJwt implements CanActivate {
+export class SuperAdminJwt implements CanActivate {
 	constructor(
 		private readonly jwtService: JwtService,
 		private readonly userRepo: UserRepo,
@@ -36,7 +37,8 @@ export class AdminJwt implements CanActivate {
 
 		const tokenData = (await this.checkToken(token)) as TAccessTokenJwt;
 		const user = await this.userRepo.find({ id: tokenData.sub });
-		if (!user || user.level.value() < 1) throw new UnauthorizedException();
+		if (!user || !user.level.equalTo(new Level(2)))
+			throw new UnauthorizedException();
 
 		req.inMemoryData = user;
 

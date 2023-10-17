@@ -19,7 +19,7 @@ export class OTPRedisService implements OTPRepo {
 		const otpObjt = OTPMapper.toObject(input.otp);
 
 		const res = await this.redisService.set(
-			`${RedisEnum.otp}${input.otp.userId}`,
+			`${RedisEnum.otp}${input.email.value()}`,
 			JSON.stringify(otpObjt),
 			'PX',
 			input.otp.ttl ?? 1000 * 60 * 2,
@@ -34,12 +34,12 @@ export class OTPRedisService implements OTPRepo {
 	}
 
 	async delete(input: IDeleteOTPInput): Promise<void> {
-		await this.redisService.del(`${RedisEnum.otp}${input.userId}`);
+		await this.redisService.del(`${RedisEnum.otp}${input.email.value()}`);
 	}
 
 	async find(input: IFindOTPInput): Promise<OTP | undefined> {
 		const rawRes = await this.redisService.get(
-			`${RedisEnum.otp}${input.userId}`,
+			`${RedisEnum.otp}${input.email.value()}`,
 		);
 		const res = rawRes ? OTPMapper.toClass(JSON.parse(rawRes)) : undefined;
 

@@ -1,15 +1,17 @@
 import { Code } from '@app/entities/VO/code';
 import { OTP } from '@app/entities/OTP';
+import { TReplace } from '@utils/replace';
 
 interface IConvertToObject {
 	id?: string;
 	ttl?: number;
-	userId: string;
+	userId?: string;
+	condominiumId: string;
 	code: Code;
 	createdAt?: Date;
 }
 
-type TClassTOObject = Required<IConvertToObject>;
+type TClassTOObject = TReplace<Required<IConvertToObject>, { userId?: string }>;
 
 export class OTPMapper {
 	static toClass(input: IConvertToObject): OTP {
@@ -17,6 +19,7 @@ export class OTPMapper {
 			{
 				ttl: input.ttl,
 				userId: input.userId,
+				condominiumId: input.condominiumId,
 				code: input.code,
 				createdAt: input.createdAt,
 			},
@@ -28,6 +31,7 @@ export class OTPMapper {
 		return {
 			id: input.id,
 			ttl: input.ttl,
+			condominiumId: input.condominiumId,
 			userId: input.userId,
 			code: input.code,
 			createdAt: input.createdAt,

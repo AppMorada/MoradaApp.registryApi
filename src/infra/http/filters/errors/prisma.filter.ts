@@ -13,6 +13,12 @@ interface IPrismaError {
 export class PrismaErrorFilter implements ExceptionFilter {
 	private possibleErrors: IPrismaError[] = [
 		{
+			name: 'Record to delete does not exist.',
+			code: 'P2025',
+			message: 'Not Found',
+			httpCode: 404,
+		},
+		{
 			name: 'Unique constraint failed',
 			code: 'P2002',
 			message: 'Unauthorized',

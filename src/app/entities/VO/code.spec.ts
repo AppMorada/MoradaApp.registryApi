@@ -11,7 +11,7 @@ describe('Code Value Object test', () => {
 	});
 
 	it('should be able to throw one error: length error', () => {
-		expect(() => new Code('1234567')).toThrowError(EntitieError);
+		expect(() => new Code('1'.repeat(101))).toThrowError(EntitieError);
 	});
 
 	it('should be able to throw one error: length error', () => {

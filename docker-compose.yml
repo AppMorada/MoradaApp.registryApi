@@ -19,8 +19,6 @@ services:
     ports:
       - "6379:6379"
     command: redis-server --loglevel warning --requirepass password 
-    volumes:
-      - cache:/data
 
   app:
     build:
@@ -35,6 +33,3 @@ services:
       - redis_db
       - db
 
-volumes:
-  cache:
-    driver: local
