@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common';
 interface IProps {
 	email: Email;
 	condominiumId: string;
+	requiredLevel?: number;
 }
 
 @Injectable()
@@ -28,6 +29,7 @@ export class GenInviteService {
 		const otp = new OTP({
 			code: new Code(hmacRes),
 			condominiumId: input.condominiumId,
+			requiredLevel: input.requiredLevel,
 			ttl: 1000 * 60 * 60 * 24 * 3,
 		});
 		await this.otpRepo.create({ otp, email: input.email });

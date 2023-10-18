@@ -19,6 +19,8 @@ import { SuperAdminJwt } from '@app/auth/guards/super-admin-jwt.guard';
 import { DeleteUserDTO } from '../DTO/deleteAdminUser.DTO';
 import { Email } from '@app/entities/VO/email';
 import { DeleteUserService } from '@app/services/deleteUser.service';
+import { GenInviteService } from '@app/services/genInvite.service';
+import { InviteUserDTO } from '../DTO/inviteUser.DTO';
 
 @Controller('super-admin')
 export class SuperAdminController {
@@ -26,6 +28,7 @@ export class SuperAdminController {
 		private readonly createUser: CreateUserService,
 		private readonly authService: AuthService,
 		private readonly deleteUserService: DeleteUserService,
+		private readonly genInvite: GenInviteService,
 	) {}
 
 	@UseGuards(CondominiumJwt)
@@ -57,15 +60,16 @@ export class SuperAdminController {
 	}
 
 	@UseGuards(SuperAdminJwt)
-	@Post('create-admin')
-	async createAdmin(@Req() req: Request, @Body() body: CreateUserDTO) {
+	@Post('invite-admin')
+	@HttpCode(204)
+	async createAdmin(@Req() req: Request, @Body() body: InviteUserDTO) {
 		const superAdminData = req.inMemoryData as User;
-		const user = UserMapper.toClass({
-			...body,
-			level: 1,
-			condominiumId: superAdminData.condominiumId,
-		});
+		const email = new Email(body.email);
 
-		await this.createUser.exec({ user }).catch((err) => console.log(err));
+		await this.genInvite.exec({
+			requiredLevel: 1,
+			condominiumId: superAdminData.condominiumId,
+			email,
+		});
 	}
 }

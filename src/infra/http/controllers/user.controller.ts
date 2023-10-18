@@ -25,13 +25,13 @@ export class UserController {
 	) {}
 
 	@UseGuards(HmacInviteGuard)
-	@Post()
+	@Post('accept')
 	async createSimpleUser(@Req() req: Request, @Body() body: CreateUserDTO) {
 		const otp = req.inMemoryData as OTP;
 
 		const user = UserMapper.toClass({
 			...body,
-			level: 0,
+			level: otp.requiredLevel ?? 0,
 			condominiumId: otp.condominiumId,
 		});
 

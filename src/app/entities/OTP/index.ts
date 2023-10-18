@@ -4,6 +4,7 @@ import { TReplace } from '@utils/replace';
 
 interface IOTPProps {
 	userId?: string;
+	requiredLevel?: number;
 	condominiumId: string;
 	code: Code;
 	ttl: number;
@@ -31,12 +32,17 @@ export class OTP {
 	public equalTo(input: OTP) {
 		return (
 			this._id === input._id &&
+			this.requiredLevel === input.requiredLevel &&
 			this.props.ttl === input.ttl &&
 			this.props.condominiumId === input.condominiumId &&
 			this.props.userId === input.userId &&
 			this.props.code.equalTo(input.code) &&
 			this.props.createdAt === input.createdAt
 		);
+	}
+
+	get requiredLevel(): number | undefined {
+		return this.props.requiredLevel;
 	}
 
 	get condominiumId(): string {
