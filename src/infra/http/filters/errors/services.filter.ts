@@ -34,7 +34,7 @@ export class ServiceErrorFilter implements ExceptionFilter {
 
 		return response.status(500).json({
 			statusCode: 500,
-			message: 'Internal server error',
+			message: 'Internal Server Error',
 		});
 	}
 }
