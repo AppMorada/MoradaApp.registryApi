@@ -18,7 +18,7 @@ export class HmacInviteGuard implements CanActivate {
 	private async validate(email: Email, code: string) {
 		const hmacRes = await this.crypt
 			.hashWithHmac({
-				data: email.value(),
+				data: email.value,
 				key: process.env.INVITE_TOKEN_KEY as string,
 			})
 			.catch(() => {

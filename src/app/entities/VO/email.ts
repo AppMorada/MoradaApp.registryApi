@@ -11,10 +11,10 @@ export class Email {
 	}
 
 	public equalTo(input: Email) {
-		return input.value() === this._value;
+		return input.value === this._value;
 	}
 
-	public value(): string {
+	get value(): string {
 		return this._value;
 	}
 }

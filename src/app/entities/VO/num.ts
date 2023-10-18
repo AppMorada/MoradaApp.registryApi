@@ -11,10 +11,10 @@ export class Num {
 	}
 
 	public equalTo(input: Num) {
-		return input.value() === this._value;
+		return input.value === this._value;
 	}
 
-	public value(): number {
+	get value(): number {
 		return this._value;
 	}
 }

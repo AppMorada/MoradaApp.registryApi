@@ -13,7 +13,7 @@ export class InMemoryOTP implements OTPRepo {
 
 	public async create(input: ICreateOTPInput): Promise<void> {
 		const existentData = this.otps.find(
-			(item) => `mockOTP:${input.email.value()}` === item.key,
+			(item) => `mockOTP:${input.email.value}` === item.key,
 		);
 
 		if (existentData)
@@ -23,14 +23,14 @@ export class InMemoryOTP implements OTPRepo {
 			});
 
 		this.otps.push({
-			key: `mockOTP:${input.email.value()}`,
+			key: `mockOTP:${input.email.value}`,
 			value: input.otp,
 		});
 	}
 
 	public async find(input: IFindOTPInput): Promise<OTP | undefined> {
 		const existentData = this.otps.find(
-			(item) => `mockOTP:${input.email.value()}` === item.key,
+			(item) => `mockOTP:${input.email.value}` === item.key,
 		);
 
 		return existentData?.value;
@@ -38,7 +38,7 @@ export class InMemoryOTP implements OTPRepo {
 
 	public async delete(input: IDeleteOTPInput): Promise<void> {
 		const existentDataIndex = this.otps.findIndex(
-			(item) => `mockOTP:${input.email.value()}` === item.key,
+			(item) => `mockOTP:${input.email.value}` === item.key,
 		);
 
 		if (existentDataIndex < 0)

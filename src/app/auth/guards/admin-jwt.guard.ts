@@ -36,7 +36,7 @@ export class AdminJwt implements CanActivate {
 
 		const tokenData = (await this.checkToken(token)) as TAccessTokenJwt;
 		const user = await this.userRepo.find({ id: tokenData.sub });
-		if (!user || user.level.value() < 1) throw new UnauthorizedException();
+		if (!user || user.level.value < 1) throw new UnauthorizedException();
 
 		req.inMemoryData = user;
 

@@ -25,8 +25,8 @@ export class UserPrismaRepo implements UserRepo {
 		const user = await this.prisma.user.findFirst({
 			where: {
 				OR: [
-					{ email: input.email?.value() },
-					{ CPF: input.CPF?.value() },
+					{ email: input.email?.value },
+					{ CPF: input.CPF?.value },
 					{ id: input?.id },
 				],
 			},
@@ -39,7 +39,7 @@ export class UserPrismaRepo implements UserRepo {
 		if (input.email)
 			await this.prisma.user.delete({
 				where: {
-					email: input?.email?.value(),
+					email: input?.email?.value,
 				},
 			});
 		else

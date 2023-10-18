@@ -26,6 +26,6 @@ describe('User entity test', () => {
 
 		expect(sut1).toBeInstanceOf(User);
 		expect(sut1.equalTo(sut2)).toBeTruthy();
-		expect(sut1.level.value()).toEqual(0);
+		expect(sut1.level.value).toEqual(0);
 	});
 });

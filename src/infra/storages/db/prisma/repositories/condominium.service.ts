@@ -29,9 +29,9 @@ export class CondominiumPrismaRepo implements CondominiumRepo {
 		const condominium = await this.prisma.condominium.findFirst({
 			where: {
 				OR: [
-					{ name: input.name?.value() },
-					{ CEP: input.CEP?.value() },
-					{ CNPJ: input.CNPJ?.value() },
+					{ name: input.name?.value },
+					{ CEP: input.CEP?.value },
+					{ CNPJ: input.CNPJ?.value },
 					{ id: input.id },
 				],
 			},

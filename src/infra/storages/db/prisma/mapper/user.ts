@@ -11,12 +11,12 @@ export class UserPrismaMapper {
 	static toPrisma(input: User): UserPrisma {
 		return {
 			id: input.id,
-			name: input.name.value(),
-			email: input.email.value(),
-			password: input.password.value(),
-			CPF: input.CPF.value(),
-			phoneNumber: input.phoneNumber.value(),
-			level: input.level.value(),
+			name: input.name.value,
+			email: input.email.value,
+			password: input.password.value,
+			CPF: input.CPF.value,
+			phoneNumber: input.phoneNumber.value,
+			level: input.level.value,
 			condominiumId: input.condominiumId,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,

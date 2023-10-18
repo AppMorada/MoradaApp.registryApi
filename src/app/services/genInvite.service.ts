@@ -22,7 +22,7 @@ export class GenInviteService {
 	async exec(input: IProps) {
 		const hmacRes = await this.cryptAdapter.hashWithHmac({
 			key: process.env.INVITE_TOKEN_KEY as string,
-			data: input.email.value(),
+			data: input.email.value,
 		});
 
 		const otp = new OTP({
@@ -34,11 +34,11 @@ export class GenInviteService {
 
 		await this.emailAdapter.send({
 			from: `${process.env.NAME_SENDER} <${process.env.EMAIL_SENDER}>`,
-			to: input.email.value(),
+			to: input.email.value,
 			subject: `${process.env.PROJECT_NAME} - Criação de condomínio`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este link com ninguém</p>
-				<a href="#">${otp.code.value()}</a>`,
+				<a href="#">${otp.code.value}</a>`,
 		});
 
 		return otp;

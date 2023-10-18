@@ -10,11 +10,11 @@ export class CondominiumPrismaMapper {
 	static toPrisma(input: Condominium): CondominiumPrisma {
 		return {
 			id: input.id,
-			name: input.name.value(),
-			CNPJ: input.CNPJ.value(),
-			CEP: input.CEP.value(),
-			block: input.block.value(),
-			num: input.num.value(),
+			name: input.name.value,
+			CNPJ: input.CNPJ.value,
+			CEP: input.CEP.value,
+			block: input.block.value,
+			num: input.num.value,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,
 		};

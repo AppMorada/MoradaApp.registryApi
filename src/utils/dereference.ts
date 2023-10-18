@@ -15,12 +15,12 @@ export class Dereference {
 	static user(input: User): User {
 		return new User(
 			{
-				name: new Name(input.name.value()),
-				email: new Email(input.email.value()),
-				password: new Password(input.password.value()),
-				CPF: new CPF(input.CPF.value()),
-				level: new Level(input.level.value()),
-				phoneNumber: new PhoneNumber(input.phoneNumber.value()),
+				name: new Name(input.name.value),
+				email: new Email(input.email.value),
+				password: new Password(input.password.value),
+				CPF: new CPF(input.CPF.value),
+				level: new Level(input.level.value),
+				phoneNumber: new PhoneNumber(input.phoneNumber.value),
 				condominiumId: input.condominiumId,
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
@@ -32,11 +32,11 @@ export class Dereference {
 	static condominium(input: Condominium): Condominium {
 		return new Condominium(
 			{
-				name: new Name(input.name.value()),
-				CEP: new CEP(input.CEP.value()),
-				CNPJ: new CNPJ(input.CNPJ.value()),
-				num: new Num(input.num.value()),
-				block: new Block(input.block.value()),
+				name: new Name(input.name.value),
+				CEP: new CEP(input.CEP.value),
+				CNPJ: new CNPJ(input.CNPJ.value),
+				num: new Num(input.num.value),
+				block: new Block(input.block.value),
 				updatedAt: input.updatedAt,
 				createdAt: input.createdAt,
 			},

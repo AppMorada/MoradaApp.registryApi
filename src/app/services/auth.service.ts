@@ -23,8 +23,8 @@ export class AuthService {
 
 	async comparePassword(user: User, password: Password): Promise<boolean> {
 		return await this.crypt.compare({
-			data: password.value(),
-			hashedData: user.password.value(),
+			data: password.value,
+			hashedData: user.password.value,
 		});
 	}
 
@@ -40,13 +40,13 @@ export class AuthService {
 		const jwtBody: IAccessTokenBody = {
 			sub: user.id,
 			content: {
-				email: user.email.value(),
-				CPF: user.CPF.value(),
-				name: user.name.value(),
-				level: user.level.value(),
+				email: user.email.value,
+				CPF: user.CPF.value,
+				name: user.name.value,
+				level: user.level.value,
 				createdAt: user.createdAt,
 				updatedAt: user.updatedAt,
-				phoneNumber: user.phoneNumber.value(),
+				phoneNumber: user.phoneNumber.value,
 			},
 			type: TokenType.accessToken,
 		};

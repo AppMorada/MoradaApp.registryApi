@@ -22,7 +22,7 @@ export class CreateCondominiumService {
 	) {}
 
 	async exec(input: IProps) {
-		await this.cepGate.check(input.condominium.CEP.value());
+		await this.cepGate.check(input.condominium.CEP.value);
 
 		await this.condominiumRepo.create({
 			condominium: input.condominium,
@@ -40,7 +40,7 @@ export class CreateCondominiumService {
 
 		await this.mailAdapter.send({
 			from: `${process.env.NAME_SENDER} <${process.env.EMAIL_SENDER}>`,
-			to: input.email.value(),
+			to: input.email.value,
 			subject: `${process.env.PROJECT_NAME} - Criação de condomínio`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este link com ninguém</p>

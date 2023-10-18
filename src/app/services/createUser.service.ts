@@ -17,7 +17,7 @@ export class CreateUserService {
 	) {}
 
 	async exec(input: IProps) {
-		const hashPass = await this.crypt.hash(input.user.password.value());
+		const hashPass = await this.crypt.hash(input.user.password.value);
 
 		const user = Dereference.user(input.user);
 		user.password = new Password(hashPass);

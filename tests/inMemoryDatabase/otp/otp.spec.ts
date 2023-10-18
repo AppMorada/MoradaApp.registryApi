@@ -52,7 +52,7 @@ describe('InMemoryData test: OTP', () => {
 	it('should be able to find one OTP', async () => {
 		const user = userFactory();
 		const otp = otpFactory();
-		sut.otps.push({ key: `mockOTP:${user.email.value()}`, value: otp });
+		sut.otps.push({ key: `mockOTP:${user.email.value}`, value: otp });
 
 		const sut2 = await sut.find({
 			email: user.email,

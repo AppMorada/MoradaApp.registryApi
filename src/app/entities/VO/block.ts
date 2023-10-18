@@ -11,10 +11,10 @@ export class Block {
 	}
 
 	public equalTo(input: Block) {
-		return input.value() === this._value;
+		return input.value === this._value;
 	}
 
-	public value(): string {
+	get value(): string {
 		return this._value;
 	}
 }

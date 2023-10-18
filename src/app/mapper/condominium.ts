@@ -37,11 +37,11 @@ export class CondominiumMapper {
 	static toObject(input: Condominium): TClassTOObject {
 		return {
 			id: input.id,
-			num: input.num.value(),
-			CEP: input.CEP.value(),
-			name: input.name.value(),
-			CNPJ: input.CNPJ.value(),
-			block: input.block.value(),
+			num: input.num.value,
+			CEP: input.CEP.value,
+			name: input.name.value,
+			CNPJ: input.CNPJ.value,
+			block: input.block.value,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,
 		};
