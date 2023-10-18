@@ -7,16 +7,16 @@ import {
 import { RedisService } from '../redis.service';
 import { Injectable } from '@nestjs/common';
 import { RedisEnum } from '../redisEnum';
-import { OTPMapper } from '@app/mapper/otp';
 import { RedisErrorsTags, RedisLogicError } from '../../errors/redis';
 import { OTP } from '@app/entities/OTP';
+import { OTPRedisMapper } from '../mapper/otp';
 
 @Injectable()
 export class OTPRedisService implements OTPRepo {
 	constructor(private readonly redisService: RedisService) {}
 
 	async create(input: ICreateOTPInput): Promise<void> {
-		const otpObjt = OTPMapper.toObject(input.otp);
+		const otpObjt = OTPRedisMapper.toRedis(input.otp);
 
 		const res = await this.redisService.set(
 			`${RedisEnum.otp}${input.email.value}`,
@@ -41,7 +41,9 @@ export class OTPRedisService implements OTPRepo {
 		const rawRes = await this.redisService.get(
 			`${RedisEnum.otp}${input.email.value}`,
 		);
-		const res = rawRes ? OTPMapper.toClass(JSON.parse(rawRes)) : undefined;
+		const res = rawRes
+			? OTPRedisMapper.toClass(JSON.parse(rawRes))
+			: undefined;
 
 		return res;
 	}

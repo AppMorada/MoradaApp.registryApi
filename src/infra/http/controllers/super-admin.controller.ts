@@ -21,6 +21,7 @@ import { Email } from '@app/entities/VO/email';
 import { DeleteUserService } from '@app/services/deleteUser.service';
 import { GenInviteService } from '@app/services/genInvite.service';
 import { InviteUserDTO } from '../DTO/inviteUser.DTO';
+import { Level } from '@app/entities/VO/level';
 
 @Controller('super-admin')
 export class SuperAdminController {
@@ -67,8 +68,9 @@ export class SuperAdminController {
 		const email = new Email(body.email);
 
 		await this.genInvite.exec({
-			requiredLevel: 1,
+			requiredLevel: new Level(1),
 			condominiumId: superAdminData.condominiumId,
+			key: process.env.INVITE_ADMIN_TOKEN_KEY,
 			email,
 		});
 	}

@@ -1,11 +1,12 @@
 import { Code } from '@app/entities/VO/code';
 import { OTP } from '@app/entities/OTP';
+import { Level } from '@app/entities/VO/level';
 
 interface IConvertToObject {
 	id?: string;
 	ttl?: number;
 	userId?: string;
-	requiredLevel?: number;
+	requiredLevel: Level;
 	condominiumId: string;
 	code: Code;
 	createdAt?: Date;
@@ -15,7 +16,7 @@ interface IClassToObject {
 	id: string;
 	ttl: number;
 	userId?: string;
-	requiredLevel?: number;
+	requiredLevel: Level;
 	condominiumId: string;
 	code: Code;
 	createdAt: Date;

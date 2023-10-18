@@ -28,10 +28,9 @@ export class UserController {
 	@Post('accept')
 	async createSimpleUser(@Req() req: Request, @Body() body: CreateUserDTO) {
 		const otp = req.inMemoryData as OTP;
-
 		const user = UserMapper.toClass({
 			...body,
-			level: otp.requiredLevel ?? 0,
+			level: otp.requiredLevel?.value || 0,
 			condominiumId: otp.condominiumId,
 		});
 

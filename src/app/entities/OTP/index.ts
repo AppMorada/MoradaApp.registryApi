@@ -1,20 +1,24 @@
 import { randomUUID } from 'crypto';
 import { Code } from '../VO/code';
-import { TReplace } from '@utils/replace';
+import { Level } from '../VO/level';
 
 interface IOTPProps {
 	userId?: string;
-	requiredLevel?: number;
+	requiredLevel: Level;
 	condominiumId: string;
 	code: Code;
 	ttl: number;
 	createdAt: Date;
 }
 
-export type TInputOTPProps = TReplace<
-	TReplace<IOTPProps, { createdAt?: Date }>,
-	{ ttl?: number }
->;
+export type TInputOTPProps = {
+	userId?: string;
+	requiredLevel?: Level;
+	condominiumId: string;
+	code: Code;
+	ttl?: number;
+	createdAt?: Date;
+};
 
 export class OTP {
 	private readonly _id: string;
@@ -24,6 +28,7 @@ export class OTP {
 		this._id = id ?? randomUUID();
 		this.props = {
 			...input,
+			requiredLevel: input.requiredLevel ?? new Level(0),
 			ttl: input.ttl ?? 1000 * 60 * 2,
 			createdAt: input.createdAt ?? new Date(),
 		};
@@ -32,7 +37,7 @@ export class OTP {
 	public equalTo(input: OTP) {
 		return (
 			this._id === input._id &&
-			this.requiredLevel === input.requiredLevel &&
+			this.requiredLevel.equalTo(input.requiredLevel) &&
 			this.props.ttl === input.ttl &&
 			this.props.condominiumId === input.condominiumId &&
 			this.props.userId === input.userId &&
@@ -41,7 +46,7 @@ export class OTP {
 		);
 	}
 
-	get requiredLevel(): number | undefined {
+	get requiredLevel(): Level {
 		return this.props.requiredLevel;
 	}
 
