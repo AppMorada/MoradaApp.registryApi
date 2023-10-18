@@ -12,9 +12,10 @@ import { GenInviteService } from '@app/services/genInvite.service';
 import { UserController } from './controllers/user.controller';
 import { AdminController } from './controllers/admin.controller';
 import { SuperAdminController } from './controllers/super-admin.controller';
+import { GatewayModule } from './gateways/gateway.module';
 
 @Module({
-	imports: [RedisModule, PrismaModule, AdaptersModule],
+	imports: [RedisModule, PrismaModule, AdaptersModule, GatewayModule],
 	controllers: [
 		CondominiumController,
 		UserController,

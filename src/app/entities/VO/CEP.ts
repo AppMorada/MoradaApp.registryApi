@@ -3,7 +3,9 @@ import { EntitiesEnum } from '../entities';
 
 export class CEP {
 	constructor(private readonly _value: string) {
-		if (_value.length !== 8)
+		this._value = _value.replace(/[-]/g, '');
+
+		if (this._value.length !== 8)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
 				message: 'Incorrect range of length in CEP value.',

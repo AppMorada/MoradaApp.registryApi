@@ -5,6 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaErrorFilter } from '@infra/http/filters/errors/prisma.filter';
 import { ServiceErrorFilter } from '@infra/http/filters/errors/services.filter';
+import { EntitieErrorFilter } from '@infra/http/filters/errors/vo.filter';
+import { GatewayErrorFilter } from '@infra/http/filters/errors/gateways.filter';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -13,6 +15,8 @@ async function bootstrap() {
 	app.useGlobalPipes(new ValidationPipe());
 	app.useGlobalFilters(new PrismaErrorFilter());
 	app.useGlobalFilters(new ServiceErrorFilter());
+	app.useGlobalFilters(new EntitieErrorFilter());
+	app.useGlobalFilters(new GatewayErrorFilter());
 
 	app.enableCors({
 		origin: '*',

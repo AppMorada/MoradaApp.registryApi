@@ -3,7 +3,9 @@ import { EntitiesEnum } from '../entities';
 
 export class CNPJ {
 	constructor(private readonly _value: string) {
-		if (_value.length !== 15)
+		this._value = _value.replaceAll(/[./-]/g, '');
+
+		if (this._value.length !== 14)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
 				message: 'Incorrect range of length in CNPJ value.',

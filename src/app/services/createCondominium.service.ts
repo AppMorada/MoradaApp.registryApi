@@ -2,6 +2,7 @@ import { EmailAdapter } from '@app/adapters/email';
 import { TokenType } from '@app/auth/tokenTypes';
 import { Email } from '@app/entities/VO/email';
 import { Condominium } from '@app/entities/condominium';
+import { CepGateway } from '@app/gateways/CEP.gateway';
 import { CondominiumRepo } from '@app/repositories/condominium';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -17,9 +18,12 @@ export class CreateCondominiumService {
 		private readonly condominiumRepo: CondominiumRepo,
 		private readonly tokenService: JwtService,
 		private readonly mailAdapter: EmailAdapter,
+		private readonly cepGate: CepGateway,
 	) {}
 
 	async exec(input: IProps) {
+		await this.cepGate.check(input.condominium.CEP.value());
+
 		await this.condominiumRepo.create({
 			condominium: input.condominium,
 		});

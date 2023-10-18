@@ -58,7 +58,6 @@ export class SuperAdminController {
 
 	@UseGuards(SuperAdminJwt)
 	@Post('create-admin')
-	@HttpCode(204)
 	async createAdmin(@Req() req: Request, @Body() body: CreateUserDTO) {
 		const superAdminData = req.inMemoryData as User;
 		const user = UserMapper.toClass({
@@ -67,6 +66,6 @@ export class SuperAdminController {
 			condominiumId: superAdminData.condominiumId,
 		});
 
-		await this.createUser.exec({ user });
+		await this.createUser.exec({ user }).catch((err) => console.log(err));
 	}
 }

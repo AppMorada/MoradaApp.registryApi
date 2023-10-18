@@ -13,7 +13,7 @@ model Condominium {
   CEP         String    @db.Char(8)
   num         Int       @db.SmallInt
   block       String    @db.Char(6)
-  CNPJ        String    @db.Char(15)
+  CNPJ        String    @db.Char(14)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
   users       User[]

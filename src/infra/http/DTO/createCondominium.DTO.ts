@@ -3,7 +3,6 @@ import {
 	IsEmail,
 	IsNumber,
 	IsString,
-	Length,
 	Max,
 	MaxLength,
 	Min,
@@ -26,7 +25,8 @@ export class CreateCondominiumDTO {
 
 	@ApiProperty()
 	@IsString()
-	@Length(8)
+	@MinLength(8)
+	@MaxLength(9)
 		CEP: string;
 
 	@ApiProperty()
@@ -42,6 +42,7 @@ export class CreateCondominiumDTO {
 
 	@ApiProperty()
 	@IsString()
-	@Length(8)
+	@MaxLength(18)
+	@MinLength(14)
 		CNPJ: string;
 }

@@ -15,7 +15,7 @@ export function userFactory(input: TOverride = {}, id?: string) {
 			email: new Email('jhondoe@email.com'),
 			password: new Password('12345678'),
 			phoneNumber: new PhoneNumber('1234567891'),
-			CPF: new CPF('12312312312'),
+			CPF: new CPF('11122233396'),
 			condominiumId: randomUUID(),
 			...input,
 		},

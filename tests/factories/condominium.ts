@@ -12,7 +12,7 @@ export function condominiumFactory(input: TOverride = {}, id?: string) {
 		{
 			name: new Name('My condominium'),
 			CEP: new CEP('12345678'),
-			CNPJ: new CNPJ('123456789123456'),
+			CNPJ: new CNPJ('12345678912345'),
 			block: new Block('123456'),
 			num: new Num(32768),
 			...input,

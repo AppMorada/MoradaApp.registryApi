@@ -4,23 +4,27 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailMock } from '@tests/adapters/emailMock';
 import { condominiumFactory } from '@tests/factories/condominium';
 import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
+import { CepGatewayMock } from '@tests/gateways/CEP.gateway';
 
 describe('Create condominium test', () => {
 	let createCondominium: CreateCondominiumService;
 
 	let condominiumRepo: InMemoryCondominium;
 	let tokenService: JwtService;
+	let cepGateway: CepGatewayMock;
 	let emailAdapter: EmailMock;
 
 	beforeEach(() => {
 		condominiumRepo = new InMemoryCondominium();
 		tokenService = new JwtService();
 		emailAdapter = new EmailMock();
+		cepGateway = new CepGatewayMock();
 
 		createCondominium = new CreateCondominiumService(
 			condominiumRepo,
 			tokenService,
 			emailAdapter,
+			cepGateway,
 		);
 	});
 
