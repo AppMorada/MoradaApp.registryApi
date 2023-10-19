@@ -37,11 +37,6 @@ export class CreateCondominiumDTO {
 
 	@ApiProperty()
 	@IsString()
-	@MaxLength(6)
-		block: string;
-
-	@ApiProperty()
-	@IsString()
 	@MaxLength(18)
 	@MinLength(14)
 		CNPJ: string;
