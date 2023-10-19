@@ -7,7 +7,14 @@ import {
 import { CryptAdapter } from '@app/adapters/crypt';
 import { OTPRepo } from '@app/repositories/otp';
 import { Email } from '@app/entities/VO/email';
-import { Level } from '@app/entities/VO/level';
+import { OTP } from '@app/entities/OTP';
+import { generateInviteInput } from '@utils/generateInviteData';
+
+interface IValidate {
+	email: Email;
+	code: string;
+	otp: OTP;
+}
 
 @Injectable()
 export class HmacInviteGuard implements CanActivate {
@@ -16,20 +23,33 @@ export class HmacInviteGuard implements CanActivate {
 		private readonly otpRepo: OTPRepo,
 	) {}
 
-	private async validate(email: Email, code: string, requiredLevel?: Level) {
+	private async validate(input: IValidate) {
 		const key =
-			!requiredLevel || requiredLevel.value <= 0
+			!input.otp.requiredLevel || input.otp.requiredLevel.value <= 0
 				? process.env.INVITE_TOKEN_KEY
-				: requiredLevel.value === 1
+				: input.otp.requiredLevel.value === 1
 					? process.env.INVITE_ADMIN_TOKEN_KEY
 					: process.env.INVITE_SUPER_ADMIN_TOKEN_KEY;
 
+		const inviteData = generateInviteInput({
+			condominiumId: input.otp.condominiumId,
+			email: input.email,
+			requiredLevel: input.otp.requiredLevel,
+			otpId: input.otp.id,
+		});
 		const hmacRes = await this.crypt
-			.hashWithHmac({ data: email.value, key: key as string })
+			.hashWithHmac({ data: inviteData, key: key as string })
 			.catch(() => {
 				throw new UnauthorizedException();
 			});
-		return hmacRes === code;
+
+		const hmacValidation = hmacRes === input.code;
+		const cryptValidation = await this.crypt.compare({
+			data: input.code,
+			hashedData: input.otp.code.value,
+		});
+
+		return hmacValidation && cryptValidation;
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -42,11 +62,12 @@ export class HmacInviteGuard implements CanActivate {
 		const otp = await this.otpRepo.find({ email });
 		if (!otp) throw new UnauthorizedException();
 
-		const validationRes = await this.validate(
+		const validationRes = await this.validate({
 			email,
-			invite instanceof Array && invite.length >= 2 ? invite[1] : '',
-			otp.requiredLevel,
-		);
+			code:
+				invite instanceof Array && invite.length >= 2 ? invite[1] : '',
+			otp,
+		});
 		if (!validationRes) throw new UnauthorizedException();
 
 		req.inMemoryData = otp;
