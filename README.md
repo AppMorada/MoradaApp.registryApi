@@ -1,37 +1,115 @@
 # Morada App - API
 
-## Instruções
-Esta é uma API, feita em NestJS, dedicada aos serviços da Morada App. Segue abaixo as depedências externas do serviço na qual o usuário deve se atentar para porta-las em sua maquina e as devidas instruções de como a utilizar em sua maquina:
+## Sobre
+Esta é uma API feita em NestJS e projetada para atender os serviços do projeto Morada APP. Sendo assim, buscamos facilitar a vida dos moradores de condomínio e dos desenvolvedores responsáveis por integrar nosso código em seus sistemas.
 
-### Depedências externas
-1. Postgres
-2. PNPM
-3. Docker
-4. Docker Compose
+Adiante, nossos servidores back-end devem contar com as seguintes dependências e ferramentas para que esteja em perfeito funcionamento:
 
-### Como usar
-Primeiramente, ative os containers necessários para o projeto com:
+1. **Mailtrap**: em ambiente de desenvolvimento, usamos o Mailtrap para realizar o envio de emails dentro da plataforma;
+2. **Postgres**: por hora, em ambiente de desenvolvimento, estamos armazenando nossos dados no Postgres pela provedora [Clever Cloud](https://console.clever-cloud.com/). Caso você faça parte da equipe de desenvolvimento, entre em contato com o time de back-end para a obtenção das credenciais de acesso ao banco de dados focado em desenvolvimento;
+3. **Redis**: para gerar dados que possuem prazo de expiração ou realizar o cache das entidades do sistema, usamos o banco de dados de cache 'Redis', na provedora [Render](https://dashboard.render.com/), assim como no Postgres, contate-nos para obter as credenciais de acesso relacionados a este banco de dados;
+4. **PNPM**: para gerenciar nossas dependências estamos usando o Performant Node Package Manager ([PNPM](https://pnpm.io/pt/)). Por quê? A resposta é simples, o pnpm é capaz de gerar links simbólicos de cada dependência utilizada no projeto, como consequência, o mesmo é capaz de reutilizar as bibliotecas que já existem em uma máquina, reduzindo de maneira significativa o espaço consumido pelo nosso sistema;
+5. **Docker**: o Docker é uma plataforma de virtualização de contêineres que permite isolar e empacotar aplicativos e seus ambientes de execução em contêineres, facilitando a preparação do ambiente do sistema e viabilizando o deploy da aplicação em inúmeras provedoras de nuvem. Sendo assim, basta executar os comandos que serão passados logo mais, e você já será capaz de possuir todos os servidores prontos para execução rapidamente. Matando assim, a necessidade de se passar horas na frente do computador configurando serviço a serviço para rodar na sua máquina;
+6. **Docker Compose**: é um orquestrador de contêineres do Docker, responsável por manter o sistema funcionando em conjunto, podendo configurar redes internas, mapear as portas de cada serviço e entre outras inúmeras funcionalidades essenciais.
+
+**AVISO**: lembre-se de que se você esta no time de back-end, você já possui muitas credenciais relacionadas a estes serviços predefinidas dentro do .env.example, juntamente com as explicações de cada variável usada!
+
+### Preparação
+Primeiramente, antes de começar a "levantar" o sistema, você deve ter instalado em sua máquina todas as dependências citadas acima _- sim, você deve ter o Postgres e Redis minimamente configurado em sua máquina, pois você será capaz de se conectar manualmente nestas instâncias em produção, apesar de já não ser uma questão extremamente prioritária -_ segue abaixo as instruções de instalação para cada sistema operacional:
+
+- **Docker**
+    1. [Linux](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
+    2. [Windows]()
+
+- **Docker Compose**
+    1. [Linux](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04)
+    2. [Windows]()
+
+- **Redis**
+    1. [Linux && Windows](https://redis.io/docs/getting-started/installation/)
+
+- **Postgres**
+    1. [Linux](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart)
+    2. [Windows]()
+
+- **PNPM**: execute ```npm i pnpm -g```
+
+- **Mailtrap [back-end apenas]**:
+    1. Crie uma conta na plataforma por [aqui](https://mailtrap.io/).
+    2. Acesse o menu da lateral a esquerda
+    3. Entre em **Email Testing** > **Inboxes** > **[Seu usuário]**
+    4. Copie e cole o arquivo .env.example em .env
+    5. Ao lado direito, na opção 'Integrations', troque para o nodemailer
+    7. Copie e cole as credenciais no .env para visualizar os dados
+    8. Insira em HOST_SENDER o valor 'sandbox.smtp.mailtrap.io'
+    9. Insira em HOST_PORT_SENDER o valor 2525
+    10. Coloque qualquer nome em NAME_SENDER
+    11. Insira auth.user em EMAIL_SENDER
+    12. Insira auth.pass em PASS_SENDER
+
+## Como usar
+
+Depois de muita configuração, vamos colocar tudo em funcionamento. Primeiramente, execute o docker compose up para levantar o sistema com base no docker-compose.yml definido na pasta root:
+
 ```
 docker compose up
 ```
 
-Agora, entre no container da aplicação e logo em seguida instale as dependências:
+Com o sistema ativo, adentre no mesmo usando o bash para entrar na instância app (o contêiner em NodeJS + NestJS):
 ```
 docker compose exec app bash
 ```
+
+Por padrão, o nosso contêiner já tem o pnpm instalado, então você não precisa instalá-lo no contexto do mesmo, sendo assim, basta instalar as dependências **DENTRO DO CONTÊINER**:
 ```
 pnpm install
 ```
 
-E por fim, FORA DO CONTAINER habilite os hooks necessários para automatizar algumas tarefas importantes, como o processo de lint:
+Se a instalação ocorreu com êxito, abra outro terminal e **FORA DO CONTÊINER** execute o comando abaixo. Por quê? Ele vai definir os hooks do git necessários para que você consiga automatizar processos de lint, formatação e testes locais toda vez que fazer commit:
 ```
 pnpm set-hooks
 ```
 
-Se achar necessário, você também pode se conectar com o Postgres da aplicação usando o seguinte comando:
+Pronto, agora execute somente ```git commit``` sempre que quiser salvar suas alterações inseridas pelo ```git add```.
+
+## Comandos
+Agora você esta apto a executar a aplicação dentro do contêiner.
+<br>
+Para executar a aplicação em ambiente de desenvolvimento:
+```
+pnpm dev
+```
+
+Para executar a aplicação em ambiente de produção:
+```
+pnpm start
+```
+
+Para executar testes unitários na aplicação:
+```
+pnpm test
+```
+
+Para fazer o build da aplicação:
+```
+pnpm build
+```
+
+## Bônus
+
+Já temos as instâncias ativas, para você consultar os serviços de armazenamento basta executar os seguintes comandos:
+
+### Postgres
 ```
 docker compose exec db psql -U default -d mydb
 ```
+Documentação do Postgres [aqui](https://www.postgresql.org/docs/current/).
 
-## Coleção de requisição rápida
-Caso queira ter acesso a documentação de cada requisição da nossa aplicação, você pode acessar este [link](https://weary-boa-earmuffs.cyclic.app/api).
+### Redis
+```
+docker compose exec redis_db redis-cli -a password
+```
+Documentação do redis [aqui](https://redis.io/commands/get/).
+
+## Coleções de requisições
+Sinta-se a vontade consultando a nossa api tanto pelo [Swagger](https://weary-boa-earmuffs.cyclic.app/api) quanto pelo [Postman](https://documenter.getpostman.com/view/25622444/2s9YR85Z9K).
