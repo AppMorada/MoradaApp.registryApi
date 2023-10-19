@@ -42,6 +42,10 @@ export class AuthService {
 			content: {
 				email: user.email.value,
 				CPF: user.CPF.value,
+				block: user.block ? user.block.value : null,
+				apartmentNumber: user.apartmentNumber
+					? user.apartmentNumber.value
+					: null,
 				name: user.name.value,
 				level: user.level.value,
 				createdAt: user.createdAt,

@@ -1,5 +1,6 @@
 import { CreateUserService } from '@app/services/createUser.service';
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	HttpCode,
@@ -16,6 +17,8 @@ import { LoginDTO } from '../DTO/login.DTO';
 import { Password } from '@app/entities/VO/password';
 import { OTP } from '@app/entities/OTP';
 import { HmacInviteGuard } from '@app/auth/guards/hmac-invite.guard';
+import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
+import { Block } from '@app/entities/VO/block';
 
 @Controller('user')
 export class UserController {
@@ -28,8 +31,24 @@ export class UserController {
 	@Post('accept')
 	async createSimpleUser(@Req() req: Request, @Body() body: CreateUserDTO) {
 		const otp = req.inMemoryData as OTP;
+
+		if (
+			(!body.apartmentNumber && otp.requiredLevel.value === 0) ||
+			(!body.block && otp.requiredLevel.value === 0)
+		)
+			throw new BadRequestException({
+				message:
+					'ERROR: apartmentNumber or block field should be used on common users.',
+				error: 'Bad Request',
+				statusCode: 400,
+			});
+
 		const user = UserMapper.toClass({
 			...body,
+			apartmentNumber: body.apartmentNumber
+				? new ApartmentNumber(body.apartmentNumber)
+				: null,
+			block: body.block ? new Block(body.block) : null,
 			level: otp.requiredLevel?.value || 0,
 			condominiumId: otp.condominiumId,
 		});

@@ -7,6 +7,7 @@ import { PrismaErrorFilter } from '@infra/http/filters/errors/prisma.filter';
 import { ServiceErrorFilter } from '@infra/http/filters/errors/services.filter';
 import { EntitieErrorFilter } from '@infra/http/filters/errors/vo.filter';
 import { GatewayErrorFilter } from '@infra/http/filters/errors/gateways.filter';
+import { RedisErrorFilter } from '@infra/http/filters/errors/redis-logic.filter';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,6 +18,7 @@ async function bootstrap() {
 	app.useGlobalFilters(new ServiceErrorFilter());
 	app.useGlobalFilters(new EntitieErrorFilter());
 	app.useGlobalFilters(new GatewayErrorFilter());
+	app.useGlobalFilters(new RedisErrorFilter());
 
 	app.enableCors({
 		origin: '*',

@@ -6,13 +6,17 @@ import { Password } from '../VO/password';
 import { CPF } from '../VO/CPF';
 import { PhoneNumber } from '../VO/phoneNumber';
 import { Level } from '../VO/level';
+import { Block } from '../VO/block';
+import { ApartmentNumber } from '../VO/apartmentNumber';
 
 interface IPropsUser {
 	name: Name;
 	email: Email;
 	password: Password;
+	block: Block | null;
 	CPF: CPF;
 	phoneNumber: PhoneNumber;
+	apartmentNumber: ApartmentNumber | null;
 	level: Level;
 	createdAt: Date;
 	updatedAt: Date;
@@ -46,6 +50,7 @@ export class User {
 			this.createdAt === input.createdAt &&
 			this.updatedAt === input.updatedAt &&
 			this.phoneNumber.equalTo(input.phoneNumber) &&
+			this.block?.value === input.block?.value &&
 			this.CPF.equalTo(input.CPF) &&
 			this.level.equalTo(input.level) &&
 			this.password.equalTo(input.password) &&
@@ -62,6 +67,22 @@ export class User {
 	// Condominium Id
 	get condominiumId(): string {
 		return this.props.condominiumId;
+	}
+
+	// Block
+	get block(): Block | null {
+		return this.props.block;
+	}
+	set block(input: Block | null) {
+		this.props.block = input;
+	}
+
+	// Apartment Number
+	get apartmentNumber(): ApartmentNumber | null {
+		return this.props.apartmentNumber;
+	}
+	set apartmentNumber(input: ApartmentNumber | null) {
+		this.props.apartmentNumber = input;
 	}
 
 	// Name

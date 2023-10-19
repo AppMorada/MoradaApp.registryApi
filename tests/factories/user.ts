@@ -1,4 +1,6 @@
 import { CPF } from '@app/entities/VO/CPF';
+import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
+import { Block } from '@app/entities/VO/block';
 import { Email } from '@app/entities/VO/email';
 import { Name } from '@app/entities/VO/name';
 import { Password } from '@app/entities/VO/password';
@@ -17,6 +19,8 @@ export function userFactory(input: TOverride = {}, id?: string) {
 			phoneNumber: new PhoneNumber('1234567891'),
 			CPF: new CPF('11122233396'),
 			condominiumId: randomUUID(),
+			apartmentNumber: new ApartmentNumber(32768),
+			block: new Block('180'),
 			...input,
 		},
 		id ?? 'default id',

@@ -1,6 +1,7 @@
 import { CEP } from '@app/entities/VO/CEP';
 import { CNPJ } from '@app/entities/VO/CNPJ';
 import { CPF } from '@app/entities/VO/CPF';
+import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
 import { Block } from '@app/entities/VO/block';
 import { Email } from '@app/entities/VO/email';
 import { Level } from '@app/entities/VO/level';
@@ -21,6 +22,10 @@ export class Dereference {
 				CPF: new CPF(input.CPF.value),
 				level: new Level(input.level.value),
 				phoneNumber: new PhoneNumber(input.phoneNumber.value),
+				apartmentNumber: input.apartmentNumber
+					? new ApartmentNumber(input.apartmentNumber.value)
+					: null,
+				block: input.block ? new Block(input.block.value) : null,
 				condominiumId: input.condominiumId,
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
@@ -36,7 +41,6 @@ export class Dereference {
 				CEP: new CEP(input.CEP.value),
 				CNPJ: new CNPJ(input.CNPJ.value),
 				num: new Num(input.num.value),
-				block: new Block(input.block.value),
 				updatedAt: input.updatedAt,
 				createdAt: input.createdAt,
 			},

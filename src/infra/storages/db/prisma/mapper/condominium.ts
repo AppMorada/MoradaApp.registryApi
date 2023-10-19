@@ -1,6 +1,5 @@
 import { CEP } from '@app/entities/VO/CEP';
 import { CNPJ } from '@app/entities/VO/CNPJ';
-import { Block } from '@app/entities/VO/block';
 import { Name } from '@app/entities/VO/name';
 import { Num } from '@app/entities/VO/num';
 import { Condominium } from '@app/entities/condominium';
@@ -13,7 +12,6 @@ export class CondominiumPrismaMapper {
 			name: input.name.value,
 			CNPJ: input.CNPJ.value,
 			CEP: input.CEP.value,
-			block: input.block.value,
 			num: input.num.value,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,
@@ -27,7 +25,6 @@ export class CondominiumPrismaMapper {
 				CEP: new CEP(input.CEP),
 				CNPJ: new CNPJ(input.CNPJ),
 				num: new Num(input.num),
-				block: new Block(input.block),
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
 			},

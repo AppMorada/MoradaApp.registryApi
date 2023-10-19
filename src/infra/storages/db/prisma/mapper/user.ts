@@ -1,4 +1,6 @@
 import { CPF } from '@app/entities/VO/CPF';
+import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
+import { Block } from '@app/entities/VO/block';
 import { Email } from '@app/entities/VO/email';
 import { Level } from '@app/entities/VO/level';
 import { Name } from '@app/entities/VO/name';
@@ -18,6 +20,10 @@ export class UserPrismaMapper {
 			phoneNumber: input.phoneNumber.value,
 			level: input.level.value,
 			condominiumId: input.condominiumId,
+			block: input.block ? input.block.value : null,
+			apartment_number: input.apartmentNumber
+				? input.apartmentNumber.value
+				: null,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,
 		};
@@ -33,6 +39,11 @@ export class UserPrismaMapper {
 				phoneNumber: new PhoneNumber(input.phoneNumber),
 				level: new Level(input.level),
 				condominiumId: input.condominiumId,
+				block: input.block !== null ? new Block(input.block) : null,
+				apartmentNumber:
+					input.apartment_number !== null
+						? new ApartmentNumber(input.apartment_number)
+						: null,
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
 			},

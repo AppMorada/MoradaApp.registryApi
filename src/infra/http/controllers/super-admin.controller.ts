@@ -1,4 +1,3 @@
-import { CreateUserService } from '@app/services/createUser.service';
 import {
 	Body,
 	Controller,
@@ -8,12 +7,7 @@ import {
 	Req,
 	UseGuards,
 } from '@nestjs/common';
-import { CreateUserDTO } from '../DTO/createUser.DTO';
-import { UserMapper } from '@app/mapper/user';
-import { CondominiumJwt } from '@app/auth/guards/condominium-jwt.guard';
-import { ICondominiumJwt } from '@app/auth/tokenTypes';
 import { Request } from 'express';
-import { AuthService } from '@app/services/auth.service';
 import { User } from '@app/entities/user';
 import { SuperAdminJwt } from '@app/auth/guards/super-admin-jwt.guard';
 import { DeleteUserDTO } from '../DTO/deleteAdminUser.DTO';
@@ -26,30 +20,9 @@ import { Level } from '@app/entities/VO/level';
 @Controller('super-admin')
 export class SuperAdminController {
 	constructor(
-		private readonly createUser: CreateUserService,
-		private readonly authService: AuthService,
 		private readonly deleteUserService: DeleteUserService,
 		private readonly genInvite: GenInviteService,
 	) {}
-
-	@UseGuards(CondominiumJwt)
-	@Post('create-itself')
-	async createSuperAdmin(@Req() req: Request, @Body() body: CreateUserDTO) {
-		const data = req.inMemoryData as ICondominiumJwt;
-		const user = UserMapper.toClass({
-			...body,
-			level: 2,
-			condominiumId: data.sub,
-		});
-
-		await this.createUser.exec({ user });
-		const { token } = await this.authService.exec({
-			email: user.email,
-			password: user.password,
-		});
-
-		return { access_token: token };
-	}
 
 	@UseGuards(SuperAdminJwt)
 	@Delete()

@@ -10,6 +10,8 @@ export interface IAccessTokenBody {
 		name: string;
 		email: string;
 		CPF: string;
+		apartmentNumber: number | null;
+		block: string | null;
 		level: number;
 		phoneNumber: string;
 		createdAt: Date;

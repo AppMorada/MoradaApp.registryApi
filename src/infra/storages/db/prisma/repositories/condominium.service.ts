@@ -7,7 +7,6 @@ import { PrismaService } from '../prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CondominiumPrismaMapper } from '../mapper/condominium';
 import { Condominium } from '@app/entities/condominium';
-import { CondominiumMapper } from '@app/mapper/condominium';
 
 @Injectable()
 export class CondominiumPrismaRepo implements CondominiumRepo {
@@ -37,6 +36,8 @@ export class CondominiumPrismaRepo implements CondominiumRepo {
 			},
 		});
 
-		return condominium ? CondominiumMapper.toClass(condominium) : undefined;
+		return condominium
+			? CondominiumPrismaMapper.toClass(condominium)
+			: undefined;
 	}
 }

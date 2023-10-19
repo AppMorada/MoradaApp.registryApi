@@ -24,7 +24,7 @@ export class CreateUserService {
 		const user = Dereference.user(input.user);
 		user.password = new Password(hashPass);
 
-		await this.otpRepo.delete({ email: input.user.email });
 		await this.userRepo.create({ user });
+		await this.otpRepo.delete({ email: input.user.email });
 	}
 }

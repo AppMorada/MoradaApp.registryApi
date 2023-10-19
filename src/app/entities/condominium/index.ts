@@ -3,14 +3,12 @@ import { TReplace } from '../../../utils/replace';
 import { CEP } from '../VO/CEP';
 import { Name } from '../VO/name';
 import { Num } from '../VO/num';
-import { Block } from '../VO/block';
 import { CNPJ } from '../VO/CNPJ';
 
 interface IPropsCondominium {
 	name: Name;
 	CEP: CEP;
 	num: Num;
-	block: Block;
 	CNPJ: CNPJ;
 	createdAt: Date;
 	updatedAt: Date;
@@ -41,7 +39,6 @@ export class Condominium {
 			this.props.name.equalTo(input.name) &&
 			this.props.CEP.equalTo(input.CEP) &&
 			this.props.num.equalTo(input.num) &&
-			this.props.block.equalTo(input.block) &&
 			this.props.CNPJ.equalTo(input.CNPJ) &&
 			this.props.createdAt === input.createdAt &&
 			this.props.updatedAt === input.updatedAt
@@ -75,14 +72,6 @@ export class Condominium {
 	}
 	set num(input: Num) {
 		this.props.num = input;
-	}
-
-	// BLOCK
-	get block(): Block {
-		return this.props.block;
-	}
-	set block(input: Block) {
-		this.props.block = input;
 	}
 
 	// CNPJ

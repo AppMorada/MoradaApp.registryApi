@@ -12,7 +12,6 @@ model Condominium {
   name        String    @db.VarChar(120)
   CEP         String    @db.Char(8)
   num         Int       @db.SmallInt
-  block       String    @db.Char(6)
   CNPJ        String    @db.Char(14)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
@@ -25,15 +24,17 @@ model Condominium {
 }
 
 model User {
-  id            String      @id @default(uuid()) @db.Uuid
-  name          String      @db.VarChar(120)
-  email         String      @db.VarChar(255)
-  password      String      @db.VarChar(64)
-  CPF           String      @db.Char(11)
-  phoneNumber   String      @db.VarChar(30)
-  level         Int         @db.SmallInt @default(0)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @default(now())
+  id                String      @id @default(uuid()) @db.Uuid
+  name              String      @db.VarChar(120)
+  email             String      @db.VarChar(255)
+  password          String      @db.VarChar(64)
+  CPF               String      @db.Char(11)
+  block             String?     @db.Char(6)
+  apartment_number  Int?        @db.SmallInt
+  phoneNumber       String      @db.VarChar(30)
+  level             Int         @db.SmallInt @default(0)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now())
 
   condominiumId String      @db.Uuid
   condominium   Condominium @relation(fields: [condominiumId], references: [id])
