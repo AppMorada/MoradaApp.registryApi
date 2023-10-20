@@ -29,6 +29,7 @@
       "@service/*": ["src/app/service/*"],
       "@infra/*": ["src/infra/*"],
       "@tests/*": ["tests/*"],
+      "@utils/*": ["src/utils/*"]
     }
   }
 }

@@ -7,12 +7,19 @@ services:
     hostname: db
     ports:
       - "5432:5432"
-    networks:
-      - internal_network
     environment:
       POSTGRES_DB: "mydb"
       POSTGRES_USER: "default"
       POSTGRES_PASSWORD: password
+
+  redis_db:
+    image: redis:7.0.5-bullseye
+    restart: always
+    hostname: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --loglevel warning --requirepass password 
+
   app:
     build:
       dockerfile: ./Dockerfile
@@ -22,13 +29,7 @@ services:
       - .:/home/node/app
     ports:
       - "3000:3000"
-    networks:
-      - internal_network
-      - external_network
     depends_on:
+      - redis_db
       - db
 
-networks:
-  external_network:
-  internal_network:
-    internal: true
