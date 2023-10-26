@@ -112,4 +112,4 @@ docker compose exec redis_db redis-cli -a password
 Documentação do redis [aqui](https://redis.io/commands/get/).
 
 ## Coleções de requisições
-Sinta-se a vontade consultando a nossa api tanto pelo [Swagger](https://weary-boa-earmuffs.cyclic.app/api) quanto pelo [Postman](https://documenter.getpostman.com/view/25622444/2s9YR85Z9K).
+Sinta-se a vontade consultando a nossa api tanto pelo [Swagger](https://wild-leather-jacket-cow.cyclic.cloud/api) quanto pelo [Postman](https://documenter.getpostman.com/view/25622444/2s9YR85Z9K).

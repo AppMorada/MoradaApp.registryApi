@@ -57,7 +57,9 @@ export class HmacInviteGuard implements CanActivate {
 
 		const regex = /invite=([^&]+)/gm;
 		const invite = regex.exec(req?._parsedUrl?.query ?? '') as string[];
-		const email = new Email(req?.body?.email);
+
+		const email = req?.body?.email ? new Email(req.body.email) : undefined;
+		if (!email) throw new UnauthorizedException();
 
 		const otp = await this.otpRepo.find({ email });
 		if (!otp) throw new UnauthorizedException();

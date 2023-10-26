@@ -11,33 +11,71 @@ import {
 
 export class CreateCondominiumDTO {
 	@ApiProperty()
-	@IsString()
-	@IsEmail()
-	@MinLength(7)
-	@MaxLength(255)
+	@IsString({
+		message: 'O campo "email" precisa ser uma string',
+	})
+	@IsEmail(
+		{},
+		{
+			message: 'O campo "email" precisa ser um email válido',
+		},
+	)
+	@MinLength(7, {
+		message: 'O campo "email" precisa conter no mínimo 7 caracteres',
+	})
+	@MaxLength(255, {
+		message: 'O campo "email" precisa conter no máximo 255 caracteres',
+	})
 		email: string;
 
 	@ApiProperty()
-	@IsString()
-	@MaxLength(120)
-	@MinLength(2)
+	@IsString({
+		message: 'O campo "name" precisa ser uma string',
+	})
+	@MaxLength(120, {
+		message: 'O campo "name" precisa conter no máximo 120 caracteres',
+	})
+	@MinLength(2, {
+		message: 'O campo "name" precisa conter no mínimo 2 caracteres',
+	})
 		name: string;
 
 	@ApiProperty()
-	@IsString()
-	@MinLength(8)
-	@MaxLength(9)
+	@IsString({
+		message: 'O campo "CEP" precisa ser uma string',
+	})
+	@MinLength(8, {
+		message: 'O campo "CEP" precisa conter no mínimo 8 caracteres',
+	})
+	@MaxLength(9, {
+		message: 'O campo "CEP" precisa conter no máximo 9 caracteres',
+	})
 		CEP: string;
 
 	@ApiProperty()
-	@IsNumber()
-	@Max(32768)
-	@Min(0)
+	@IsNumber(
+		{},
+		{
+			message: 'O campo "num" precisa ser um número',
+		},
+	)
+	@Max(32768, {
+		message: 'O campo "num" precisa ser menor ou igual a 32768',
+	})
+	@Min(0, {
+		message: 'O campo "num" precisa ser maior ou igual a 0',
+	})
 		num: number;
 
 	@ApiProperty()
-	@IsString()
-	@MaxLength(18)
-	@MinLength(14)
+	@IsString({
+		message: 'O campo "CNPJ" precisa ser uma string',
+	})
+	@MaxLength(18, {
+		message: 'O campo "CNPJ" precisa conter no máximo 18 caracteres',
+	})
+	@MinLength(14, {
+		message: 'O campo "CNPJ" precisa conter no mínimo 14 caracteres',
+	})
 		CNPJ: string;
 }
