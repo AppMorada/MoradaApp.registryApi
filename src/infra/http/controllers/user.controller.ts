@@ -19,6 +19,7 @@ import { OTP } from '@app/entities/OTP';
 import { HmacInviteGuard } from '@app/auth/guards/hmac-invite.guard';
 import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
 import { Block } from '@app/entities/VO/block';
+import { LayersEnum, Log } from '@utils/log';
 
 @Controller('user')
 export class UserController {
@@ -32,16 +33,28 @@ export class UserController {
 	async createSimpleUser(@Req() req: Request, @Body() body: CreateUserDTO) {
 		const otp = req.inMemoryData as OTP;
 
+		// PASSAR PARA OUTRO DOMÍNIO
 		if (
 			(!body.apartmentNumber && otp.requiredLevel.value === 0) ||
 			(!body.block && otp.requiredLevel.value === 0)
-		)
+		) {
+			Log.error({
+				name: 'Omissão de campos',
+				layer: LayersEnum.dto,
+				message: [
+					'apartmentNumber e block não devem ser omitidos em usuários comuns',
+				],
+				httpCode: 400,
+			});
+
 			throw new BadRequestException({
-				message:
-					'ERROR: apartmentNumber or block field should be used on common users.',
+				message: [
+					'apartmentNumber e block não devem ser omitidos em usuários comuns',
+				],
 				error: 'Bad Request',
 				statusCode: 400,
 			});
+		}
 
 		const user = UserMapper.toClass({
 			...body,

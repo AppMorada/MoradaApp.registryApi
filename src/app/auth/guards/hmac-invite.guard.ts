@@ -1,14 +1,10 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	Injectable,
-	UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { OTPRepo } from '@app/repositories/otp';
 import { Email } from '@app/entities/VO/email';
 import { OTP } from '@app/entities/OTP';
 import { generateInviteInput } from '@utils/generateInviteData';
+import { GuardErrors } from '@app/errors/guard';
 
 interface IValidate {
 	email: Email;
@@ -40,7 +36,9 @@ export class HmacInviteGuard implements CanActivate {
 		const hmacRes = await this.crypt
 			.hashWithHmac({ data: inviteData, key: key as string })
 			.catch(() => {
-				throw new UnauthorizedException();
+				throw new GuardErrors({
+					message: 'Falha ao tentar gerar um HMAC do convite',
+				});
 			});
 
 		const hmacValidation = hmacRes === input.code;
@@ -59,10 +57,13 @@ export class HmacInviteGuard implements CanActivate {
 		const invite = regex.exec(req?._parsedUrl?.query ?? '') as string[];
 
 		const email = req?.body?.email ? new Email(req.body.email) : undefined;
-		if (!email) throw new UnauthorizedException();
+		if (!email)
+			throw new GuardErrors({
+				message: 'Email não inserido no body da requisição',
+			});
 
 		const otp = await this.otpRepo.find({ email });
-		if (!otp) throw new UnauthorizedException();
+		if (!otp) throw new GuardErrors({ message: 'O convite não existe' });
 
 		const validationRes = await this.validate({
 			email,
@@ -70,7 +71,10 @@ export class HmacInviteGuard implements CanActivate {
 				invite instanceof Array && invite.length >= 2 ? invite[1] : '',
 			otp,
 		});
-		if (!validationRes) throw new UnauthorizedException();
+		if (!validationRes)
+			throw new GuardErrors({
+				message: 'O convite é inválido',
+			});
 
 		req.inMemoryData = otp;
 

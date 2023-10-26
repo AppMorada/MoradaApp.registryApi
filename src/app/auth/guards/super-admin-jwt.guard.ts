@@ -1,13 +1,9 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	Injectable,
-	UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ICondominiumJwt, TAccessTokenJwt } from '../tokenTypes';
 import { UserRepo } from '@app/repositories/user';
 import { Level } from '@app/entities/VO/level';
+import { GuardErrors } from '@app/errors/guard';
 
 @Injectable()
 export class SuperAdminJwt implements CanActivate {
@@ -22,7 +18,7 @@ export class SuperAdminJwt implements CanActivate {
 				secret: process.env.ACCESS_TOKEN_KEY,
 			})
 			.catch(() => {
-				throw new UnauthorizedException();
+				throw new GuardErrors({ message: 'JWT inválido' });
 			});
 
 		return tokenData;
@@ -33,12 +29,14 @@ export class SuperAdminJwt implements CanActivate {
 		const rawToken = req?.headers?.authorization;
 
 		const token = rawToken?.split(' ')[1];
-		if (!token) throw new UnauthorizedException();
+		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
 
 		const tokenData = (await this.checkToken(token)) as TAccessTokenJwt;
 		const user = await this.userRepo.find({ id: tokenData.sub });
 		if (!user || !user.level.equalTo(new Level(2)))
-			throw new UnauthorizedException();
+			throw new GuardErrors({
+				message: 'Usuário não tem autorização para realizar tal ação',
+			});
 
 		req.inMemoryData = user;
 
