@@ -1,19 +1,20 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { AdapterError } from '@app/errors/adapter';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { LayersEnum, Log } from '@utils/log';
 import { Response } from 'express';
 
 @Catch(AdapterError)
 export class AdapterErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	catch(exception: AdapterError, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
 
-		Log.error({
+		this.logger.error({
 			name: exception.name,
 			layer: LayersEnum.adapter,
-			message: exception.message,
-			httpCode: exception.httpCode ?? 500,
+			description: exception.message,
 			stack: exception.stack,
 		});
 

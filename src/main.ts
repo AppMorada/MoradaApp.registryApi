@@ -12,25 +12,36 @@ import { GuardErrorFilter } from '@infra/http/filters/errors/guard.filter';
 import { AdapterErrorFilter } from '@infra/http/filters/errors/adapter.filter';
 import { GenericErrorFilter } from '@infra/http/filters/errors/generic.filter';
 import { ClassValidatorErrorFilter } from '@infra/http/filters/errors/classValidator.filter';
+import { Echo } from 'echoguard';
+import { LogInterceptor } from '@infra/http/interceptors/logger.interceptor';
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
+import { NotFoundFilter } from '@infra/http/filters/errors/notFound.filter';
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule);
+	const app: NestExpressApplication =
+		await NestFactory.create<NestExpressApplication>(AppModule);
+
 	app.enableShutdownHooks();
 
+	const logger = app.get(LoggerAdapter);
+	Echo.start({ appName: 'MoradaApp', server: app });
+
+	app.useGlobalInterceptors(new LogInterceptor(logger));
 	app.useGlobalPipes(new ValidationPipe());
 
-	app.useGlobalFilters(new GenericErrorFilter());
+	app.useGlobalFilters(new GenericErrorFilter(logger));
 
-	app.useGlobalFilters(new PrismaErrorFilter());
-	app.useGlobalFilters(new RedisErrorFilter());
+	app.useGlobalFilters(new PrismaErrorFilter(logger));
+	app.useGlobalFilters(new RedisErrorFilter(logger));
 
-	app.useGlobalFilters(new ServiceErrorFilter());
-	app.useGlobalFilters(new EntitieErrorFilter());
-	app.useGlobalFilters(new GatewayErrorFilter());
-	app.useGlobalFilters(new GuardErrorFilter());
-	app.useGlobalFilters(new AdapterErrorFilter());
+	app.useGlobalFilters(new ServiceErrorFilter(logger));
+	app.useGlobalFilters(new EntitieErrorFilter(logger));
+	app.useGlobalFilters(new GatewayErrorFilter(logger));
+	app.useGlobalFilters(new GuardErrorFilter(logger));
+	app.useGlobalFilters(new AdapterErrorFilter(logger));
 
-	app.useGlobalFilters(new ClassValidatorErrorFilter());
+	app.useGlobalFilters(new ClassValidatorErrorFilter(logger));
+	app.useGlobalFilters(new NotFoundFilter(logger));
 
 	app.enableCors({
 		origin: '*', // mudar no futuro
@@ -47,6 +58,13 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('api', app, document);
 
-	await app.listen(process.env.PORT || 3000);
+	await app.listen(process.env.PORT || 3000).then(() => {
+		if (process.env.NODE_ENV === 'production')
+			logger.info({
+				name: 'Servidor online!',
+				description: 'Tudo em ordem com o estado interno do servidor!',
+				layer: LayersEnum.start,
+			});
+	});
 }
 bootstrap();

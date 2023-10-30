@@ -1,6 +1,6 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { LayersEnum, Log } from '@utils/log';
 import { Response } from 'express';
 
 interface IServiceErrors {
@@ -12,6 +12,8 @@ interface IServiceErrors {
 
 @Catch(ServiceErrors)
 export class ServiceErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	private possibleErrors: IServiceErrors[] = [
 		{
 			name: 'Credenciais inválidas',
@@ -30,12 +32,10 @@ export class ServiceErrorFilter implements ExceptionFilter {
 		});
 
 		if (error) {
-			Log.error({
+			this.logger.error({
 				name: `${error.name} - ${exception.name}`,
 				layer: LayersEnum.services,
-				message: error.message,
-				tag: error.tag,
-				httpCode: error.httpCode,
+				description: error.message,
 				stack: exception.stack,
 			});
 
@@ -45,12 +45,10 @@ export class ServiceErrorFilter implements ExceptionFilter {
 			});
 		}
 
-		Log.error({
+		this.logger.error({
 			name: exception.name,
 			layer: LayersEnum.services,
-			message: exception.message,
-			tag: exception.tag,
-			httpCode: 500,
+			description: exception.message,
 			stack: exception.stack,
 		});
 

@@ -1,6 +1,6 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { LayersEnum, Log } from '@utils/log';
 import { Response } from 'express';
 
 interface IPrismaError {
@@ -12,6 +12,8 @@ interface IPrismaError {
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	private possibleErrors: IPrismaError[] = [
 		{
 			name: 'Dado não existe',
@@ -51,11 +53,10 @@ export class PrismaErrorFilter implements ExceptionFilter {
 		});
 
 		if (error) {
-			Log.error({
+			this.logger.error({
 				name: `${error.name} - ${exception.code}`,
 				layer: LayersEnum.database,
-				message: error.message,
-				httpCode: error.httpCode,
+				description: error.message,
 				stack: exception.stack,
 			});
 
@@ -65,11 +66,10 @@ export class PrismaErrorFilter implements ExceptionFilter {
 			});
 		}
 
-		Log.error({
+		this.logger.error({
 			name: `${exception.name} - ${exception.code}`,
 			layer: LayersEnum.database,
-			message: exception.message,
-			httpCode: 500,
+			description: exception.message,
 			stack: exception.stack,
 		});
 

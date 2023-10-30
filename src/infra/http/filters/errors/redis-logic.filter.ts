@@ -1,9 +1,9 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import {
 	RedisErrorsTags,
 	RedisLogicError,
 } from '@infra/storages/cache/errors/redis';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { LayersEnum, Log } from '@utils/log';
 import { Response } from 'express';
 
 interface IRedisError {
@@ -15,6 +15,8 @@ interface IRedisError {
 
 @Catch(RedisLogicError)
 export class RedisErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	private possibleErrors: IRedisError[] = [
 		{
 			name: 'Dado já existe',
@@ -33,11 +35,10 @@ export class RedisErrorFilter implements ExceptionFilter {
 		});
 
 		if (error) {
-			Log.error({
+			this.logger.error({
 				name: `${error.name} - ${exception.name}`,
 				layer: LayersEnum.cache,
-				message: error.message,
-				httpCode: error.httpCode,
+				description: error.message,
 				stack: exception.stack,
 			});
 			return response.status(error.httpCode).json({
@@ -46,11 +47,10 @@ export class RedisErrorFilter implements ExceptionFilter {
 			});
 		}
 
-		Log.error({
+		this.logger.error({
 			name: exception.name,
 			layer: LayersEnum.cache,
-			message: exception.message,
-			httpCode: 500,
+			description: exception.message,
 			stack: exception.stack,
 		});
 

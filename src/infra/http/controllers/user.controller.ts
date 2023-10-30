@@ -19,13 +19,14 @@ import { OTP } from '@app/entities/OTP';
 import { HmacInviteGuard } from '@app/auth/guards/hmac-invite.guard';
 import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
 import { Block } from '@app/entities/VO/block';
-import { LayersEnum, Log } from '@utils/log';
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 
 @Controller('user')
 export class UserController {
 	constructor(
 		private readonly createUser: CreateUserService,
 		private readonly authService: AuthService,
+		private readonly logger: LoggerAdapter,
 	) {}
 
 	@UseGuards(HmacInviteGuard)
@@ -38,13 +39,11 @@ export class UserController {
 			(!body.apartmentNumber && otp.requiredLevel.value === 0) ||
 			(!body.block && otp.requiredLevel.value === 0)
 		) {
-			Log.error({
+			this.logger.error({
 				name: 'Omissão de campos',
 				layer: LayersEnum.dto,
-				message: [
+				description:
 					'apartmentNumber e block não devem ser omitidos em usuários comuns',
-				],
-				httpCode: 400,
 			});
 
 			throw new BadRequestException({

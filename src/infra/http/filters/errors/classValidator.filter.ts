@@ -1,10 +1,10 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import {
 	ArgumentsHost,
 	BadRequestException,
 	Catch,
 	ExceptionFilter,
 } from '@nestjs/common';
-import { LayersEnum, Log } from '@utils/log';
 import { isArray, isNumber, isString } from 'class-validator';
 import { Response } from 'express';
 
@@ -16,6 +16,8 @@ interface IBodyProps {
 
 @Catch(BadRequestException)
 export class ClassValidatorErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	validateBody(input: any): input is IBodyProps {
 		return (
 			'message' in input &&
@@ -38,11 +40,10 @@ export class ClassValidatorErrorFilter implements ExceptionFilter {
 				message: 'Erro interno do servidor',
 			});
 
-		Log.error({
+		this.logger.error({
 			name: 'Requisição ruim',
 			layer: LayersEnum.dto,
-			message: body.message,
-			httpCode: 400,
+			description: JSON.stringify(body.message),
 			stack: exception.stack,
 		});
 

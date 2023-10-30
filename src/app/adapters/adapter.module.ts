@@ -5,6 +5,8 @@ import { CryptAdapter } from './crypt';
 import { BcryptAdapter } from './bcrypt/bcryptAdapter';
 import { HttpAdapter } from './http';
 import { FetchAdapter } from './fetch/fetchAdapter';
+import { LoggerAdapter } from './logger';
+import { EchoguardAdapter } from './echoguard';
 
 @Global()
 @Module({
@@ -21,7 +23,11 @@ import { FetchAdapter } from './fetch/fetchAdapter';
 			provide: HttpAdapter,
 			useClass: FetchAdapter,
 		},
+		{
+			provide: LoggerAdapter,
+			useClass: EchoguardAdapter,
+		},
 	],
-	exports: [EmailAdapter, CryptAdapter, HttpAdapter],
+	exports: [EmailAdapter, CryptAdapter, HttpAdapter, LoggerAdapter],
 })
 export class AdaptersModule {}

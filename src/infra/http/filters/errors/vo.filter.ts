@@ -1,21 +1,22 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { EntitiesEnum } from '@app/entities/entities';
 import { EntitieError } from '@app/errors/entities';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { LayersEnum, Log } from '@utils/log';
 import { Response } from 'express';
 
 @Catch(EntitieError)
 export class EntitieErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	catch(exception: EntitieError, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
 
 		if (exception.entity === EntitiesEnum.vo) {
-			Log.error({
+			this.logger.error({
 				name: exception.name,
 				layer: LayersEnum.entitie,
-				message: exception.message,
-				httpCode: 400,
+				description: exception.message,
 				stack: exception.stack,
 			});
 
@@ -26,11 +27,10 @@ export class EntitieErrorFilter implements ExceptionFilter {
 			});
 		}
 
-		Log.error({
+		this.logger.error({
 			name: exception.name,
 			layer: LayersEnum.entitie,
-			message: exception.message,
-			httpCode: 500,
+			description: exception.message,
 			stack: exception.stack,
 		});
 

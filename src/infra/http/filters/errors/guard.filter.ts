@@ -1,19 +1,20 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { GuardErrors } from '@app/errors/guard';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { LayersEnum, Log } from '@utils/log';
 import { Response } from 'express';
 
 @Catch(GuardErrors)
 export class GuardErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	catch(exception: GuardErrors, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
 
-		Log.error({
+		this.logger.error({
 			name: `Camada de autenticação - ${exception.name}`,
 			layer: LayersEnum.auth,
-			message: exception.message,
-			httpCode: 401,
+			description: exception.message,
 			stack: exception.stack,
 		});
 

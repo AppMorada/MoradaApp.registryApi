@@ -1,6 +1,6 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { GatewayErrors, GatewaysErrorsTags } from '@infra/http/gateways/errors';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { LayersEnum, Log } from '@utils/log';
 import { Response } from 'express';
 
 interface IGatewayError {
@@ -12,6 +12,8 @@ interface IGatewayError {
 
 @Catch(GatewayErrors)
 export class GatewayErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	private possibleErrors: IGatewayError[] = [
 		{
 			name: 'Entrada inválida',
@@ -31,12 +33,11 @@ export class GatewayErrorFilter implements ExceptionFilter {
 		});
 
 		if (error) {
-			Log.error({
+			this.logger.error({
 				name: `${error.name} - ${exception.name}`,
 				layer: LayersEnum.gateway,
-				message: error.message,
+				description: error.message,
 				stack: exception.stack,
-				httpCode: error.httpCode,
 			});
 
 			return response.status(error.httpCode).json({
@@ -45,12 +46,11 @@ export class GatewayErrorFilter implements ExceptionFilter {
 			});
 		}
 
-		Log.error({
+		this.logger.error({
 			name: exception.name,
 			layer: LayersEnum.gateway,
-			message: exception.message,
+			description: exception.message,
 			stack: exception.stack,
-			httpCode: 500,
 		});
 
 		return response.status(500).json({
