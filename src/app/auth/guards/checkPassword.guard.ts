@@ -43,7 +43,7 @@ export class CheckPasswordGuard implements CanActivate {
 				message: 'Usuário não existe',
 			});
 
-		this.validate(password, user.password.value);
+		await this.validate(password, user.password.value);
 
 		req.inMemoryData = {
 			...req.inMemoryData,

@@ -6,6 +6,9 @@ import { OTP } from '@app/entities/OTP';
 import { generateInviteInput } from '@utils/generateInviteData';
 import { GuardErrors } from '@app/errors/guard';
 import { Request } from 'express';
+import { plainToClass } from 'class-transformer';
+import { InviteUserDTO } from '@infra/http/DTO/inviteUser.DTO';
+import { checkClassValidatorErrors } from '@utils/convertValidatorErr';
 
 interface IValidate {
 	email: Email;
@@ -54,11 +57,9 @@ export class HmacInviteGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
 
-		const email = req?.body?.email ? new Email(req.body.email) : undefined;
-		if (!email)
-			throw new GuardErrors({
-				message: 'Email não inserido no body da requisição',
-			});
+		const body = plainToClass(InviteUserDTO, req.body);
+		await checkClassValidatorErrors({ body });
+		const email = new Email(body.email);
 
 		const otp = await this.otpRepo.find({ email });
 		if (!otp) throw new GuardErrors({ message: 'O convite não existe' });

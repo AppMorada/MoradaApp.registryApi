@@ -14,9 +14,22 @@ import { AdminController } from './controllers/admin.controller';
 import { SuperAdminController } from './controllers/super-admin.controller';
 import { GatewayModule } from './gateways/gateway.module';
 import { GenTFAService } from '@app/services/genTFA.service';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
-	imports: [RedisModule, PrismaModule, AdaptersModule, GatewayModule],
+	imports: [
+		RedisModule,
+		PrismaModule,
+		AdaptersModule,
+		GatewayModule,
+		ThrottlerModule.forRoot([
+			{
+				limit: 6,
+				ttl: 2000,
+			},
+		]),
+	],
 	controllers: [
 		CondominiumController,
 		UserController,
@@ -31,6 +44,10 @@ import { GenTFAService } from '@app/services/genTFA.service';
 		DeleteUserService,
 		GenInviteService,
 		GenTFAService,
+		{
+			provide: APP_GUARD,
+			useClass: ThrottlerGuard,
+		},
 	],
 })
 export class HttpModule {}

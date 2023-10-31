@@ -21,6 +21,12 @@ export class ServiceErrorFilter implements ExceptionFilter {
 			message: 'Acesso não autorizado',
 			httpCode: 401,
 		},
+		{
+			name: 'Dado já existe',
+			tag: ServiceErrorsTags.alreadyExist,
+			message: 'O conteúdo a ser criado já existe',
+			httpCode: 409,
+		},
 	];
 
 	catch(exception: ServiceErrors, host: ArgumentsHost) {

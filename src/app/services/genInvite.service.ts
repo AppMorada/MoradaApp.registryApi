@@ -4,7 +4,9 @@ import { OTP } from '@app/entities/OTP';
 import { Code } from '@app/entities/VO/code';
 import { Email } from '@app/entities/VO/email';
 import { Level } from '@app/entities/VO/level';
+import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { OTPRepo } from '@app/repositories/otp';
+import { UserRepo } from '@app/repositories/user';
 import { Injectable } from '@nestjs/common';
 import {
 	IGenerateInviteKeyProps,
@@ -24,10 +26,11 @@ export class GenInviteService {
 	constructor(
 		private readonly cryptAdapter: CryptAdapter,
 		private readonly emailAdapter: EmailAdapter,
+		private readonly userRepo: UserRepo,
 		private readonly otpRepo: OTPRepo,
 	) {}
 
-	async generateCodeForOTP(
+	private async generateCodeForOTP(
 		input: Omit<IGenerateInviteKeyProps, 'otpId'>,
 		key: string,
 	) {
@@ -63,6 +66,13 @@ export class GenInviteService {
 	}
 
 	async exec(input: IProps) {
+		const user = await this.userRepo.find({ email: input.email });
+		if (user)
+			throw new ServiceErrors({
+				message: 'O usuário já existe',
+				tag: ServiceErrorsTags.alreadyExist,
+			});
+
 		const { otp, notSafeHash } = await this.generateCodeForOTP(
 			{
 				requiredLevel: input.requiredLevel,

@@ -17,6 +17,7 @@ import { LogInterceptor } from '@infra/http/interceptors/logger.interceptor';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { NotFoundFilter } from '@infra/http/filters/errors/notFound.filter';
 import * as cookieParser from 'cookie-parser';
+import { ThrottlerErrorFilter } from '@infra/http/filters/errors/throttler.filter';
 
 async function bootstrap() {
 	const app: NestExpressApplication =
@@ -43,6 +44,7 @@ async function bootstrap() {
 	app.useGlobalFilters(new AdapterErrorFilter(logger));
 
 	app.useGlobalFilters(new ClassValidatorErrorFilter(logger));
+	app.useGlobalFilters(new ThrottlerErrorFilter(logger));
 	app.useGlobalFilters(new NotFoundFilter(logger));
 
 	app.enableCors({

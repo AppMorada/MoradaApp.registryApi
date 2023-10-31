@@ -3,6 +3,7 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	Get,
 	HttpCode,
 	Post,
 	Req,
@@ -131,7 +132,7 @@ export class UserController {
 	}
 
 	@UseGuards(RefreshTokenGuard)
-	@Post('refresh-token')
+	@Get('get-tokens')
 	@HttpCode(200)
 	async refreshToken(
 		@Res({ passthrough: true }) res: Response,

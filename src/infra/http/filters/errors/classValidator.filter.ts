@@ -35,7 +35,7 @@ export class ClassValidatorErrorFilter implements ExceptionFilter {
 
 		const body = exception.getResponse() as IBodyProps;
 		if (!this.validateBody(body))
-			return response.status(400).json({
+			return response.status(500).json({
 				statusCode: 500,
 				message: 'Erro interno do servidor',
 			});
