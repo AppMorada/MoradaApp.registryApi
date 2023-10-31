@@ -1,6 +1,6 @@
 export enum TokenType {
-	createCondominium = 'Condominium Creation',
 	accessToken = 'Access Token',
+	refreshToken = 'Refresh Token',
 }
 
 export interface IAccessTokenBody {
@@ -9,7 +9,6 @@ export interface IAccessTokenBody {
 	content: {
 		name: string;
 		email: string;
-		CPF: string;
 		apartmentNumber: number | null;
 		block: string | null;
 		level: number;
@@ -17,16 +16,14 @@ export interface IAccessTokenBody {
 		createdAt: Date;
 		updatedAt: Date;
 	};
-}
-
-export type TAccessTokenJwt = {
 	iat: number;
 	exp: number;
-} & IAccessTokenBody;
+}
 
-export interface ICondominiumJwt {
+export interface IRefreshTokenBody {
 	sub: string;
 	type: string;
+	email: string;
 	iat: number;
 	exp: number;
 }

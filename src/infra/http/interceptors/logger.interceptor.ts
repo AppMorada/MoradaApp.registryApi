@@ -21,9 +21,9 @@ export class LogInterceptor implements NestInterceptor {
 		const anonymous = randomUUID();
 
 		this.logger.info({
-			name: `"${req.url}" acessado`,
+			name: `"${req.path}" acessado`,
 			description: `Um usuário não identificado esta acessando a rota "${
-				req.url
+				req.path
 			}" às "${DateFormats.prettify(
 				date,
 			)}" usando o id temporário "${anonymous}" e o método "${
@@ -35,7 +35,7 @@ export class LogInterceptor implements NestInterceptor {
 		return next.handle().pipe(
 			tap(() => {
 				this.logger.info({
-					name: `"${req.url}" acesso finalizado`,
+					name: `"${req.path}" acesso finalizado`,
 					description: `Acesso bem sucedido por "${anonymous}"`,
 					layer: LayersEnum.interceptors,
 				});

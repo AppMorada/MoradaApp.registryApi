@@ -1,7 +1,7 @@
 import { userFactory } from '@tests/factories/user';
-import { CryptMock } from '@tests/adapters/cryptMock';
-import { GenInviteService } from './genInvite.service';
-import { EmailMock } from '@tests/adapters/emailMock';
+import { CryptSpy } from '@tests/adapters/cryptSpy';
+import { GenInviteService } from '../genInvite.service';
+import { EmailSpy } from '@tests/adapters/emailSpy';
 import { InMemoryOTP } from '@tests/inMemoryDatabase/otp';
 import { condominiumFactory } from '@tests/factories/condominium';
 
@@ -9,13 +9,13 @@ describe('Gen invite test', () => {
 	let genInvite: GenInviteService;
 
 	let otpRepo: InMemoryOTP;
-	let emailAdapter: EmailMock;
-	let crypt: CryptMock;
+	let emailAdapter: EmailSpy;
+	let crypt: CryptSpy;
 
 	beforeEach(() => {
 		otpRepo = new InMemoryOTP();
-		crypt = new CryptMock();
-		emailAdapter = new EmailMock();
+		crypt = new CryptSpy();
+		emailAdapter = new EmailSpy();
 
 		genInvite = new GenInviteService(crypt, emailAdapter, otpRepo);
 	});
@@ -24,15 +24,12 @@ describe('Gen invite test', () => {
 		const user = userFactory();
 		const condominium = condominiumFactory();
 
-		const spyOfCrypt = jest.spyOn(CryptMock.prototype, 'hashWithHmac');
-		const spyOfEmail = jest.spyOn(EmailMock.prototype, 'send');
-
 		await genInvite.exec({
 			email: user.email,
 			condominiumId: condominium.id,
 		});
 
-		expect(spyOfCrypt).toHaveReturnedTimes(1);
-		expect(spyOfEmail).toHaveReturnedTimes(1);
+		expect(crypt.calls.hashWithHmac).toEqual(1);
+		expect(emailAdapter.calls.send).toEqual(1);
 	});
 });

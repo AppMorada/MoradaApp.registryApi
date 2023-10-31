@@ -1,9 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ICondominiumJwt, TAccessTokenJwt } from '../tokenTypes';
+import { IAccessTokenBody } from '../tokenTypes';
 import { UserRepo } from '@app/repositories/user';
 import { Level } from '@app/entities/VO/level';
 import { GuardErrors } from '@app/errors/guard';
+import { Request } from 'express';
 
 @Injectable()
 export class SuperAdminJwt implements CanActivate {
@@ -13,7 +14,7 @@ export class SuperAdminJwt implements CanActivate {
 	) {}
 
 	private async checkToken(token: string) {
-		const tokenData: ICondominiumJwt = await this.jwtService
+		const tokenData: IAccessTokenBody = await this.jwtService
 			.verifyAsync(token, {
 				secret: process.env.ACCESS_TOKEN_KEY,
 			})
@@ -25,20 +26,23 @@ export class SuperAdminJwt implements CanActivate {
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const req = context.switchToHttp().getRequest();
+		const req = context.switchToHttp().getRequest<Request>();
 		const rawToken = req?.headers?.authorization;
 
 		const token = rawToken?.split(' ')[1];
 		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
 
-		const tokenData = (await this.checkToken(token)) as TAccessTokenJwt;
+		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
 		const user = await this.userRepo.find({ id: tokenData.sub });
 		if (!user || !user.level.equalTo(new Level(2)))
 			throw new GuardErrors({
 				message: 'Usuário não tem autorização para realizar tal ação',
 			});
 
-		req.inMemoryData = user;
+		req.inMemoryData = {
+			...req.inMemoryData,
+			user,
+		};
 
 		return true;
 	}

@@ -11,6 +11,7 @@ describe('InMemoryData test: Condominium', () => {
 	it('should be able to create one condominium', async () => {
 		const condominium = condominiumFactory();
 		expect(sut.create({ condominium })).resolves;
+		expect(sut.calls.create).toEqual(1);
 	});
 
 	it('should be able to throw error: condominium already exist', async () => {
@@ -22,6 +23,7 @@ describe('InMemoryData test: Condominium', () => {
 				message: 'Condominium already exist',
 			}),
 		);
+		expect(sut.calls.create).toEqual(2);
 	});
 
 	it('should be able to find one condominium', async () => {
@@ -44,5 +46,6 @@ describe('InMemoryData test: Condominium', () => {
 		expect(sut2 && sut3 && sut2.equalTo(sut3)).toBeTruthy();
 		expect(sut3 && sut4 && sut3.equalTo(sut4)).toBeTruthy();
 		expect(sut4 && sut5 && sut4.equalTo(sut5)).toBeTruthy();
+		expect(sut.calls.find).toEqual(4);
 	});
 });

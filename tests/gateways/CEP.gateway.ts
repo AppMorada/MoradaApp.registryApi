@@ -1,7 +1,12 @@
 import { CepGateway, ICheckCep } from '@app/gateways/CEP.gateway';
 
-export class CepGatewayMock implements CepGateway {
+export class CepGatewaySpy implements CepGateway {
+	calls = {
+		check: 0,
+	};
+
 	async check(): Promise<ICheckCep> {
+		this.calls.check = this.calls.check + 1;
 		return {
 			city: 'any',
 			street_address: 'any',

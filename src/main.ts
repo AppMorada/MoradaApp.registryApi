@@ -16,12 +16,14 @@ import { Echo } from 'echoguard';
 import { LogInterceptor } from '@infra/http/interceptors/logger.interceptor';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { NotFoundFilter } from '@infra/http/filters/errors/notFound.filter';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
 	const app: NestExpressApplication =
 		await NestFactory.create<NestExpressApplication>(AppModule);
 
 	app.enableShutdownHooks();
+	app.use(cookieParser(process.env.COOKIE_KEY));
 
 	const logger = app.get(LoggerAdapter);
 	Echo.start({ appName: 'MoradaApp', server: app });

@@ -6,33 +6,71 @@ import {
 	HttpCode,
 	Post,
 	Req,
+	Res,
 	UseGuards,
 } from '@nestjs/common';
 import { CreateUserDTO } from '../DTO/createUser.DTO';
 import { UserMapper } from '@app/mapper/user';
-import { Request } from 'express';
-import { AuthService } from '@app/services/auth.service';
-import { Email } from '@app/entities/VO/email';
-import { LoginDTO } from '../DTO/login.DTO';
-import { Password } from '@app/entities/VO/password';
+import { Request, Response } from 'express';
+import { CreateTokenService } from '@app/services/createToken.service';
 import { OTP } from '@app/entities/OTP';
 import { HmacInviteGuard } from '@app/auth/guards/hmac-invite.guard';
 import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
 import { Block } from '@app/entities/VO/block';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
+import { CheckPasswordGuard } from '@app/auth/guards/checkPassword.guard';
+import { User } from '@app/entities/user';
+import { GenTFAService } from '@app/services/genTFA.service';
+import { CheckOTPGuard } from '@app/auth/guards/checkOTP.guard';
+import { Throttle } from '@nestjs/throttler';
+import { RefreshTokenGuard } from '@app/auth/guards/refreshToken.guard';
 
+@Throttle({
+	default: {
+		limit: 3,
+		ttl: 60000,
+	},
+})
 @Controller('user')
 export class UserController {
 	constructor(
 		private readonly createUser: CreateUserService,
-		private readonly authService: AuthService,
+		private readonly createToken: CreateTokenService,
+		private readonly genTFA: GenTFAService,
 		private readonly logger: LoggerAdapter,
 	) {}
 
+	private async processTokens(res: Response, user: User) {
+		const { accessToken, refreshToken } = await this.createToken.exec({
+			user,
+			removeOTP: true,
+		});
+
+		const expires = new Date(
+			Date.now() + Number(process.env.REFRESH_TOKEN_EXP),
+		);
+
+		res.cookie('refresh-token', refreshToken, {
+			expires,
+			maxAge: parseInt(process.env.REFRESH_TOKEN_EXP as string) * 1000,
+			path: '/',
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production' && true,
+			sameSite: 'strict',
+			signed: true,
+		});
+
+		return { accessToken };
+	}
+
 	@UseGuards(HmacInviteGuard)
 	@Post('accept')
-	async createSimpleUser(@Req() req: Request, @Body() body: CreateUserDTO) {
-		const otp = req.inMemoryData as OTP;
+	async createSimpleUser(
+		@Req() req: Request,
+		@Res({ passthrough: true }) res: Response,
+		@Body() body: CreateUserDTO,
+	) {
+		const otp = req.inMemoryData.otp as OTP;
 
 		// PASSAR PARA OUTRO DOMÍNIO
 		if (
@@ -66,22 +104,41 @@ export class UserController {
 		});
 
 		await this.createUser.exec({ user });
-		const { token } = await this.authService.exec({
-			email: user.email,
-			password: user.password,
-		});
-
-		return { token };
+		return await this.processTokens(res, user);
 	}
 
+	@UseGuards(CheckPasswordGuard)
+	@Post('launch-tfa')
+	@HttpCode(204)
+	async launchTFA(@Req() req: Request) {
+		const user = req.inMemoryData.user as User;
+		await this.genTFA.exec({
+			email: user.email,
+			userId: user.id,
+			condominiumId: user.condominiumId,
+		});
+	}
+
+	@UseGuards(CheckOTPGuard)
 	@Post('login')
 	@HttpCode(200)
-	async login(@Body() body: LoginDTO) {
-		const { token } = await this.authService.exec({
-			email: new Email(body.email),
-			password: new Password(body.password),
-		});
+	async login(
+		@Res({ passthrough: true }) res: Response,
+		@Req() req: Request,
+	) {
+		const user = req.inMemoryData.user as User;
+		return await this.processTokens(res, user);
+	}
 
-		return { token };
+	@UseGuards(RefreshTokenGuard)
+	@Post('refresh-token')
+	@HttpCode(200)
+	async refreshToken(
+		@Res({ passthrough: true }) res: Response,
+		@Req() req: Request,
+	) {
+		const user = req.inMemoryData.user as User;
+		this.createToken.exec({ user, removeOTP: true });
+		return await this.processTokens(res, user);
 	}
 }

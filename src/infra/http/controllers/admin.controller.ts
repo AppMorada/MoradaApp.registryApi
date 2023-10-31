@@ -22,7 +22,7 @@ export class AdminController {
 	@HttpCode(204)
 	@Post('invite')
 	async invite(@Req() req: Request, @Body() body: InviteUserDTO) {
-		const data = req.inMemoryData as User;
+		const data = req.inMemoryData.user as User;
 		await this.genInviteService.exec({
 			email: new Email(body.email),
 			condominiumId: data.condominiumId,

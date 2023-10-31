@@ -5,6 +5,7 @@ import { Email } from '@app/entities/VO/email';
 import { OTP } from '@app/entities/OTP';
 import { generateInviteInput } from '@utils/generateInviteData';
 import { GuardErrors } from '@app/errors/guard';
+import { Request } from 'express';
 
 interface IValidate {
 	email: Email;
@@ -51,10 +52,7 @@ export class HmacInviteGuard implements CanActivate {
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const req = context.switchToHttp().getRequest();
-
-		const regex = /invite=([^&]+)/gm;
-		const invite = regex.exec(req?._parsedUrl?.query ?? '') as string[];
+		const req = context.switchToHttp().getRequest<Request>();
 
 		const email = req?.body?.email ? new Email(req.body.email) : undefined;
 		if (!email)
@@ -67,8 +65,7 @@ export class HmacInviteGuard implements CanActivate {
 
 		const validationRes = await this.validate({
 			email,
-			code:
-				invite instanceof Array && invite.length >= 2 ? invite[1] : '',
+			code: String(req.query.invite),
 			otp,
 		});
 		if (!validationRes)
@@ -76,7 +73,10 @@ export class HmacInviteGuard implements CanActivate {
 				message: 'O convite é inválido',
 			});
 
-		req.inMemoryData = otp;
+		req.inMemoryData = {
+			...req.inMemoryData,
+			otp,
+		};
 
 		return true;
 	}
