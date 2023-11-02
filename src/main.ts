@@ -30,10 +30,10 @@ async function bootstrap() {
 	Echo.start({
 		appName: 'MoradaApp',
 		server: app,
-		environment:
-			process.env.NODE_ENV !== 'production'
-				? 'LOCAL'
-				: { database: 'REDIS', url: process.env.REDIS_URL as string },
+		environment: {
+			database: 'REDIS',
+			url: process.env.REDIS_URL as string,
+		},
 	});
 	app.useGlobalInterceptors(new LogInterceptor(logger));
 	app.useGlobalPipes(new ValidationPipe());
