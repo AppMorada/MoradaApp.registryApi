@@ -27,7 +27,8 @@ async function bootstrap() {
 	app.use(cookieParser(process.env.COOKIE_KEY));
 
 	const logger = app.get(LoggerAdapter);
-	if (process.env.LOGS === 'SUPRESS')
+
+	if (process.env.LOGS !== 'SUPRESS') {
 		Echo.start({
 			appName: 'MoradaApp',
 			server: app,
@@ -36,6 +37,7 @@ async function bootstrap() {
 				url: process.env.REDIS_URL as string,
 			},
 		});
+	}
 
 	app.useGlobalInterceptors(new LogInterceptor(logger));
 	app.useGlobalPipes(new ValidationPipe());
