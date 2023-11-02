@@ -11,6 +11,8 @@ services:
       POSTGRES_DB: "mydb"
       POSTGRES_USER: "default"
       POSTGRES_PASSWORD: password
+    volumes:
+      - db:/var/lib/postgresql/data
 
   redis_db:
     image: redis:7.0.5-bullseye
@@ -18,7 +20,9 @@ services:
     hostname: redis
     ports:
       - "6379:6379"
-    command: redis-server --loglevel warning --requirepass password 
+    command: redis-server --loglevel warning --requirepass password
+    volumes:
+      - cache:/data
 
   app:
     build:
@@ -33,3 +37,8 @@ services:
       - redis_db
       - db
 
+volumes:
+  db:
+    driver: local
+  cache:
+    driver: local
