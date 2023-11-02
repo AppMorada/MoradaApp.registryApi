@@ -15,7 +15,7 @@ CREATE TABLE "condominiums" (
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "name" VARCHAR(120) NOT NULL,
-    "email" VARCHAR(255) NOT NULL,
+    "email" VARCHAR(320) NOT NULL,
     "password" VARCHAR(64) NOT NULL,
     "CPF" CHAR(11) NOT NULL,
     "block" CHAR(6),

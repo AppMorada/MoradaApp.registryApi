@@ -12,10 +12,7 @@ export class LoginDTO {
 			message: 'O campo "email" precisa ser um email válido',
 		},
 	)
-	@MinLength(7, {
-		message: 'O campo "email" precisa conter no mínimo 7 caracteres',
-	})
-	@MaxLength(255, {
+	@MaxLength(320, {
 		message: 'O campo "email" precisa conter no máximo 255 caracteres',
 	})
 		email: string;

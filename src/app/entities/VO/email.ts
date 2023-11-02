@@ -3,7 +3,7 @@ import { EntitiesEnum } from '../entities';
 
 export class Email {
 	constructor(private readonly _value: string) {
-		if (_value.length > 255 || _value.length < 7)
+		if (_value.length > 320)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
 				message: 'Incorrect range of length in Email value.',
