@@ -79,8 +79,9 @@ export class CreateUserDTO {
 			message: 'O campo "apartmentNumber" precisa ser um número',
 		},
 	)
-	@Max(32768, {
-		message: 'O campo "apartmentNumber" precisa ser menor ou igual a 32768',
+	@Max(2147483647, {
+		message:
+			'O campo "apartmentNumber" precisa ser menor ou igual a 2147483647',
 	})
 	@Min(0, {
 		message: 'O campo "apartmentNumber" precisa ser maior ou igual a 0',
