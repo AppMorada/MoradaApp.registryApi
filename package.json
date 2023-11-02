@@ -46,7 +46,7 @@
 		"cookie-parser": "^1.4.6",
 		"dotenv": "^16.3.1",
 		"dotenv-cli": "^7.3.0",
-		"echoguard": "^0.0.6",
+		"echoguard": "0.0.7-alpha",
 		"husky": "^8.0.3",
 		"ioredis": "^5.3.2",
 		"nodemailer": "^6.9.6",

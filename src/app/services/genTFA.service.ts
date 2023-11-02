@@ -42,7 +42,7 @@ export class GenTFAService {
 			condominiumId: input.condominiumId,
 		});
 
-		this.otp.create({
+		await this.otp.create({
 			email: input.email,
 			otp,
 		});

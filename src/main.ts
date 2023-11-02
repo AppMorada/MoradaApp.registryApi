@@ -27,22 +27,24 @@ async function bootstrap() {
 	app.use(cookieParser(process.env.COOKIE_KEY));
 
 	const logger = app.get(LoggerAdapter);
-	Echo.start({ appName: 'MoradaApp', server: app });
-
+	Echo.start({
+		appName: 'MoradaApp',
+		server: app,
+		environment:
+			process.env.NODE_ENV !== 'production'
+				? 'LOCAL'
+				: { database: 'REDIS', url: process.env.REDIS_URL as string },
+	});
 	app.useGlobalInterceptors(new LogInterceptor(logger));
 	app.useGlobalPipes(new ValidationPipe());
-
 	app.useGlobalFilters(new GenericErrorFilter(logger));
-
 	app.useGlobalFilters(new PrismaErrorFilter(logger));
 	app.useGlobalFilters(new RedisErrorFilter(logger));
-
 	app.useGlobalFilters(new ServiceErrorFilter(logger));
 	app.useGlobalFilters(new EntitieErrorFilter(logger));
 	app.useGlobalFilters(new GatewayErrorFilter(logger));
 	app.useGlobalFilters(new GuardErrorFilter(logger));
 	app.useGlobalFilters(new AdapterErrorFilter(logger));
-
 	app.useGlobalFilters(new ClassValidatorErrorFilter(logger));
 	app.useGlobalFilters(new ThrottlerErrorFilter(logger));
 	app.useGlobalFilters(new NotFoundFilter(logger));

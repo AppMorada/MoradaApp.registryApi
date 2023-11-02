@@ -29,7 +29,8 @@ export class OTPRedisService implements OTPRepo {
 		if (!res)
 			throw new RedisLogicError({
 				tag: RedisErrorsTags.alreadyExist,
-				message: 'Could not create OTP, because it already exist.',
+				message:
+					'Não foi possível criar um código, porque ele já existe.',
 			});
 	}
 
