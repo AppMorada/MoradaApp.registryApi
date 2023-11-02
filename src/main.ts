@@ -27,14 +27,16 @@ async function bootstrap() {
 	app.use(cookieParser(process.env.COOKIE_KEY));
 
 	const logger = app.get(LoggerAdapter);
-	Echo.start({
-		appName: 'MoradaApp',
-		server: app,
-		environment: {
-			database: 'REDIS',
-			url: process.env.REDIS_URL as string,
-		},
-	});
+	if (process.env.LOGS === 'SUPRESS')
+		Echo.start({
+			appName: 'MoradaApp',
+			server: app,
+			environment: {
+				database: 'REDIS',
+				url: process.env.REDIS_URL as string,
+			},
+		});
+
 	app.useGlobalInterceptors(new LogInterceptor(logger));
 	app.useGlobalPipes(new ValidationPipe());
 	app.useGlobalFilters(new GenericErrorFilter(logger));
