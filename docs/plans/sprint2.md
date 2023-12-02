@@ -60,17 +60,12 @@ Com base no que foi fornecido, chega-se a conclusão de que a migração, mesmo 
 - **Probabilidade de insurgência**: baixa.
 - **Mitigação**: para reduzir a probabilidade de uma eventual cobrança inesperada por parte do GCP/Firebase, recomenda-se ativar alerta dedicado para isso e avisar os usuários da nossa API sobre as tabelas de preços estabelecidas. Além disso, cabe aos devs de back-end, estabelecer uma política de uso regulatório dos serviços envolvidos
 
-### 4.2 Tempo de Inatividade (Downtime)
-- **Avaliação de impacto**: ao realizar a migração de um provedor para o outro, obrigatoriamente nosso serviço terá de enfrentar um downtime e caso não seja planejado de maneira coesa, pode-se alcançar um limite tempo indesejável;
-- **Probabilidade de insurgência**: baixa.
-- **Mitigação**: ao finalizar os preparativos para a migração completa dos serviços, os desenvolvedores deverão alertar os demais membros da organização, o dia na qual os serviços estarão em período de manutenção, diminuindo assim, as chances de interromper o trabalho dos demais colaboradores.
-
-### 4.3 Dificuldade em estabelecer um ambiente estável para os QAs
+### 4.2 Dificuldade em estabelecer um ambiente estável para os QAs
 - **Avaliação do impacto**: ao propor que neste mesmo sprint iremos criar um ambiente adequado para os QAs, onde os mesmos possam realizar testes, visualizar logs e ter acesso a code analysis, automaticamente a equipe de back-end assume a responsabilidade de estabelecer relações com serviços de baixo orçamento, tendo em vista a proposta do projeto. Como consequência, a pesquisa destas ferramentas pode se mostrar desafiadora;
 - **Probabilidade de insurgência**: média.
 - **Mitigação**: cabe aos responsáveis pelo estabelecimento destas ferramentas, dialogar com a equipe de QAs e Stakeholders e fazer pesquisas sobre possíveis sistemas de baixo custo e com uma curva de aprendizado adequada para o time de testes.
 
-### 4.4 Incompatibilidade de Serviços
+### 4.3 Incompatibilidade de Serviços
 - **Avaliação de impacto**: Apesar da migração entre provedores ser totalmente possível quando se trata das Serverless Functions (Nosso servidor em questão), a migração integral e granular de todos os serviços pode se mostrar desafiadora, tendo em vista que realizar o deslocamento de um banco de dados para o outro pode não ser totalmente possível haja visto que os mesmos não possuem o mesmo paradigma;
 - **Probabilidade de insurgência**: alta.
 - **Mitigação**: como já citado, realizar a transição gradual dos serviços já presentes no sistema, começando pelos servidores de back-end - no caso a API em questão - criados utilizando o NestJs. Enquanto isso, deixar certos membros encarregados de estudar a viabilidade das migrações dos bancos de dados para o Firebase, caso isto seja inviável, cabe os desenvolvedores planejarem uma possível utilização destas instâncias dentro do próprio GCP, plataforma essa similar a AWS e Azure e que se encontra altamente integrada ao Firebase, facilitando assim, a comunicação entre os serviços.
