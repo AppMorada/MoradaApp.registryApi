@@ -1,3 +1,4 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import {
 	RedisErrorsTags,
 	RedisLogicError,
@@ -6,6 +7,7 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
 
 interface IRedisError {
+	name: string;
 	tag: RedisErrorsTags;
 	message: string;
 	httpCode: number;
@@ -13,10 +15,13 @@ interface IRedisError {
 
 @Catch(RedisLogicError)
 export class RedisErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	private possibleErrors: IRedisError[] = [
 		{
+			name: 'Dado já existe',
 			tag: RedisErrorsTags.alreadyExist,
-			message: 'Could not launch invite, because it already exists',
+			message: 'Não foi possível criar o dado, pois o mesmo já existe',
 			httpCode: 409,
 		},
 	];
@@ -29,15 +34,29 @@ export class RedisErrorFilter implements ExceptionFilter {
 			return item.tag === exception.tag;
 		});
 
-		if (error)
+		if (error) {
+			this.logger.error({
+				name: `${error.name} - ${exception.name}`,
+				layer: LayersEnum.cache,
+				description: error.message,
+				stack: exception.stack,
+			});
 			return response.status(error.httpCode).json({
 				statusCode: error.httpCode,
 				message: error.message,
 			});
+		}
+
+		this.logger.error({
+			name: exception.name,
+			layer: LayersEnum.cache,
+			description: exception.message,
+			stack: exception.stack,
+		});
 
 		return response.status(500).json({
 			statusCode: 500,
-			message: 'Internal Server Error',
+			message: 'Erro interno do servidor',
 		});
 	}
 }

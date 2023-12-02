@@ -37,7 +37,7 @@ export class SuperAdminController {
 	@Post('invite-admin')
 	@HttpCode(204)
 	async createAdmin(@Req() req: Request, @Body() body: InviteUserDTO) {
-		const superAdminData = req.inMemoryData as User;
+		const superAdminData = req.inMemoryData.user as User;
 		const email = new Email(body.email);
 
 		await this.genInvite.exec({

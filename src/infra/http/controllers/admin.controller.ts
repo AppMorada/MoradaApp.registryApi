@@ -20,9 +20,9 @@ export class AdminController {
 
 	@UseGuards(AdminJwt)
 	@HttpCode(204)
-	@Post('invite')
+	@Post('invite-user')
 	async invite(@Req() req: Request, @Body() body: InviteUserDTO) {
-		const data = req.inMemoryData as User;
+		const data = req.inMemoryData.user as User;
 		await this.genInviteService.exec({
 			email: new Email(body.email),
 			condominiumId: data.condominiumId,

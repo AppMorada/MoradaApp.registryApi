@@ -1,5 +1,6 @@
 export enum ServiceErrorsTags {
 	unauthorized = 'Unauthorized',
+	alreadyExist = 'Conflict',
 }
 
 interface IProps {

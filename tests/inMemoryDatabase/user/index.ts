@@ -9,9 +9,16 @@ import {
 import { InMemoryError } from '@tests/errors/inMemoryError';
 
 export class InMemoryUser implements UserRepo {
+	public calls = {
+		create: 0,
+		find: 0,
+		delete: 0,
+	};
 	public users: User[] = [];
 
 	public async create(input: ICreateUserInput): Promise<void> {
+		this.calls.create = this.calls.create + 1;
+
 		const existentData = this.users.find(
 			(item) =>
 				input.user.id === item.id ||
@@ -29,6 +36,8 @@ export class InMemoryUser implements UserRepo {
 	}
 
 	public async find(input: IUserSearchQuery): Promise<User | undefined> {
+		this.calls.find = this.calls.find + 1;
+
 		const existentData = this.users.find((item) => {
 			return (
 				(input.email && item.email.equalTo(input.email)) ||
@@ -41,6 +50,8 @@ export class InMemoryUser implements UserRepo {
 	}
 
 	public async delete(input: IDeleteUserParameters): Promise<void> {
+		this.calls.delete = this.calls.delete + 1;
+
 		const existentDataIndex = this.users.findIndex((item) => {
 			return (
 				(input.id && item.id === input.id) ||

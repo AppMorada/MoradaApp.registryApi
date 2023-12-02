@@ -1,3 +1,4 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { GatewayErrors, GatewaysErrorsTags } from '@infra/http/gateways/errors';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
@@ -11,12 +12,14 @@ interface IGatewayError {
 
 @Catch(GatewayErrors)
 export class GatewayErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	private possibleErrors: IGatewayError[] = [
 		{
-			name: 'Invalid Result',
+			name: 'Entrada inválida',
 			tag: GatewaysErrorsTags.InvalidResult,
 			message:
-				'Bad Request - Could not achieve the expected result, please check your inputs',
+				'Não foi possível atingir o resultado esperado com a entrada de dados fornecida, por favor, verifique se seus dados são válidos',
 			httpCode: 400,
 		},
 	];
@@ -29,15 +32,30 @@ export class GatewayErrorFilter implements ExceptionFilter {
 			return item.tag === exception.tag;
 		});
 
-		if (error)
+		if (error) {
+			this.logger.error({
+				name: `${error.name} - ${exception.name}`,
+				layer: LayersEnum.gateway,
+				description: error.message,
+				stack: exception.stack,
+			});
+
 			return response.status(error.httpCode).json({
 				statusCode: error.httpCode,
 				message: error.message,
 			});
+		}
+
+		this.logger.error({
+			name: exception.name,
+			layer: LayersEnum.gateway,
+			description: exception.message,
+			stack: exception.stack,
+		});
 
 		return response.status(500).json({
 			statusCode: 500,
-			message: 'Internal server error',
+			message: 'Erro interno do servidor',
 		});
 	}
 }

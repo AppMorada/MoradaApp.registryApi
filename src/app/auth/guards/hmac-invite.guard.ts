@@ -1,14 +1,14 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	Injectable,
-	UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { OTPRepo } from '@app/repositories/otp';
 import { Email } from '@app/entities/VO/email';
 import { OTP } from '@app/entities/OTP';
 import { generateInviteInput } from '@utils/generateInviteData';
+import { GuardErrors } from '@app/errors/guard';
+import { Request } from 'express';
+import { plainToClass } from 'class-transformer';
+import { InviteUserDTO } from '@infra/http/DTO/inviteUser.DTO';
+import { checkClassValidatorErrors } from '@utils/convertValidatorErr';
 
 interface IValidate {
 	email: Email;
@@ -40,7 +40,9 @@ export class HmacInviteGuard implements CanActivate {
 		const hmacRes = await this.crypt
 			.hashWithHmac({ data: inviteData, key: key as string })
 			.catch(() => {
-				throw new UnauthorizedException();
+				throw new GuardErrors({
+					message: 'Falha ao tentar gerar um HMAC do convite',
+				});
 			});
 
 		const hmacValidation = hmacRes === input.code;
@@ -53,24 +55,29 @@ export class HmacInviteGuard implements CanActivate {
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const req = context.switchToHttp().getRequest();
+		const req = context.switchToHttp().getRequest<Request>();
 
-		const regex = /invite=([^&]+)/gm;
-		const invite = regex.exec(req?._parsedUrl?.query ?? '') as string[];
-		const email = new Email(req?.body?.email);
+		const body = plainToClass(InviteUserDTO, req.body);
+		await checkClassValidatorErrors({ body });
+		const email = new Email(body.email);
 
 		const otp = await this.otpRepo.find({ email });
-		if (!otp) throw new UnauthorizedException();
+		if (!otp) throw new GuardErrors({ message: 'O convite não existe' });
 
 		const validationRes = await this.validate({
 			email,
-			code:
-				invite instanceof Array && invite.length >= 2 ? invite[1] : '',
+			code: String(req.query.invite),
 			otp,
 		});
-		if (!validationRes) throw new UnauthorizedException();
+		if (!validationRes)
+			throw new GuardErrors({
+				message: 'O convite é inválido',
+			});
 
-		req.inMemoryData = otp;
+		req.inMemoryData = {
+			...req.inMemoryData,
+			otp,
+		};
 
 		return true;
 	}

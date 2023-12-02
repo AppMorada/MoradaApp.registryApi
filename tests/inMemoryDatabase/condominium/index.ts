@@ -8,9 +8,15 @@ import {
 import { InMemoryError } from '@tests/errors/inMemoryError';
 
 export class InMemoryCondominium implements CondominiumRepo {
+	public calls = {
+		create: 0,
+		find: 0,
+	};
 	public condominiums: Condominium[] = [];
 
 	public async create(input: ICreateCondominiumInput): Promise<void> {
+		this.calls.create = this.calls.create + 1;
+
 		const existentData = this.condominiums.find((item) =>
 			input.condominium.equalTo(item),
 		);
@@ -27,6 +33,8 @@ export class InMemoryCondominium implements CondominiumRepo {
 	public async find(
 		input: ICondominiumSearchQuery,
 	): Promise<Condominium | undefined> {
+		this.calls.find = this.calls.find + 1;
+
 		const existentData = this.condominiums.find((item) => {
 			return (
 				(input.CNPJ && item.CNPJ.equalTo(input.CNPJ)) ||

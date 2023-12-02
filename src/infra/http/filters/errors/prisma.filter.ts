@@ -1,3 +1,4 @@
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
@@ -11,29 +12,31 @@ interface IPrismaError {
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaErrorFilter implements ExceptionFilter {
+	constructor(private readonly logger: LoggerAdapter) {}
+
 	private possibleErrors: IPrismaError[] = [
 		{
-			name: 'Record to delete does not exist.',
+			name: 'Dado não existe',
 			code: 'P2025',
-			message: 'Not Found',
+			message: 'Não foi possível deletar o dado, pois o mesmo não existe',
 			httpCode: 404,
 		},
 		{
-			name: 'Unique constraint failed',
+			name: 'Erro ao criar dado repetido',
 			code: 'P2002',
-			message: 'Unauthorized',
+			message: 'Acesso não autorizado',
 			httpCode: 401,
 		},
 		{
-			name: 'Database {database_name} already exists',
+			name: 'Dado já existe',
 			code: 'P1009',
-			message: 'Unauthorized',
+			message: 'Acesso não autorizado',
 			httpCode: 401,
 		},
 		{
-			name: 'Database {database_file_name} does not exist',
+			name: 'Dado não existe',
 			code: 'P1003',
-			message: 'Not Found',
+			message: 'Não encontrado',
 			httpCode: 404,
 		},
 	];
@@ -49,15 +52,30 @@ export class PrismaErrorFilter implements ExceptionFilter {
 			return item.code === exception.code;
 		});
 
-		if (error)
+		if (error) {
+			this.logger.error({
+				name: `${error.name} - ${exception.code}`,
+				layer: LayersEnum.database,
+				description: error.message,
+				stack: exception.stack,
+			});
+
 			return response.status(error.httpCode).json({
 				statusCode: error.httpCode,
 				message: error.message,
 			});
+		}
+
+		this.logger.error({
+			name: `${exception.name} - ${exception.code}`,
+			layer: LayersEnum.database,
+			description: exception.message,
+			stack: exception.stack,
+		});
 
 		return response.status(500).json({
 			statusCode: 500,
-			message: 'Internal Server Error',
+			message: 'Erro interno do servidor',
 		});
 	}
 }

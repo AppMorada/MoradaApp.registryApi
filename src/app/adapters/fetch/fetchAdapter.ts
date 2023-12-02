@@ -1,8 +1,11 @@
-import { HttpException, InternalServerErrorException } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 import { IHttpClientCall, HttpAdapter, IHttpClientCallReturn } from '../http';
+import { AdapterError } from '@app/errors/adapter';
 
 export class FetchAdapter implements HttpAdapter {
 	async call(input: IHttpClientCall): Promise<IHttpClientCallReturn> {
+		let statusCode: number | undefined;
+
 		return await fetch(input.url, {
 			method: input.method,
 			headers: input.headers,
@@ -17,11 +20,13 @@ export class FetchAdapter implements HttpAdapter {
 					? await res.json()
 					: undefined;
 
-				if (res.status >= 400)
+				if (res.status >= 400) {
+					statusCode = res.status;
 					throw new HttpException(
-						'Can\'t contact external service',
+						'Requisição mal sucedida',
 						res.status,
 					);
+				}
 
 				return {
 					status,
@@ -31,9 +36,14 @@ export class FetchAdapter implements HttpAdapter {
 			})
 			.catch((err) => {
 				if (!(err instanceof HttpException))
-					throw new InternalServerErrorException();
+					throw new AdapterError({
+						message: `Não foi possível estabelecer uma conexão com o serviço de URL ${input.url}, pois o adaptador responsável por tal tarefa disparou um erro não reconhecível`,
+					});
 
-				throw err;
+				throw new AdapterError({
+					message: `A requisição do serviço de URL ${input.url} falhou com o código ${statusCode}`,
+					httpCode: statusCode,
+				});
 			});
 	}
 }

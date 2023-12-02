@@ -13,6 +13,7 @@ describe('InMemoryData test: OTP', () => {
 		const user = userFactory();
 		const otp = otpFactory();
 		expect(sut.create({ email: user.email, otp })).resolves;
+		expect(sut.calls.create).toEqual(1);
 	});
 
 	it('should be able to delete one OTP', async () => {
@@ -23,6 +24,8 @@ describe('InMemoryData test: OTP', () => {
 		await sut.delete({ email: user.email });
 
 		expect(Boolean(sut.otps[0])).toBeFalsy();
+		expect(sut.calls.create).toEqual(1);
+		expect(sut.calls.delete).toEqual(1);
 	});
 
 	it('should be able to throw one error: OTP does not exist - delete operation', async () => {
@@ -33,6 +36,7 @@ describe('InMemoryData test: OTP', () => {
 				message: 'OTP doesn\'t exist',
 			}),
 		);
+		expect(sut.calls.delete).toEqual(1);
 	});
 
 	it('should be able to throw one error: OTP already exist', async () => {
@@ -47,6 +51,7 @@ describe('InMemoryData test: OTP', () => {
 				message: 'OTP already exist',
 			}),
 		);
+		expect(sut.calls.create).toEqual(2);
 	});
 
 	it('should be able to find one OTP', async () => {
@@ -59,5 +64,6 @@ describe('InMemoryData test: OTP', () => {
 		});
 
 		expect(Boolean(sut2)).toBeTruthy();
+		expect(sut.calls.find).toEqual(1);
 	});
 });
