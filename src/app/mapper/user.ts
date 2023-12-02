@@ -5,10 +5,10 @@ import { Name } from '@app/entities/VO/name';
 import { Password } from '@app/entities/VO/password';
 import { PhoneNumber } from '@app/entities/VO/phoneNumber';
 import { User } from '../entities/user';
-import { Block } from '@app/entities/VO/block';
 import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
+import { Block } from '@app/entities/VO/block';
 
-interface IConvertToObject {
+export interface IUserInObject {
 	id?: string;
 	name: string;
 	email: string;
@@ -17,13 +17,13 @@ interface IConvertToObject {
 	phoneNumber: string;
 	level: number;
 	condominiumId: string;
-	block: Block | null;
-	apartmentNumber: ApartmentNumber | null;
+	block: string | null;
+	apartmentNumber: number | null;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
 
-type TClassTOObject = {
+type TClassToObject = {
 	id: string;
 	name: string;
 	email: string;
@@ -32,14 +32,14 @@ type TClassTOObject = {
 	phoneNumber: string;
 	level: number;
 	condominiumId: string;
-	block: Block | null;
-	apartmentNumber: ApartmentNumber | null;
+	block: string | null;
+	apartmentNumber: number | null;
 	createdAt: Date;
 	updatedAt: Date;
 };
 
 export class UserMapper {
-	static toClass(input: IConvertToObject): User {
+	static toClass(input: IUserInObject): User {
 		return new User(
 			{
 				name: new Name(input.name),
@@ -49,8 +49,10 @@ export class UserMapper {
 				phoneNumber: new PhoneNumber(input.phoneNumber),
 				level: new Level(input.level),
 				condominiumId: input.condominiumId,
-				apartmentNumber: input.apartmentNumber ?? null,
-				block: input.block ?? null,
+				apartmentNumber: input.apartmentNumber
+					? new ApartmentNumber(input.apartmentNumber)
+					: null,
+				block: input.block ? new Block(input.block) : null,
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
 			},
@@ -58,7 +60,7 @@ export class UserMapper {
 		);
 	}
 
-	static toObject(input: User): TClassTOObject {
+	static toObject(input: User): TClassToObject {
 		return {
 			id: input.id,
 			name: input.name.value,
@@ -68,8 +70,8 @@ export class UserMapper {
 			phoneNumber: input.phoneNumber.value,
 			level: input.level.value,
 			condominiumId: input.condominiumId,
-			apartmentNumber: input.apartmentNumber,
-			block: input.block,
+			apartmentNumber: input.apartmentNumber?.value ?? null,
+			block: input.block?.value ?? null,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,
 		};

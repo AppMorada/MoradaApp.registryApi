@@ -31,5 +31,8 @@
       "@tests/*": ["tests/*"],
       "@utils/*": ["src/utils/*"]
     }
-  }
+  },
+  "include": [
+    "**/*.ts"
+  ]
 }

@@ -16,8 +16,6 @@ import { Request, Response } from 'express';
 import { CreateTokenService } from '@app/services/createToken.service';
 import { OTP } from '@app/entities/OTP';
 import { HmacInviteGuard } from '@app/auth/guards/hmac-invite.guard';
-import { ApartmentNumber } from '@app/entities/VO/apartmentNumber';
-import { Block } from '@app/entities/VO/block';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { CheckPasswordGuard } from '@app/auth/guards/checkPassword.guard';
 import { User } from '@app/entities/user';
@@ -96,10 +94,8 @@ export class UserController {
 
 		const user = UserMapper.toClass({
 			...body,
-			apartmentNumber: body.apartmentNumber
-				? new ApartmentNumber(body.apartmentNumber)
-				: null,
-			block: body.block ? new Block(body.block) : null,
+			apartmentNumber: body.apartmentNumber ?? null,
+			block: body.block ?? null,
 			level: otp.requiredLevel?.value || 0,
 			condominiumId: otp.condominiumId,
 		});

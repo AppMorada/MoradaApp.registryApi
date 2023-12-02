@@ -1,5 +1,5 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
-import { GatewayErrors, GatewaysErrorsTags } from '@infra/http/gateways/errors';
+import { GatewayErrors, GatewaysErrorsTags } from '@infra/gateways/errors';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -22,6 +22,13 @@ export class GatewayErrorFilter implements ExceptionFilter {
 				'Não foi possível atingir o resultado esperado com a entrada de dados fornecida, por favor, verifique se seus dados são válidos',
 			httpCode: 400,
 		},
+		{
+			name: 'Dada envenenado',
+			tag: GatewaysErrorsTags.PoisonedContent,
+			message:
+				'Conteúdo armazenado dentro do serviço em questão foi envenenado',
+			httpCode: 500,
+		},
 	];
 
 	catch(exception: GatewayErrors, host: ArgumentsHost) {
@@ -36,7 +43,11 @@ export class GatewayErrorFilter implements ExceptionFilter {
 			this.logger.error({
 				name: `${error.name} - ${exception.name}`,
 				layer: LayersEnum.gateway,
-				description: error.message,
+				description: `${
+					exception.content
+						? `${error.message} - ${exception.content}`
+						: error.message
+				}`,
 				stack: exception.stack,
 			});
 

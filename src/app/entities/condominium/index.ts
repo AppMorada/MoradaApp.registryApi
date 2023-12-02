@@ -1,9 +1,9 @@
 import { randomUUID } from 'crypto';
-import { TReplace } from '../../../utils/replace';
 import { CEP } from '../VO/CEP';
 import { Name } from '../VO/name';
 import { Num } from '../VO/num';
 import { CNPJ } from '../VO/CNPJ';
+import { TReplace } from '@utils/replace';
 
 interface IPropsCondominium {
 	name: Name;
@@ -15,8 +15,8 @@ interface IPropsCondominium {
 }
 
 export type TInputPropsCondominium = TReplace<
-	TReplace<IPropsCondominium, { createdAt?: Date }>,
-	{ updatedAt?: Date }
+	TReplace<IPropsCondominium, { updatedAt?: Date }>,
+	{ createdAt?: Date }
 >;
 
 export class Condominium {

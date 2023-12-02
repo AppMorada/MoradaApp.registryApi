@@ -1,0 +1,18 @@
+{
+  "configurations": {
+    "run - js-debug": {
+      "adapter": "js-debug",
+      "configuration": {
+        "request": "attach",
+        "port": 9229,
+        "address": "127.0.0.1"
+      },
+      "breakpoints": {
+        "exception": {
+          "all": "",
+          "uncaught": ""
+        }
+      }
+    }
+  }
+}
