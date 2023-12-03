@@ -23,7 +23,8 @@ Realizar a transferência dos sistemas vigentes do MoradaApp para a provedora de
 
 - Ambiente de hospedagem da API;
 - Aprimoramento no ambiente de análise do código;
-- Definição de CI/CD remoto.
+- Definição de CI/CD remoto;
+- Encontrar uma ferramenta que substitua o Postman.
 
 ## 3. Justificando
 ### 3.1 Razões
