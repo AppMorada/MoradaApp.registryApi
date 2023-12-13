@@ -14,7 +14,7 @@ jobs:
         code: [ 16.x, 18.x, 20.x ]
     steps:
       - uses: actions/checkout@v3
-      - uses: pnpm/actions-setup@v2
+      - uses: pnpm/action-setup@v2
         with:
           version: 8
 
