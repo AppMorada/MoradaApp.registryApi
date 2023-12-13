@@ -10,7 +10,8 @@ Adiante, nossos servidores back-end devem contar com as seguintes dependências 
 3. **Redis**: para gerar dados que possuem prazo de expiração ou realizar o cache das entidades do sistema, usamos o banco de dados de cache 'Redis', na provedora [Render](https://dashboard.render.com/), assim como no Postgres, contate-nos para obter as credenciais de acesso relacionados a este banco de dados;
 4. **PNPM**: para gerenciar nossas dependências estamos usando o Performant Node Package Manager ([PNPM](https://pnpm.io/pt/)). Por quê? A resposta é simples, o pnpm é capaz de gerar links simbólicos de cada dependência utilizada no projeto, como consequência, o mesmo é capaz de reutilizar as bibliotecas que já existem em uma máquina, reduzindo de maneira significativa o espaço consumido pelo nosso sistema;
 5. **Docker**: o Docker é uma plataforma de virtualização de contêineres que permite isolar e empacotar aplicativos e seus ambientes de execução em contêineres, facilitando a preparação do ambiente do sistema e viabilizando o deploy da aplicação em inúmeras provedoras de nuvem. Sendo assim, basta executar os comandos que serão passados logo mais, e você já será capaz de possuir todos os servidores prontos para execução rapidamente. Matando assim, a necessidade de se passar horas na frente do computador configurando serviço a serviço para rodar na sua máquina;
-6. **Docker Compose**: é um orquestrador de contêineres do Docker, responsável por manter o sistema funcionando em conjunto, podendo configurar redes internas, mapear as portas de cada serviço e entre outras inúmeras funcionalidades essenciais.
+6. **Docker Compose**: é um orquestrador de contêineres do Docker, responsável por manter o sistema funcionando em conjunto, podendo configurar redes internas, mapear as portas de cada serviço e entre outras inúmeras funcionalidades essenciais;
+7. **Firebase (em análise)**: é um provedor de Saas utilizado para conseguirmos acesso serviços previamente prontos e com suas infraestruturas provisionadas.
 
 **AVISO**: lembre-se de que se você esta no time de back-end, você já possui muitas credenciais relacionadas a estes serviços predefinidas dentro do .env.example, juntamente com as explicações de cada variável usada!
 
@@ -60,9 +61,19 @@ Com o sistema ativo, adentre no mesmo usando o bash para entrar na instância ap
 docker compose exec app bash
 ```
 
-Por padrão, o nosso contêiner já tem o pnpm instalado, então você não precisa instalá-lo no contexto do mesmo, sendo assim, basta instalar as dependências **DENTRO DO CONTÊINER**:
+Dentro do contêiner, execute as migrations do prisma:
 ```
-pnpm install
+pnpm prisma migrate dev
+```
+
+Por padrão, o nosso contêiner já tem o pnpm instalado, então você não precisa instalá-lo no contexto do mesmo, sendo assim, basta você realizar o login na sua conta do firebase **DENTRO DO CONTÊINER**:
+```
+firebase login --no-localhost
+```
+
+Logo em seguida, instale os emuladores requisitados para um bom funcionamento da aplicação:
+```
+firebase init emulators
 ```
 
 Se a instalação ocorreu com êxito, abra outro terminal e **FORA DO CONTÊINER** execute o comando abaixo. Por quê? Ele vai definir os hooks do git necessários para que você consiga automatizar processos de lint, formatação e testes locais toda vez que fazer commit:
@@ -77,12 +88,12 @@ Agora você esta apto a executar a aplicação dentro do contêiner.
 <br>
 Para executar a aplicação em ambiente de desenvolvimento:
 ```
-pnpm dev
+pnpm emulator
 ```
 
-Para executar a aplicação em ambiente de produção:
+Para escutar as modificações que você fez dentro das functions:
 ```
-pnpm start
+pnpm build:watch
 ```
 
 Para executar testes unitários na aplicação:
@@ -112,4 +123,8 @@ docker compose exec redis_db redis-cli -a password
 Documentação do redis [aqui](https://redis.io/commands/get/).
 
 ## Coleções de requisições
-Sinta-se a vontade consultando a nossa api tanto pelo [Swagger](https://xerus-knickers.cyclic.app/api) quanto pelo [Postman](https://documenter.getpostman.com/view/25622444/2s9YR85Z9K).
+Sinta-se a vontade consultando a nossa api tanto pelo [Swagger](https://wild-leather-jacket-cow.cyclic.cloud/api) quanto pelo [Postman](https://documenter.getpostman.com/view/25622444/2s9YR85Z9K).
+
+| Documentos extras |
+|-------------------|
+| [Planos para a sprint 2](docs/plans/sprint2.md)|

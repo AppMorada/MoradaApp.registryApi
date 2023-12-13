@@ -1,5 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import type { NestExpressApplication } from '@nestjs/platform-express';
+import {
+	ExpressAdapter,
+	type NestExpressApplication,
+} from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
@@ -12,32 +15,25 @@ import { GuardErrorFilter } from '@infra/http/filters/errors/guard.filter';
 import { AdapterErrorFilter } from '@infra/http/filters/errors/adapter.filter';
 import { GenericErrorFilter } from '@infra/http/filters/errors/generic.filter';
 import { ClassValidatorErrorFilter } from '@infra/http/filters/errors/classValidator.filter';
-import { Echo } from 'echoguard';
 import { LogInterceptor } from '@infra/http/interceptors/logger.interceptor';
-import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
+import { LoggerAdapter } from '@app/adapters/logger';
 import { NotFoundFilter } from '@infra/http/filters/errors/notFound.filter';
 import * as cookieParser from 'cookie-parser';
 import { ThrottlerErrorFilter } from '@infra/http/filters/errors/throttler.filter';
+import * as express from 'express';
+import * as functions from 'firebase-functions';
 
-async function bootstrap() {
+async function bootstrap(requestListener: express.Express) {
 	const app: NestExpressApplication =
-		await NestFactory.create<NestExpressApplication>(AppModule);
+		await NestFactory.create<NestExpressApplication>(
+			AppModule,
+			new ExpressAdapter(requestListener),
+		);
 
 	app.enableShutdownHooks();
 	app.use(cookieParser(process.env.COOKIE_KEY));
 
 	const logger = app.get(LoggerAdapter);
-
-	if (process.env.LOGS !== 'SUPRESS') {
-		Echo.start({
-			appName: 'MoradaApp',
-			server: app,
-			environment: {
-				database: 'REDIS',
-				url: process.env.REDIS_URL as string,
-			},
-		});
-	}
 
 	app.useGlobalInterceptors(new LogInterceptor(logger));
 	app.useGlobalPipes(new ValidationPipe());
@@ -68,13 +64,37 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('api', app, document);
 
-	await app.listen(process.env.PORT || 3000).then(() => {
-		if (process.env.NODE_ENV === 'production')
-			logger.info({
-				name: 'Servidor online!',
-				description: 'Tudo em ordem com o estado interno do servidor!',
-				layer: LayersEnum.start,
-			});
-	});
+	await app.init();
 }
-bootstrap();
+
+const nodeEnv = process.env.NODE_ENV;
+const envs = [
+	'PROJECT_NAME',
+	'DATABASE_URL',
+	'REDIS_URL',
+	'ACCESS_TOKEN_EXP',
+	'ACCESS_TOKEN_KEY',
+	'REFRESH_TOKEN_EXP',
+	'REFRESH_TOKEN_KEY',
+	'INVITE_TOKEN_KEY',
+	'INVITE_ADMIN_TOKEN_KEY',
+	'INVITE_SUPER_ADMIN_TOKEN_KEY',
+	'COOKIE_KEY',
+	'HOST_SENDER',
+	'HOST_PORT_SENDER',
+	'NAME_SENDER',
+	'EMAIL_SENDER',
+	'PASS_SENDER',
+];
+
+const expressApp = express();
+
+export const SiginAPI = functions
+	.region('europe-west1')
+	.runWith({
+		secrets: nodeEnv === 'development' || nodeEnv === 'test' ? [] : envs,
+	})
+	.https.onRequest(async (req, res) => {
+		await bootstrap(expressApp);
+		expressApp(req, res);
+	});

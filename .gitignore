@@ -15,3 +15,9 @@ log.db-lock
 .env.test
 
 .pnpm-store
+.firebaserc
+database-debug.log
+firestore-debug.log
+firebase-debug.log
+pubsub-debug.log
+ui-debug.log

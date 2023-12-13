@@ -1,25 +1,38 @@
 import { Echo } from 'echoguard';
 import { ILoggerDefaultProps, LoggerAdapter, TECEProps } from '../logger';
+import { warn, info, debug, error, log } from 'firebase-functions/logger';
 
-export class EchoguardAdapter implements LoggerAdapter {
+export class FirebaseLoggerAdapter implements LoggerAdapter {
 	async log(input: ILoggerDefaultProps): Promise<void> {
-		Echo.create({ ...input, level: Echo.LogsLevelEnum.info });
+		log(`LOG: ${input.name}`, { ...input, level: Echo.LogsLevelEnum.info });
 	}
 
 	async info(input: ILoggerDefaultProps): Promise<void> {
-		Echo.create({ ...input, level: Echo.LogsLevelEnum.info });
+		info(`INFO: ${input.name}`, {
+			...input,
+			level: Echo.LogsLevelEnum.info,
+		});
 	}
 
 	async debug(input: ILoggerDefaultProps): Promise<void> {
-		Echo.create({ ...input, level: Echo.LogsLevelEnum.debug });
+		debug(`DEBUG: ${input.name}`, {
+			...input,
+			level: Echo.LogsLevelEnum.info,
+		});
 	}
 
 	async warn(input: ILoggerDefaultProps): Promise<void> {
-		Echo.create({ ...input, level: Echo.LogsLevelEnum.warn });
+		warn(`WARN: ${input.name}`, {
+			...input,
+			level: Echo.LogsLevelEnum.info,
+		});
 	}
 
 	async alert(input: ILoggerDefaultProps): Promise<void> {
-		Echo.create({ ...input, level: Echo.LogsLevelEnum.alert });
+		warn(`ALERT: ${input.name}`, {
+			...input,
+			level: Echo.LogsLevelEnum.info,
+		});
 	}
 
 	async error({ stack, ...input }: TECEProps): Promise<void> {
@@ -28,7 +41,7 @@ export class EchoguardAdapter implements LoggerAdapter {
 				? `${stack ? '\n[STACK] ' + stack : input.description}`
 				: `${input.description}`;
 
-		Echo.create({
+		error(`ERROR: ${input.name}`, {
 			...input,
 			description,
 			level: Echo.LogsLevelEnum.error,
@@ -41,7 +54,7 @@ export class EchoguardAdapter implements LoggerAdapter {
 				? `${stack ? '\n[STACK] ' + stack : input.description}`
 				: `${input.description}`;
 
-		Echo.create({
+		error(`CRITICAL: ${input.name}`, {
 			...input,
 			description,
 			level: Echo.LogsLevelEnum.error,
@@ -54,7 +67,7 @@ export class EchoguardAdapter implements LoggerAdapter {
 				? `${stack ? '\n[STACK] ' + stack : input.description}`
 				: `${input.description}`;
 
-		Echo.create({
+		error(`EMERGENCIAL: ${input.name}`, {
 			...input,
 			description,
 			level: Echo.LogsLevelEnum.error,

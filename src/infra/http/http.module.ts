@@ -12,7 +12,7 @@ import { GenInviteService } from '@app/services/genInvite.service';
 import { UserController } from './controllers/user.controller';
 import { AdminController } from './controllers/admin.controller';
 import { SuperAdminController } from './controllers/super-admin.controller';
-import { GatewayModule } from './gateways/gateway.module';
+import { GatewayModule } from '../gateways/gateway.module';
 import { GenTFAService } from '@app/services/genTFA.service';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -25,8 +25,8 @@ import { APP_GUARD } from '@nestjs/core';
 		GatewayModule,
 		ThrottlerModule.forRoot([
 			{
-				limit: 6,
-				ttl: 2000,
+				limit: 45,
+				ttl: 30000,
 			},
 		]),
 	],

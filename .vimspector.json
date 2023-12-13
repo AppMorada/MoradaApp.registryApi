@@ -1,0 +1,25 @@
+{
+  "configurations": {
+    "run - js-debug": {
+      "adapter": "js-debug",
+      "default": true,
+      "configuration": {
+        "name": "Docker: Attach to Node",
+        "request": "attach",
+        "port": 9229,
+        "address": "localhost",
+        "localRoot": "${workspaceFolder}",
+        "remoteRoot": "/home/node/app",
+        "skipFiles": ["<node_internals>/**"],
+        "protocol": "auto"
+      },
+      "breakpoints": {
+        "exception": {
+          "all": "",
+          "uncaught": ""
+        }
+      }
+    }
+  }
+}
+

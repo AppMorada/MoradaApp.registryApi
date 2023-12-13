@@ -1,0 +1,53 @@
+name: CI - Unit & E2E Tests
+
+env:
+  PROJECT_NAME: ${{secrets.PROJECT_NAME}}
+  DATABASE_URL: ${{secrets.DATABASE_URL}}
+  REDIS_URL: ${{secrets.REDIS_URL}}
+  ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
+  ACCESS_TOKEN_EXP: ${{secrets.ACCESS_TOKEN_EXP}}
+  ACCESS_TOKEN_KEY: ${{secrets.ACCESS_TOKEN_KEY}}
+  REFRESH_TOKEN_EXP: ${{secrets.REFRESH_TOKEN_EXP}}
+  REFRESH_TOKEN_KEY: ${{secrets.REFRESH_TOKEN_KEY}}
+  INVITE_TOKEN_KEY: ${{secrets.INVITE_TOKEN_KEY}}
+  INVITE_ADMIN_TOKEN_KEY: ${{secrets.INVITE_ADMIN_TOKEN_KEY}}
+  INVITE_SUPER_ADMIN_TOKEN_KEY: ${{secrets.INVITE_SUPER_ADMIN_TOKEN_KEY}}
+  COOKIE_KEY: ${{secrets.COOKIE_KEY}}
+  HOST_SENDER: ${{secrets.HOST_SENDER}}
+  HOST_PORT_SENDER: ${{secrets.HOST_PORT_SENDER}}
+  NAME_SENDER: ${{secrets.NAME_SENDER}}
+  EMAIL_SENDER: ${{secrets.EMAIL_SENDER}}
+  PASS_SENDER: ${{secrets.PASS_SENDER}}
+  LOGS: ${{secrets.LOGS}}
+
+on:
+  push:
+    branches: 
+      - "*"
+      - "!main"
+
+jobs:
+  unit-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        node: [ 16.x, 18.x, 20.x ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate Content Prisma
+        run: pnpm prisma generate
+      - name: Run unit tests
+        run: pnpm run test

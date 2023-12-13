@@ -6,9 +6,9 @@ interface IConvertToObject {
 	id?: string;
 	ttl?: number;
 	userId?: string;
-	requiredLevel: Level;
+	requiredLevel: number;
 	condominiumId: string;
-	code: Code;
+	code: string;
 	createdAt?: Date;
 }
 
@@ -16,9 +16,9 @@ interface IClassToObject {
 	id: string;
 	ttl: number;
 	userId?: string;
-	requiredLevel: Level;
+	requiredLevel: number;
 	condominiumId: string;
-	code: Code;
+	code: string;
 	createdAt: Date;
 }
 
@@ -28,9 +28,9 @@ export class OTPMapper {
 			{
 				ttl: input.ttl,
 				userId: input.userId,
-				requiredLevel: input.requiredLevel,
+				requiredLevel: new Level(input.requiredLevel),
 				condominiumId: input.condominiumId,
-				code: input.code,
+				code: new Code(input.code),
 				createdAt: input.createdAt,
 			},
 			input.id,
@@ -40,11 +40,11 @@ export class OTPMapper {
 	static toObject(input: OTP): IClassToObject {
 		return {
 			id: input.id,
-			requiredLevel: input.requiredLevel,
+			requiredLevel: input.requiredLevel.value,
 			ttl: input.ttl,
 			condominiumId: input.condominiumId,
 			userId: input.userId,
-			code: input.code,
+			code: input.code.value,
 			createdAt: input.createdAt,
 		};
 	}
