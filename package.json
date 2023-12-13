@@ -11,7 +11,8 @@
 		"build:watch": "nest build -w",
 		"dev": "dotenv -e .env -- nest start --watch",
 		"start": "dotenv -e .env.prod node .",
-		"emulator": "firebase emulators:start --only functions,database,auth,firestore --debug",
+		"emulator": "pnpm build:watch | firebase emulators:start --only functions:SiginAPI,database,auth,firestore --debug",
+		"emulator:debug": "firebase emulators:start --inspect-functions --only functions,database,auth,firestore",
 		"shell": "firebase functions:shell",
 		"firebase:start": "shell",
 		"firebase:deploy": "firebase deploy --only functions",
@@ -41,6 +42,7 @@
 		"schema": "./src/infra/storages/db/prisma/schema.prisma"
 	},
 	"dependencies": {
+		"@google-cloud/functions-framework": "^3.3.0",
 		"@nestjs/common": "^10.2.5",
 		"@nestjs/core": "^10.2.5",
 		"@nestjs/jwt": "^10.1.1",

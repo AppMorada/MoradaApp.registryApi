@@ -66,10 +66,34 @@ async function bootstrap(requestListener: express.Express) {
 
 	await app.init();
 }
+
+const nodeEnv = process.env.NODE_ENV;
+const envs = [
+	'PROJECT_NAME',
+	'DATABASE_URL',
+	'REDIS_URL',
+	'ACCESS_TOKEN_EXP',
+	'ACCESS_TOKEN_KEY',
+	'REFRESH_TOKEN_EXP',
+	'REFRESH_TOKEN_KEY',
+	'INVITE_TOKEN_KEY',
+	'INVITE_ADMIN_TOKEN_KEY',
+	'INVITE_SUPER_ADMIN_TOKEN_KEY',
+	'COOKIE_KEY',
+	'HOST_SENDER',
+	'HOST_PORT_SENDER',
+	'NAME_SENDER',
+	'EMAIL_SENDER',
+	'PASS_SENDER',
+];
+
 const expressApp = express();
 
 export const SiginAPI = functions
 	.region('europe-west1')
+	.runWith({
+		secrets: nodeEnv === 'development' || nodeEnv === 'test' ? [] : envs,
+	})
 	.https.onRequest(async (req, res) => {
 		await bootstrap(expressApp);
 		expressApp(req, res);
