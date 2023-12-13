@@ -1,4 +1,4 @@
-name: CI - Unit & E2E Tests
+name: CD - Deploy functions
 
 env:
   PROJECT_NAME: ${{secrets.PROJECT_NAME}}
@@ -22,9 +22,8 @@ env:
 
 on:
   push:
-    branches: 
-      - "*"
-      - "!main"
+    branches:
+      - "main"
 
 jobs:
   unit-test:
@@ -51,3 +50,38 @@ jobs:
         run: pnpm prisma generate
       - name: Run unit tests
         run: pnpm run test
+
+  deploy:
+    needs: [unit-test]
+    env:
+      GOOGLE_APP_CREDENTIALS_BASE64: ${{secrets.GOOGLE_APP_CREDENTIALS_BASE64}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install firebase tools
+        run: pnpm install -g firebase-tools
+
+      - name: Prepare Google Application Credentials
+        run: |
+          echo "${{secrets.GOOGLE_APP_CREDETIALS_BASE64}}" | base64 --decode > "google-application-credentials.json"
+
+      - name: Deploy firebase functions
+        run: firebase deploy --only functions --non-interactive --debug
+
+      - name: Remove credentials file
+        if: sucess() || failure()
+        run: |
+          rm google-application-credentials.json
+  
