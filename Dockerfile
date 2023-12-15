@@ -1,5 +1,8 @@
 FROM node:18.18-slim
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
 WORKDIR /home/node/app
 
 RUN apt-get update -y && apt-get upgrade -y
@@ -9,8 +12,9 @@ RUN ln -s /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
 RUN npm i pnpm firebase-tools -g
 
 COPY ./package.json .
+COPY ./pnpm-lock.yaml .
 
-RUN pnpm install 
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY . .
 

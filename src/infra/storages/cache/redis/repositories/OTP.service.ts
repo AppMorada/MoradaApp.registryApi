@@ -18,7 +18,7 @@ export class OTPRedisService implements OTPRepo {
 	async create(input: ICreateOTPInput): Promise<void> {
 		const otpObjt = OTPRedisMapper.toRedis(input.otp);
 
-		const res = await this.redisService.set(
+		const res = await this.redisService.instance.set(
 			`${RedisEnum.otp}${input.email.value}`,
 			JSON.stringify(otpObjt),
 			'PX',
@@ -35,11 +35,13 @@ export class OTPRedisService implements OTPRepo {
 	}
 
 	async delete(input: IDeleteOTPInput): Promise<void> {
-		await this.redisService.del(`${RedisEnum.otp}${input.email.value}`);
+		await this.redisService.instance.del(
+			`${RedisEnum.otp}${input.email.value}`,
+		);
 	}
 
 	async find(input: IFindOTPInput): Promise<OTP | undefined> {
-		const rawRes = await this.redisService.get(
+		const rawRes = await this.redisService.instance.get(
 			`${RedisEnum.otp}${input.email.value}`,
 		);
 		const res = rawRes

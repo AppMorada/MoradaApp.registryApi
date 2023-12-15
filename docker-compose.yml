@@ -31,6 +31,8 @@ services:
     restart: always
     volumes:
       - .:/home/node/app
+      - firebase-cache:/root/.cache/firebase
+      - firebase-configs:/root/.config
     ports:
       - 9091:9091 # Firebase Authentication
       - 5002:5002 # Clound Functions
@@ -51,4 +53,8 @@ volumes:
   db:
     driver: local
   cache:
+    driver: local
+  firebase-cache:
+    driver: local
+  firebase-configs:
     driver: local

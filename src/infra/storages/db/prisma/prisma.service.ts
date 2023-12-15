@@ -2,24 +2,33 @@ import {
 	Injectable,
 	OnApplicationShutdown,
 	OnModuleDestroy,
-	OnModuleInit,
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService
 	extends PrismaClient
-	implements OnModuleInit, OnModuleDestroy, OnApplicationShutdown
+	implements OnModuleDestroy, OnApplicationShutdown
 {
-	async onModuleInit() {
-		await this.$connect();
+	private status = false;
+
+	async init() {
+		if (!this.status)
+			await this.$connect().then(() => (this.status = true));
+	}
+
+	async close() {
+		if (this.status)
+			await this.$disconnect().then(() => (this.status = false));
 	}
 
 	async onModuleDestroy() {
-		await this.$disconnect();
+		if (this.status)
+			await this.$disconnect().then(() => (this.status = false));
 	}
 
 	async onApplicationShutdown() {
-		await this.$disconnect();
+		if (this.status)
+			await this.$disconnect().then(() => (this.status = false));
 	}
 }
