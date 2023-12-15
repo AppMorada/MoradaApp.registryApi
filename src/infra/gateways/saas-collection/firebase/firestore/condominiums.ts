@@ -26,7 +26,7 @@ export class CondominiumsFirestore implements CondominiumRepo {
 		// 			Filter.where('name', '==', String(input.name?.value)),
 		// 		),
 		// 	)
-		// 	.get();
+		// 	.get()
 
 		return undefined;
 	}
