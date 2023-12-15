@@ -6,8 +6,8 @@ import {
 } from '@app/repositories/condominium';
 import { FirebaseInstances } from '..';
 // import { Filter } from 'firebase-admin/firestore';
-// import { Condominium } from '@app/entities/condominium';
-//
+import { Condominium } from '@app/entities/condominium';
+
 export class CondominiumsFirestore implements CondominiumRepo {
 	async create(input: ICreateCondominiumInput): Promise<void> {
 		const condInObjt = CondominiumMapper.toObject(input.condominium);
@@ -26,7 +26,7 @@ export class CondominiumsFirestore implements CondominiumRepo {
 		// 			Filter.where('name', '==', String(input.name?.value)),
 		// 		),
 		// 	)
-		// 	.get();
+		// 	.get()
 
 		return undefined;
 	}
