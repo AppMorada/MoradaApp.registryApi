@@ -13,6 +13,7 @@ log.db-lock
 .env
 .env.prod
 .env.test
+*.txt
 
 .pnpm-store
 database-debug*.*log

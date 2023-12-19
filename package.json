@@ -1,6 +1,7 @@
 {
 	"name": "MoradaApp.Api",
-	"main": "dist/src/main.js",
+	"main": "dist/src/entrypoint.js",
+	"type": "commonjs",
 	"author": "MoradaAPP",
 	"license": "MIT",
 	"engines": {
@@ -11,7 +12,7 @@
 		"build:watch": "nest build -w",
 		"dev": "dotenv -e .env -- nest start --watch",
 		"start": "dotenv -e .env.prod node .",
-		"emulator": "firebase emulators:start --only functions:SiginAPI,database,auth,firestore",
+		"emulator": "firebase emulators:start --only functions,database,auth,firestore",
 		"emulator:debug": "firebase emulators:start --inspect-functions --only functions,database,auth,firestore",
 		"shell": "firebase functions:shell",
 		"firebase:start": "shell",

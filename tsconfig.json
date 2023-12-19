@@ -25,11 +25,11 @@
     "noFallthroughCasesInSwitch": false,
     
     "paths": {
-      "@app/*": ["src/app/*"],
-      "@service/*": ["src/app/service/*"],
-      "@infra/*": ["src/infra/*"],
-      "@tests/*": ["tests/*"],
-      "@utils/*": ["src/utils/*"]
+      "@registry:app/*": ["src/registryAPI/app/*"],
+      "@registry:service/*": ["src/registryAPI/app/service/*"],
+      "@registry:infra/*": ["src/registryAPI/infra/*"],
+      "@registry:tests/*": ["src/registryAPI/tests/*"],
+      "@registry:utils/*": ["src/registryAPI/utils/*"]
     }
   },
   "include": [
