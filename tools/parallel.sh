@@ -24,10 +24,10 @@ fi
 
 /bin/echo -e "${INFO_FLAG} Executing the following commands in parallel:"
 /bin/echo -e "  ${BULLET_PT}  ${ORANGE}firestore.sh${RESET_COLOR}"
-/bin/echo -e "  ${BULLET_PT}  ${ORANGE}build:watch.sh${RESET_COLOR}"
+/bin/echo -e "  ${BULLET_PT}  ${ORANGE}build_watch.sh${RESET_COLOR}"
 /bin/echo -e "  ${BULLET_PT}  ${ORANGE}functions.sh${RESET_COLOR}"
 
-BUILD_CMD="sh -c ./tools/build:watch.sh"
+BUILD_CMD="sh -c ./tools/build_watch.sh"
 FIRESTORE_CMD="sh -c ./tools/firestore.sh"
 
 REGISTRY_FN_CMD="npm-watch functions:registryapi"
