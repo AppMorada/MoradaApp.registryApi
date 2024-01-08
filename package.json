@@ -8,7 +8,8 @@
 	},
 	"scripts": {
 		"build": "nest build",
-		"build:watch": "sh -c ./commands/build:watch.sh",
+		"build:watch": "nest build -w",
+		"build:watch:custom": "sh -c ./commands/build:watch.sh",
 		"firestore": "sh -c ./commands/firestore.sh",
 		"dev": "sh -c ./commands/parallel.sh",
 		"start": "functions:registryapi",
