@@ -13,6 +13,7 @@ interface IGatewayError {
 	httpCode: number;
 }
 
+/** Usado para filtrar erros dos Gateways */
 @Catch(GatewayErrors)
 export class GatewayErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}
@@ -28,8 +29,7 @@ export class GatewayErrorFilter implements ExceptionFilter {
 		{
 			name: 'Dada envenenado',
 			tag: GatewaysErrorsTags.PoisonedContent,
-			message:
-				'Conteúdo armazenado dentro do serviço em questão foi envenenado',
+			message: 'Conteúdo mau formado pelo servidor',
 			httpCode: 500,
 		},
 	];

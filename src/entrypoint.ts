@@ -1,1 +1,1 @@
-export { RegistryAPI } from './registryAPI/firebase-function';
+export { RegistryAPI } from './registryAPI';

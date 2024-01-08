@@ -13,6 +13,7 @@ interface IServiceErrors {
 	httpCode: number;
 }
 
+/** Usado para filtrar erros dos Services */
 @Catch(ServiceErrors)
 export class ServiceErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}
@@ -29,6 +30,13 @@ export class ServiceErrorFilter implements ExceptionFilter {
 			tag: ServiceErrorsTags.alreadyExist,
 			message: 'O conteúdo a ser criado já existe',
 			httpCode: 409,
+		},
+		{
+			name: 'Uso incorreto de recusrsos',
+			tag: ServiceErrorsTags.wrongServiceUsage,
+			message:
+				'Não é possível utilizar este recurso para realizar está ação',
+			httpCode: 400,
 		},
 	];
 

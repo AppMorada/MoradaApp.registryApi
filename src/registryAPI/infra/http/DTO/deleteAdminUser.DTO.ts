@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { userDTORules } from '@registry:app/entities/user';
 import { IsEmail, IsString, MaxLength } from 'class-validator';
 
+/** Usado para validar o corpo das requisições de deleção de usuários */
 export class DeleteUserDTO {
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "email" precisa ser uma string',
+		message: 'O campo "email" precisa conter caracteres válidos',
 	})
 	@IsEmail(
 		{},
@@ -12,8 +14,8 @@ export class DeleteUserDTO {
 			message: 'O campo "email" precisa ser um email válido',
 		},
 	)
-	@MaxLength(320, {
-		message: 'O campo "email" precisa conter no máximo 255 caracteres',
+	@MaxLength(userDTORules.email.maxLength, {
+		message: `O campo "email" precisa conter no máximo ${userDTORules.email.maxLength} caracteres`,
 	})
 		email: string;
 }

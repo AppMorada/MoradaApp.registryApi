@@ -10,6 +10,7 @@ interface IPrismaError {
 	httpCode: number;
 }
 
+/** Usado para filtrar erros do Prisma */
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

@@ -1,4 +1,8 @@
 export class DateFormats {
+	/**
+	 * Formata a data para ser mostrado, por exemplo, em logs
+	 * @param date - Deve conter a data a ser formatada
+	 **/
 	static prettify(date: Date): string {
 		const rawSeconds = date.getUTCSeconds();
 		const rawMinutes = date.getUTCMinutes();

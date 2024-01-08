@@ -9,12 +9,12 @@
     "spec": false
   },
   "compilerOptions": {
-    "manualRestart": true,
-    "tsConfigPath": "./tsconfig.build.json",
-    "webpack": false,
-    "deleteOutDir": true,
-    "assets": [],
-    "watchAssets": false,
-    "plugins": []
+    "typeCheck": true,
+    "builder": {
+      "type": "swc",
+      "options": {
+        "swcrcPath": "./.swcrc"
+      }
+    }
   }
 }

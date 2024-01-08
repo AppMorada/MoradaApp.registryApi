@@ -1,18 +1,19 @@
 import {
 	CondominiumRepo,
-	ICondominiumSearchQuery,
-	ICreateCondominiumInput,
+	CondominiumInterfaces,
 } from '@registry:app/repositories/condominium';
 import { PrismaService } from '../prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CondominiumPrismaMapper } from '../mapper/condominium';
 import { Condominium } from '@registry:app/entities/condominium';
+import { CEP, CNPJ, Name } from '@registry:app/entities/VO';
+import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 
 @Injectable()
 export class CondominiumPrismaRepo implements CondominiumRepo {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create(input: ICreateCondominiumInput): Promise<void> {
+	async create(input: CondominiumInterfaces.create): Promise<void> {
 		const condominiumInPrisma = CondominiumPrismaMapper.toPrisma(
 			input.condominium,
 		);
@@ -22,22 +23,37 @@ export class CondominiumPrismaRepo implements CondominiumRepo {
 		});
 	}
 
+	async find(input: CondominiumInterfaces.safeSearch): Promise<Condominium>;
 	async find(
-		input: ICondominiumSearchQuery,
+		input: CondominiumInterfaces.search,
+	): Promise<Condominium | undefined>;
+
+	async find(
+		input: CondominiumInterfaces.search | CondominiumInterfaces.safeSearch,
 	): Promise<Condominium | undefined> {
-		const condominium = await this.prisma.condominium.findFirst({
-			where: {
-				OR: [
-					{ name: input.name?.value },
-					{ CEP: input.CEP?.value },
-					{ CNPJ: input.CNPJ?.value },
-					{ id: input.id },
-				],
-			},
+		const query =
+			input.key instanceof Name
+				? { name: input.key.value }
+				: input.key instanceof CEP
+					? { CEP: input.key.value }
+					: input.key instanceof CNPJ
+						? { CNPJ: input.key.value }
+						: { id: input.key.value };
+
+		const unparsedCondominium = await this.prisma.condominium.findFirst({
+			where: query,
 		});
 
-		return condominium
-			? CondominiumPrismaMapper.toClass(condominium)
-			: undefined;
+		if (!unparsedCondominium && input?.safeSearch)
+			throw new DatabaseCustomError({
+				message: 'Este usuário não existe',
+				tag: DatabaseCustomErrorsTags.contentDoesntExists,
+			});
+
+		if (!unparsedCondominium) return undefined;
+
+		const condominium =
+			CondominiumPrismaMapper.toClass(unparsedCondominium);
+		return condominium;
 	}
 }

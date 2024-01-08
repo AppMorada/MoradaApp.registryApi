@@ -1,9 +1,5 @@
-import { randomUUID } from 'crypto';
-import { CEP } from '../VO/CEP';
-import { Name } from '../VO/name';
-import { Num } from '../VO/num';
-import { CNPJ } from '../VO/CNPJ';
-import { TReplace } from '@registry:utils/replace';
+import { CEP, Name, Num, CNPJ, UUID } from '../VO';
+import { Entity } from '../entities';
 
 interface IPropsCondominium {
 	name: Name;
@@ -14,28 +10,78 @@ interface IPropsCondominium {
 	updatedAt: Date;
 }
 
-export type TInputPropsCondominium = TReplace<
-	TReplace<IPropsCondominium, { updatedAt?: Date }>,
-	{ createdAt?: Date }
->;
+export type TInputPropsCondominium = {
+	name: string;
+	CEP: string;
+	num: number;
+	CNPJ: string;
+	createdAt?: Date;
+	updatedAt?: Date;
+};
 
-export class Condominium {
-	private readonly _id: string;
+export const condominiumDTORules = {
+	name: {
+		minLength: 2,
+		maxLength: 120,
+		type: 'string',
+	},
+	CEP: {
+		minLength: 8,
+		maxLength: 9,
+		type: 'string',
+	},
+	num: {
+		minLength: 0,
+		maxLength: 2147483647,
+		type: 'number',
+	},
+	CNPJ: {
+		minLength: 14,
+		maxLength: 18,
+		type: 'string',
+	},
+	createdAt: {
+		type: Date,
+	},
+	updatedAy: {
+		type: Date,
+	},
+};
+
+export class Condominium implements Entity {
+	private readonly _id: UUID;
 	private props: IPropsCondominium;
 
 	constructor(content: TInputPropsCondominium, id?: string) {
 		this.props = {
-			...content,
+			name: new Name(content.name),
+			CEP: new CEP(content.CEP),
+			num: new Num(content.num),
+			CNPJ: new CNPJ(content.CNPJ),
 			createdAt: content.createdAt ?? new Date(),
 			updatedAt: content.updatedAt ?? new Date(),
 		};
-		this._id = id ?? randomUUID();
+		this._id = id ? new UUID(id) : UUID.genV4();
 	}
 
-	public equalTo(input: Condominium) {
+	public dereference(): Condominium {
+		return new Condominium(
+			{
+				name: this.name.value,
+				CEP: this.CEP.value,
+				num: this.num.value,
+				CNPJ: this.CNPJ.value,
+				createdAt: this.createdAt,
+				updatedAt: this.updatedAt,
+			},
+			this.id.value,
+		);
+	}
+
+	public equalTo(input: Condominium): boolean {
 		return (
 			input instanceof Condominium &&
-			this.id === input.id &&
+			this.id.equalTo(input.id) &&
 			this.props.name.equalTo(input.name) &&
 			this.props.CEP.equalTo(input.CEP) &&
 			this.props.num.equalTo(input.num) &&
@@ -46,7 +92,7 @@ export class Condominium {
 	}
 
 	// ID
-	get id(): string {
+	get id(): UUID {
 		return this._id;
 	}
 

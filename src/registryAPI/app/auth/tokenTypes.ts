@@ -9,9 +9,6 @@ export interface IAccessTokenBody {
 	content: {
 		name: string;
 		email: string;
-		apartmentNumber: number | null;
-		block: string | null;
-		level: number;
 		phoneNumber: string;
 		createdAt: Date;
 		updatedAt: Date;

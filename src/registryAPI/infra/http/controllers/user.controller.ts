@@ -3,6 +3,7 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	Delete,
 	Get,
 	HttpCode,
 	Post,
@@ -14,15 +15,20 @@ import { CreateUserDTO } from '../DTO/createUser.DTO';
 import { UserMapper } from '@registry:app/mapper/user';
 import { Request, Response } from 'express';
 import { CreateTokenService } from '@registry:app/services/createToken.service';
-import { OTP } from '@registry:app/entities/OTP';
 import { HmacInviteGuard } from '@registry:app/auth/guards/hmac-invite.guard';
 import { LayersEnum, LoggerAdapter } from '@registry:app/adapters/logger';
 import { CheckPasswordGuard } from '@registry:app/auth/guards/checkPassword.guard';
 import { User } from '@registry:app/entities/user';
 import { GenTFAService } from '@registry:app/services/genTFA.service';
-import { CheckOTPGuard } from '@registry:app/auth/guards/checkOTP.guard';
+import { CheckTFACodeGuard } from '@registry:app/auth/guards/checkTFACode.guard';
 import { Throttle } from '@nestjs/throttler';
 import { RefreshTokenGuard } from '@registry:app/auth/guards/refreshToken.guard';
+import { Invite } from '@registry:app/entities/invite';
+import { ApartmentNumber, Block } from '@registry:app/entities/VO';
+import { ValueObject } from '@registry:app/entities/entities';
+import { JwtGuard } from '@registry:app/auth/guards/jwt.guard';
+import { DeleteUserService } from '@registry:app/services/deleteUser.service';
+import { GetCondominiumRelUserService } from '@registry:app/services/getCondominiumRel.service';
 
 @Throttle({
 	default: {
@@ -32,9 +38,12 @@ import { RefreshTokenGuard } from '@registry:app/auth/guards/refreshToken.guard'
 })
 @Controller('user')
 export class UserController {
+	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
+		private readonly getCondominiumRelUserService: GetCondominiumRelUserService,
 		private readonly createUser: CreateUserService,
 		private readonly createToken: CreateTokenService,
+		private readonly deleteUserService: DeleteUserService,
 		private readonly genTFA: GenTFAService,
 		private readonly logger: LoggerAdapter,
 	) {}
@@ -42,7 +51,6 @@ export class UserController {
 	private async processTokens(res: Response, user: User) {
 		const { accessToken, refreshToken } = await this.createToken.exec({
 			user,
-			removeOTP: true,
 		});
 
 		const expires = new Date(
@@ -69,12 +77,11 @@ export class UserController {
 		@Res({ passthrough: true }) res: Response,
 		@Body() body: CreateUserDTO,
 	) {
-		const otp = req.inMemoryData.otp as OTP;
-
+		const invite = req.inMemoryData.invite as Invite;
 		// PASSAR PARA OUTRO DOMÍNIO
 		if (
-			(!body.apartmentNumber && otp.requiredLevel.value === 0) ||
-			(!body.block && otp.requiredLevel.value === 0)
+			(!body.apartmentNumber && invite.type.value === 0) ||
+			(!body.block && invite.type.value === 0)
 		) {
 			this.logger.error({
 				name: 'Omissão de campos',
@@ -92,15 +99,16 @@ export class UserController {
 			});
 		}
 
-		const user = UserMapper.toClass({
-			...body,
-			apartmentNumber: body.apartmentNumber ?? null,
-			block: body.block ?? null,
-			level: otp.requiredLevel?.value || 0,
-			condominiumId: otp.condominiumId,
+		const { apartmentNumber, block, ...coreInfo } = body;
+		const user = UserMapper.toClass({ ...coreInfo });
+		await this.createUser.exec({
+			user,
+			invite,
+			apartmentNumber: ValueObject.build(ApartmentNumber, apartmentNumber)
+				.allowNullish()
+				.exec(),
+			block: ValueObject.build(Block, block).allowNullish().exec(),
 		});
-
-		await this.createUser.exec({ user });
 		return await this.processTokens(res, user);
 	}
 
@@ -112,11 +120,36 @@ export class UserController {
 		await this.genTFA.exec({
 			email: user.email,
 			userId: user.id,
-			condominiumId: user.condominiumId,
 		});
 	}
 
-	@UseGuards(CheckOTPGuard)
+	@UseGuards(JwtGuard)
+	@Delete()
+	@HttpCode(204)
+	async deleteAccount(@Req() req: Request) {
+		const user = req.inMemoryData.user as User;
+		await this.deleteUserService.exec({ target: user.email });
+	}
+
+	@UseGuards(JwtGuard)
+	@Get()
+	@HttpCode(200)
+	async getAccount(@Req() req: Request) {
+		const user = req.inMemoryData.user as User;
+		const { condominiumRels } =
+			await this.getCondominiumRelUserService.exec({ userId: user.id });
+
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		const { password: _, ...userAsObject } = UserMapper.toObject(user);
+		return {
+			user: {
+				...userAsObject,
+				condominiumRels,
+			},
+		};
+	}
+
+	@UseGuards(CheckTFACodeGuard)
 	@Post('login')
 	@HttpCode(200)
 	async login(
@@ -135,7 +168,7 @@ export class UserController {
 		@Req() req: Request,
 	) {
 		const user = req.inMemoryData.user as User;
-		this.createToken.exec({ user, removeOTP: true });
+		this.createToken.exec({ user });
 		return await this.processTokens(res, user);
 	}
 }

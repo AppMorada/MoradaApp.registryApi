@@ -1,0 +1,262 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>MoradaApp.Api documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+	   <link rel="stylesheet" href="./styles/style.css">
+        <link rel="stylesheet" href="./styles/dark.css">
+        <link rel="stylesheet" href="./styles/postmark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="./" class="navbar-brand">MoradaApp.Api documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content getting-started">
+                   <div class="content-data">
+
+<h1>Morada App - API</h1>
+<h2>Sobre</h2>
+<p>Esta é uma API feita em NestJS e projetada para atender os serviços do projeto Morada APP. Sendo assim, buscamos facilitar a vida dos moradores de condomínio e dos desenvolvedores responsáveis por integrar nosso código em seus sistemas.</p>
+<p>Adiante, nossos servidores back-end devem contar com as seguintes dependências e ferramentas para que esteja em perfeito funcionamento:</p>
+<ol>
+<li><strong>Mailtrap</strong>: em ambiente de desenvolvimento, usamos o Mailtrap para realizar o envio de emails dentro da plataforma;</li>
+<li><strong>Postgres</strong>: por hora, em ambiente de desenvolvimento, estamos armazenando nossos dados no Postgres pela provedora <a href="https://console.clever-cloud.com/">Clever Cloud</a>. Caso você faça parte da equipe de desenvolvimento, entre em contato com o time de back-end para a obtenção das credenciais de acesso ao banco de dados focado em desenvolvimento;</li>
+<li><strong>PNPM</strong>: para gerenciar nossas dependências estamos usando o Performant Node Package Manager (<a href="https://pnpm.io/pt/">PNPM</a>). Por quê? A resposta é simples, o pnpm é capaz de gerar links simbólicos de cada dependência utilizada no projeto, como consequência, o mesmo é capaz de reutilizar as bibliotecas que já existem em uma máquina, reduzindo de maneira significativa o espaço consumido pelo nosso sistema;</li>
+<li><strong>Docker</strong>: o Docker é uma plataforma de virtualização de contêineres que permite isolar e empacotar aplicativos e seus ambientes de execução em contêineres, facilitando a preparação do ambiente do sistema e viabilizando o deploy da aplicação em inúmeras provedoras de nuvem. Sendo assim, basta executar os comandos que serão passados logo mais, e você já será capaz de possuir todos os servidores prontos para execução rapidamente. Matando assim, a necessidade de se passar horas na frente do computador configurando serviço a serviço para rodar na sua máquina;</li>
+<li><strong>Docker Compose</strong>: é um orquestrador de contêineres do Docker, responsável por manter o sistema funcionando em conjunto, podendo configurar redes internas, mapear as portas de cada serviço e entre outras inúmeras funcionalidades essenciais;</li>
+<li><strong>Firebase (em análise)</strong>: é um provedor de Saas utilizado para conseguirmos acesso serviços previamente prontos e com suas infraestruturas provisionadas.</li>
+</ol>
+<p><strong>AVISO</strong>: lembre-se de que se você esta no time de back-end, você já possui muitas credenciais relacionadas a estes serviços predefinidas dentro do .env.example, juntamente com as explicações de cada variável usada!</p>
+<h3>Preparação</h3>
+<p>Primeiramente, antes de começar a &quot;levantar&quot; o sistema, você deve ter instalado em sua máquina todas as dependências citadas acima <em>- sim, você deve ter o Postgres e Redis minimamente configurado em sua máquina, pois você será capaz de se conectar manualmente nestas instâncias em produção, apesar de já não ser uma questão extremamente prioritária -</em> segue abaixo as instruções de instalação para cada sistema operacional:</p>
+<ul>
+<li><p><strong>Docker</strong></p>
+<ol>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04">Linux</a></li>
+<li><a href="">Windows</a></li>
+</ol>
+</li>
+<li><p><strong>Docker Compose</strong></p>
+<ol>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04">Linux</a></li>
+<li><a href="">Windows</a></li>
+</ol>
+</li>
+<li><p><strong>Redis</strong></p>
+<ol>
+<li><a href="https://redis.io/docs/getting-started/installation/">Linux &amp;&amp; Windows</a></li>
+</ol>
+</li>
+<li><p><strong>Postgres</strong></p>
+<ol>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart">Linux</a></li>
+<li><a href="">Windows</a></li>
+</ol>
+</li>
+<li><p><strong>PNPM</strong>: execute <code>npm i pnpm -g</code></p>
+</li>
+<li><p><strong>Mailtrap [back-end apenas]</strong>:</p>
+<ol>
+<li>Crie uma conta na plataforma por <a href="https://mailtrap.io/">aqui</a>.</li>
+<li>Acesse o menu da lateral a esquerda</li>
+<li>Entre em <strong>Email Testing</strong> &gt; <strong>Inboxes</strong> &gt; <strong>[Seu usuário]</strong></li>
+<li>Copie e cole o arquivo .env.example em .env</li>
+<li>Ao lado direito, na opção &#39;Integrations&#39;, troque para o nodemailer</li>
+<li>Copie e cole as credenciais no .env para visualizar os dados</li>
+<li>Insira em HOST_SENDER o valor &#39;sandbox.smtp.mailtrap.io&#39;</li>
+<li>Insira em HOST_PORT_SENDER o valor 2525</li>
+<li>Coloque qualquer nome em NAME_SENDER</li>
+<li>Insira auth.user em EMAIL_SENDER</li>
+<li>Insira auth.pass em PASS_SENDER</li>
+</ol>
+</li>
+</ul>
+<h2>Como usar</h2>
+<p>Depois de muita configuração, vamos colocar tudo em funcionamento. Primeiramente, execute o docker compose up para levantar o sistema com base no docker-compose.yml definido na pasta root:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">docker compose up</code></pre></div><p>Com o sistema ativo, adentre no mesmo usando o bash para entrar na instância app (o contêiner em NodeJS + NestJS):</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">docker compose exec app bash</code></pre></div><p>Dentro do contêiner, execute as migrations do prisma:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">pnpm prisma migrate dev</code></pre></div><p>Por padrão, o nosso contêiner já tem o pnpm instalado, então você não precisa instalá-lo no contexto do mesmo, sendo assim, basta você realizar o login na sua conta do firebase <strong>DENTRO DO CONTÊINER</strong>:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">firebase login --no-localhost</code></pre></div><p>Logo em seguida, instale os emuladores requisitados para um bom funcionamento da aplicação:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">firebase init emulators</code></pre></div><p>Se a instalação ocorreu com êxito, abra outro terminal e <strong>FORA DO CONTÊINER</strong> execute o comando abaixo. Por quê? Ele vai definir os hooks do git necessários para que você consiga automatizar processos de lint, formatação e testes locais toda vez que fazer commit:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">pnpm set-hooks</code></pre></div><p>Pronto, agora execute somente <code>git commit</code> sempre que quiser salvar suas alterações inseridas pelo <code>git add</code>.</p>
+<h2>Comandos</h2>
+<p>Agora você esta apto a executar a aplicação dentro do contêiner.
+<br>
+Para executar a aplicação em ambiente de desenvolvimento:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">pnpm dev </code></pre></div><p>Para escutar as modificações que você fez dentro das functions:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">pnpm build:watch</code></pre></div><p>Para executar testes unitários na aplicação:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">pnpm test</code></pre></div><p>Para fazer o build da aplicação:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">pnpm build</code></pre></div><h2>Bônus</h2>
+<p>Já temos as instâncias ativas, para você consultar os serviços de armazenamento basta executar os seguintes comandos:</p>
+<h3>Postgres</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-none">docker compose exec db psql -U default -d mydb</code></pre></div><p>Documentação do Postgres <a href="https://www.postgresql.org/docs/current/">aqui</a>.</p>
+<h2>Coleções de requisições</h2>
+<p>Sinta-se a vontade consultando a nossa api tanto pelo <a href="https://wild-leather-jacket-cow.cyclic.cloud/api">Swagger</a> quanto pelo <a href="https://documenter.getpostman.com/view/25622444/2s9YR85Z9K">Postman</a>.</p>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>Documentos extras</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="docs/plans/sprint2.md">Planos para a sprint 2</a></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 0;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_URL = 'index.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="./js/libs/custom-elements.min.js"></script>
+       <script src="./js/libs/lit-html.js"></script>
+
+       <script src="./js/menu-wc.js" defer></script>
+       <script nomodule src="./js/menu-wc_es5.js" defer></script>
+
+       <script src="./js/libs/bootstrap-native.js"></script>
+
+       <script src="./js/libs/es6-shim.min.js"></script>
+       <script src="./js/libs/EventDispatcher.js"></script>
+       <script src="./js/libs/promise.min.js"></script>
+       <script src="./js/libs/zepto.min.js"></script>
+
+       <script src="./js/compodoc.js"></script>
+
+       <script src="./js/tabs.js"></script>
+       <script src="./js/menu.js"></script>
+       <script src="./js/libs/clipboard.min.js"></script>
+       <script src="./js/libs/prism.js"></script>
+       <script src="./js/sourceCode.js"></script>
+          <script src="./js/search/search.js"></script>
+          <script src="./js/search/lunr.min.js"></script>
+          <script src="./js/search/search-lunr.js"></script>
+          <script src="./js/search/search_index.js"></script>
+       <script src="./js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

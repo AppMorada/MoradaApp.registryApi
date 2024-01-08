@@ -1,59 +1,55 @@
 import { CryptAdapter } from '@registry:app/adapters/crypt';
 import { EmailAdapter } from '@registry:app/adapters/email';
-import { OTP } from '@registry:app/entities/OTP';
-import { Code } from '@registry:app/entities/VO/code';
-import { Email } from '@registry:app/entities/VO/email';
-import { OTPRepo } from '@registry:app/repositories/otp';
+import { Email, UUID } from '@registry:app/entities/VO';
 import { Injectable } from '@nestjs/common';
+import { UserRepo } from '@registry:app/repositories/user';
+import { generateStringCodeContent } from '@registry:utils/generateStringCodeContent';
+import { IService } from './_IService';
 
 interface IProps {
 	email: Email;
-	userId: string;
-	condominiumId: string;
+	userId: UUID;
 }
 
+/** Serviço responsável por iniciar o processo de autenticação de dois fatores */
 @Injectable()
-export class GenTFAService {
+export class GenTFAService implements IService {
 	constructor(
 		private readonly email: EmailAdapter,
-		private readonly otp: OTPRepo,
+		private readonly userRepo: UserRepo,
 		private readonly crypt: CryptAdapter,
 	) {}
 
-	private async generateRandomNumbers() {
-		let rawCode: number[] | string = [];
+	private async genCode(input: UUID) {
+		const user = await this.userRepo.find({ key: input, safeSearch: true });
+		let code = generateStringCodeContent({
+			email: user.email,
+			id: user.id,
+		});
+		const key = process.env.TFA_TOKEN_KEY as string;
 
-		for (let i = 0; i <= 5; i++)
-			rawCode.push(Math.floor(Math.random() * 9));
+		const metadata = JSON.stringify({
+			iat: Date.now(),
+			exp: Date.now() + 1000 * 60 * 60 * 3,
+		});
+		code = `${btoa(metadata)}.${btoa(code)}`;
 
-		rawCode = rawCode.join().replaceAll(',', '');
-
-		const hash = await this.crypt.hash(rawCode);
-		const code = new Code(String(hash));
-
-		return { rawCode, code };
+		const inviteSignature = await this.crypt.hashWithHmac({
+			data: code,
+			key,
+		});
+		return `${btoa(metadata)}.${btoa(inviteSignature)}`;
 	}
 
 	async exec(input: IProps) {
-		const { rawCode, code } = await this.generateRandomNumbers();
-		const otp = new OTP({
-			code,
-			userId: input.userId,
-			condominiumId: input.condominiumId,
-		});
-
-		await this.otp.create({
-			email: input.email,
-			otp,
-		});
-
+		const code = await this.genCode(input.userId);
 		await this.email.send({
 			from: `${process.env.NAME_SENDER} <${process.env.EMAIL_SENDER}>`,
 			to: input.email.value,
 			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
-				<p>${rawCode}</p>`,
+				<a href="#">https://[EXEMPLO DE DOMÍNIO]/[PÁGINA DO FRONT PARA VALIDAR O CÓDIGO]/${code}</a>`,
 		});
 	}
 }

@@ -1,11 +1,18 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	CanActivate,
+	ExecutionContext,
+	HttpStatus,
+	Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IAccessTokenBody } from '../tokenTypes';
 import { UserRepo } from '@registry:app/repositories/user';
-import { Level } from '@registry:app/entities/VO/level';
+import { UUID } from '@registry:app/entities/VO';
 import { GuardErrors } from '@registry:app/errors/guard';
 import { Request } from 'express';
 
+/** Usado para validar se um usuário tem permissões de um administrador */
 @Injectable()
 export class SuperAdminJwt implements CanActivate {
 	constructor(
@@ -29,12 +36,28 @@ export class SuperAdminJwt implements CanActivate {
 		const req = context.switchToHttp().getRequest<Request>();
 		const rawToken = req?.headers?.authorization;
 
+		const condominiumId = req.params?.condominiumId;
+		if (!condominiumId)
+			throw new BadRequestException({
+				statusCode: HttpStatus.BAD_REQUEST,
+				error: 'Bad Request',
+				message: 'Condomínio não especificado',
+			});
+
 		const token = rawToken?.split(' ')[1];
 		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
 
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
-		const user = await this.userRepo.find({ id: tokenData.sub });
-		if (!user || !user.level.equalTo(new Level(2)))
+		const user = await this.userRepo.find({
+			key: new UUID(tokenData.sub),
+			safeSearch: true,
+		});
+		const condominiumRelUser = await this.userRepo.getCondominiumRelation({
+			userId: user.id,
+			condominiumId: new UUID(condominiumId),
+		});
+
+		if (!condominiumRelUser || condominiumRelUser.level.value < 2)
 			throw new GuardErrors({
 				message: 'Usuário não tem autorização para realizar tal ação',
 			});
@@ -42,6 +65,7 @@ export class SuperAdminJwt implements CanActivate {
 		req.inMemoryData = {
 			...req.inMemoryData,
 			user,
+			condominiumRelUser,
 		};
 
 		return true;

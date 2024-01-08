@@ -1,6 +1,5 @@
 import { CryptAdapter } from '@registry:app/adapters/crypt';
-import { Email } from '@registry:app/entities/VO/email';
-import { Password } from '@registry:app/entities/VO/password';
+import { Email, Password } from '@registry:app/entities/VO';
 import { GuardErrors } from '@registry:app/errors/guard';
 import { UserRepo } from '@registry:app/repositories/user';
 import { LoginDTO } from '@registry:infra/http/DTO/login.DTO';
@@ -9,6 +8,7 @@ import { checkClassValidatorErrors } from '@registry:utils/convertValidatorErr';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 
+/** Usado para validar as senhas */
 @Injectable()
 export class CheckPasswordGuard implements CanActivate {
 	constructor(
@@ -37,12 +37,7 @@ export class CheckPasswordGuard implements CanActivate {
 		const email = new Email(body.email);
 		const password = new Password(body.password);
 
-		const user = await this.userRepo.find({ email });
-		if (!user)
-			throw new GuardErrors({
-				message: 'Usuário não existe',
-			});
-
+		const user = await this.userRepo.find({ key: email, safeSearch: true });
 		await this.validate(password, user.password.value);
 
 		req.inMemoryData = {

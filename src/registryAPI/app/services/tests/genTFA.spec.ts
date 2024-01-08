@@ -1,35 +1,41 @@
 import { CryptSpy } from '@registry:tests/adapters/cryptSpy';
 import { EmailSpy } from '@registry:tests/adapters/emailSpy';
-import { InMemoryOTP } from '@registry:tests/inMemoryDatabase/otp';
 import { GenTFAService } from '../genTFA.service';
 import { userFactory } from '@registry:tests/factories/user';
+import { InMemoryUser } from '@registry:tests/inMemoryDatabase/user';
+import { InMemoryContainer } from '@registry:tests/inMemoryDatabase/inMemoryContainer';
+import { condominiumRelUserFactory } from '@registry:tests/factories/condominiumRelUser';
 
 describe('Gen TFA Service', () => {
 	let genTFA: GenTFAService;
 
-	let otpRepo: InMemoryOTP;
+	let inMemoryContainer: InMemoryContainer;
+	let userRepo: InMemoryUser;
 	let emailAdapter: EmailSpy;
 	let cryptAdapter: CryptSpy;
 
 	beforeEach(() => {
-		otpRepo = new InMemoryOTP();
+		inMemoryContainer = new InMemoryContainer();
+		userRepo = new InMemoryUser(inMemoryContainer);
 		emailAdapter = new EmailSpy();
 		cryptAdapter = new CryptSpy();
 
-		genTFA = new GenTFAService(emailAdapter, otpRepo, cryptAdapter);
+		genTFA = new GenTFAService(emailAdapter, userRepo, cryptAdapter);
 	});
 
 	it('should be able to gen a TFA', async () => {
 		const user = userFactory();
+		const condominiumRelUser = condominiumRelUserFactory();
+
+		await userRepo.create({ user, condominiumRelUser });
 
 		await genTFA.exec({
 			email: user.email,
 			userId: user.id,
-			condominiumId: user.condominiumId,
 		});
 
-		expect(cryptAdapter.calls.hash).toEqual(1);
+		expect(userRepo.calls.create).toEqual(1);
+		expect(cryptAdapter.calls.hashWithHmac).toEqual(1);
 		expect(emailAdapter.calls.send).toEqual(1);
-		expect(otpRepo.calls.create).toEqual(1);
 	});
 });

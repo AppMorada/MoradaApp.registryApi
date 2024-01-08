@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { condominiumDTORules } from '@registry:app/entities/condominium';
+import { userDTORules } from '@registry:app/entities/user';
 import {
 	IsEmail,
 	IsNumber,
@@ -9,10 +11,11 @@ import {
 	MinLength,
 } from 'class-validator';
 
+/** Usado para validar o corpo das requisições de criação de condomínio */
 export class CreateCondominiumDTO {
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "email" precisa ser uma string',
+		message: 'O campo "email" precisa conter caracteres válidos',
 	})
 	@IsEmail(
 		{},
@@ -20,32 +23,32 @@ export class CreateCondominiumDTO {
 			message: 'O campo "email" precisa ser um email válido',
 		},
 	)
-	@MaxLength(320, {
-		message: 'O campo "email" precisa conter no máximo 255 caracteres',
+	@MaxLength(userDTORules.email.maxLength, {
+		message: `O campo "email" precisa conter no máximo ${userDTORules.email.maxLength} caracteres`,
 	})
 		email: string;
 
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "name" precisa ser uma string',
+		message: 'O campo "name" precisa conter caracteres válidos',
 	})
-	@MaxLength(120, {
-		message: 'O campo "name" precisa conter no máximo 120 caracteres',
+	@MaxLength(condominiumDTORules.name.maxLength, {
+		message: `O campo "name" precisa conter no máximo ${condominiumDTORules.name.maxLength} caracteres`,
 	})
-	@MinLength(2, {
-		message: 'O campo "name" precisa conter no mínimo 2 caracteres',
+	@MinLength(condominiumDTORules.name.minLength, {
+		message: `O campo "name" precisa conter no mínimo ${condominiumDTORules.name.minLength} caracteres`,
 	})
 		name: string;
 
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "CEP" precisa ser uma string',
+		message: 'O campo "CEP" precisa conter caracteres válidos',
 	})
-	@MinLength(8, {
-		message: 'O campo "CEP" precisa conter no mínimo 8 caracteres',
+	@MinLength(condominiumDTORules.CEP.minLength, {
+		message: `O campo "CEP" precisa conter no mínimo ${condominiumDTORules.CEP.minLength} caracteres`,
 	})
-	@MaxLength(9, {
-		message: 'O campo "CEP" precisa conter no máximo 9 caracteres',
+	@MaxLength(condominiumDTORules.CEP.maxLength, {
+		message: `O campo "CEP" precisa conter no máximo ${condominiumDTORules.CEP.maxLength} caracteres`,
 	})
 		CEP: string;
 
@@ -56,23 +59,23 @@ export class CreateCondominiumDTO {
 			message: 'O campo "num" precisa ser um número',
 		},
 	)
-	@Max(2147483647, {
-		message: 'O campo "num" precisa ser menor ou igual a 2147483647',
+	@Max(condominiumDTORules.num.maxLength, {
+		message: `O campo "num" precisa ser menor ou igual a ${condominiumDTORules.num.maxLength}`,
 	})
-	@Min(0, {
-		message: 'O campo "num" precisa ser maior ou igual a 0',
+	@Min(condominiumDTORules.num.minLength, {
+		message: `O campo "num" precisa ser maior ou igual a ${condominiumDTORules.num.minLength}`,
 	})
 		num: number;
 
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "CNPJ" precisa ser uma string',
+		message: 'O campo "CNPJ" precisa conter caracteres válidos',
 	})
-	@MaxLength(18, {
-		message: 'O campo "CNPJ" precisa conter no máximo 18 caracteres',
+	@MaxLength(condominiumDTORules.CNPJ.maxLength, {
+		message: `O campo "CNPJ" precisa conter no máximo ${condominiumDTORules.CNPJ.maxLength} caracteres`,
 	})
-	@MinLength(14, {
-		message: 'O campo "CNPJ" precisa conter no mínimo 14 caracteres',
+	@MinLength(condominiumDTORules.CNPJ.minLength, {
+		message: `O campo "CNPJ" precisa conter no mínimo ${condominiumDTORules.CNPJ.minLength} caracteres`,
 	})
 		CNPJ: string;
 }

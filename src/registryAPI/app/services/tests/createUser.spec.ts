@@ -1,33 +1,36 @@
-import { InMemoryUser } from '@registry:tests/inMemoryDatabase/user';
 import { CreateUserService } from '../createUser.service';
 import { userFactory } from '@registry:tests/factories/user';
 import { CryptSpy } from '@registry:tests/adapters/cryptSpy';
-import { InMemoryOTP } from '@registry:tests/inMemoryDatabase/otp';
-import { otpFactory } from '@registry:tests/factories/otp';
+import { InMemoryInvite } from '@registry:tests/inMemoryDatabase/invites';
+import { inviteFactory } from '@registry:tests/factories/invite';
+import { InMemoryContainer } from '@registry:tests/inMemoryDatabase/inMemoryContainer';
+import { condominiumRelUserFactory } from '@registry:tests/factories/condominiumRelUser';
 
 describe('Create user test', () => {
 	let createUser: CreateUserService;
-	let userRepo: InMemoryUser;
+	let inMemoryContainer: InMemoryContainer;
+	let inviteRepo: InMemoryInvite;
 	let crypt: CryptSpy;
-	let otpSpy: InMemoryOTP;
 
 	beforeEach(() => {
-		userRepo = new InMemoryUser();
 		crypt = new CryptSpy();
-		otpSpy = new InMemoryOTP();
-		createUser = new CreateUserService(userRepo, crypt, otpSpy);
+		inMemoryContainer = new InMemoryContainer();
+		inviteRepo = new InMemoryInvite(inMemoryContainer);
+		createUser = new CreateUserService(inviteRepo, crypt);
 	});
 
 	it('should be able to create a user', async () => {
-		const user = userFactory();
+		const invite = inviteFactory();
+		await inviteRepo.create({ invite });
 
-		const otp = otpFactory();
-		otpSpy.create({ email: user.email, otp });
-
-		await createUser.exec({ user });
-
-		expect(userRepo.users[0].equalTo(user)).toBeTruthy();
-		expect(userRepo.calls.create).toEqual(1);
-		expect(otpSpy.calls.create).toEqual(1);
+		const user = userFactory({ email: invite.email.value });
+		const condominiumRelUser = condominiumRelUserFactory();
+		await createUser.exec({
+			user,
+			invite,
+			block: condominiumRelUser.block,
+			apartmentNumber: condominiumRelUser.apartmentNumber,
+		});
+		expect(inviteRepo.calls.transferToUserResources).toEqual(1);
 	});
 });

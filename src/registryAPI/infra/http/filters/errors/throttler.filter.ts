@@ -3,6 +3,7 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 import { Response } from 'express';
 
+/** Usado para filtrar erros dos Throttler */
 @Catch(ThrottlerException)
 export class ThrottlerErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

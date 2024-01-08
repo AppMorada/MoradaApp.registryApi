@@ -1,52 +1,102 @@
 import { PrismaService } from '../prisma.service';
 import { Injectable } from '@nestjs/common';
-import {
-	ICreateUserInput,
-	IDeleteUserParameters,
-	IUserSearchQuery,
-	UserRepo,
-} from '@registry:app/repositories/user';
+import { UserRepoInterfaces, UserRepo } from '@registry:app/repositories/user';
 import { UserPrismaMapper } from '../mapper/user';
 import { User } from '@registry:app/entities/user';
+import { Email, UUID } from '@registry:app/entities/VO';
+import { CondominiumRelUser } from '@registry:app/entities/condominiumRelUser';
+import { CondominiumRelUserPrismaMapper } from '../mapper/condominiumRelUser';
+import {
+	CondominiumRelUserMapper,
+	TCondominiumRelUserToObject,
+} from '@registry:app/mapper/condominiumRelUser';
+import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 
 @Injectable()
 export class UserPrismaRepo implements UserRepo {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create(input: ICreateUserInput): Promise<void> {
-		const userInPrisma = UserPrismaMapper.toPrisma(input.user);
+	async create(): Promise<void> {}
 
-		await this.prisma.user.create({
-			data: { ...userInPrisma },
-		});
-	}
+	async find(input: UserRepoInterfaces.safeSearch): Promise<User>;
+	async find(input: UserRepoInterfaces.search): Promise<User | undefined>;
 
-	async find(input: IUserSearchQuery): Promise<User | undefined> {
-		const user = await this.prisma.user.findFirst({
+	async find(
+		input: UserRepoInterfaces.search | UserRepoInterfaces.safeSearch,
+	): Promise<User | undefined> {
+		const query =
+			input.key instanceof UUID
+				? { id: input.key.value }
+				: input.key instanceof Email
+					? { email: input.key.value }
+					: { CPF: input.key.value };
+
+		const unparsedUser = await this.prisma.user.findFirst({
 			where: {
-				OR: [
-					{ email: input.email?.value },
-					{ CPF: input.CPF?.value },
-					{ id: input?.id },
-				],
+				OR: [query],
 			},
 		});
 
-		return user ? UserPrismaMapper.toClass(user) : undefined;
+		if (!unparsedUser && input?.safeSearch)
+			throw new DatabaseCustomError({
+				message: 'Este usuário não existe',
+				tag: DatabaseCustomErrorsTags.contentDoesntExists,
+			});
+
+		if (!unparsedUser) return undefined;
+
+		const user = UserPrismaMapper.toClass(unparsedUser);
+		return user;
 	}
 
-	async delete(input: IDeleteUserParameters): Promise<undefined> {
-		if (input.email)
-			await this.prisma.user.delete({
+	async getCondominiumRelation(
+		input: UserRepoInterfaces.getCondominiumRelation,
+	): Promise<CondominiumRelUser | undefined> {
+		const unparsedCondominiumRelUser =
+			await this.prisma.condominiumRelUser.findFirst({
 				where: {
-					email: input?.email?.value,
+					AND: [
+						{ userId: input.userId.value },
+						{ condominiumId: input.condominiumId.value },
+					],
 				},
 			});
-		else
-			await this.prisma.user.delete({
+
+		if (!unparsedCondominiumRelUser) return undefined;
+
+		const condominiumRelUser = CondominiumRelUserPrismaMapper.toClass(
+			unparsedCondominiumRelUser,
+		);
+		return condominiumRelUser;
+	}
+
+	async getAllCondominiumRelation(
+		input: UserRepoInterfaces.getAllCondominiumRelation,
+	): Promise<TCondominiumRelUserToObject[]> {
+		const unparsedCondominiumRelGroup =
+			await this.prisma.condominiumRelUser.findMany({
 				where: {
-					id: input.id,
+					userId: input.userId.value,
 				},
 			});
+
+		const condominiumRelGroup = unparsedCondominiumRelGroup.map((item) => {
+			return CondominiumRelUserMapper.toObject(
+				CondominiumRelUserPrismaMapper.toClass(item),
+			);
+		});
+
+		return condominiumRelGroup;
+	}
+
+	async delete(input: UserRepoInterfaces.remove): Promise<undefined> {
+		const query = { id: input.key.value };
+
+		if (input.key instanceof Email) {
+			const user = await this.find({ key: input.key, safeSearch: true });
+			query.id = user.id.value;
+		}
+
+		await this.prisma.user.delete({ where: query });
 	}
 }

@@ -3,6 +3,7 @@ import { GuardErrors } from '@registry:app/errors/guard';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
 
+/** Usado para filtrar erros dos Guards */
 @Catch(GuardErrors)
 export class GuardErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

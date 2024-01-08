@@ -5,8 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IRefreshTokenBody, TokenType } from '../tokenTypes';
 import { UserRepo } from '@registry:app/repositories/user';
-import { Email } from '@registry:app/entities/VO/email';
+import { Email } from '@registry:app/entities/VO';
 
+/** Usado para validar os tokens do tipo "RefreshToken" */
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
 	constructor(
@@ -14,13 +15,6 @@ export class RefreshTokenGuard implements CanActivate {
 		private readonly jwtService: JwtService,
 		private readonly userRepo: UserRepo,
 	) {}
-
-	private async findUser(email: Email) {
-		const user = await this.userRepo.find({ email });
-		if (!user) throw new GuardErrors({ message: 'Usuário não existe' });
-
-		return user;
-	}
 
 	private async checkCookie(cookie: string) {
 		const token = await this.cookieAdapter.validateSignedCookie({
@@ -43,7 +37,7 @@ export class RefreshTokenGuard implements CanActivate {
 			})
 			.catch(() => {
 				throw new GuardErrors({
-					message: `Token armazenado no ${TokenType.refreshToken} é inválido`,
+					message: `Dado armazenado no ${TokenType.refreshToken} é inválido`,
 				});
 			});
 
@@ -66,7 +60,10 @@ export class RefreshTokenGuard implements CanActivate {
 
 		const parsedToken = await this.checkCookie(token);
 		const data = await this.checkToken(parsedToken);
-		const user = await this.findUser(new Email(data.email));
+		const user = await this.userRepo.find({
+			key: new Email(data.email),
+			safeSearch: true,
+		});
 
 		req.inMemoryData = {
 			...req.inMemoryData,

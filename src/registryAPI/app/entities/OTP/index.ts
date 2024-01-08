@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
-import { Code } from '../VO/code';
-import { Level } from '../VO/level';
+import { Code, Level } from '../VO';
+import { Entity } from '../entities';
 
 interface IOTPProps {
 	userId?: string;
@@ -20,10 +20,11 @@ export type TInputOTPProps = {
 	createdAt?: Date;
 };
 
-export class OTP {
+export class OTP implements Entity {
 	private readonly _id: string;
 	private readonly props: IOTPProps;
 
+	/** @deprecated **/
 	constructor(input: TInputOTPProps, id?: string) {
 		this._id = id ?? randomUUID();
 		this.props = {
@@ -34,6 +35,19 @@ export class OTP {
 		};
 	}
 
+	dereference(): OTP {
+		return new OTP(
+			{
+				userId: this.userId,
+				requiredLevel: new Level(this.requiredLevel.value),
+				condominiumId: this.condominiumId,
+				code: new Code(this.code.value),
+				ttl: this.ttl,
+				createdAt: this.createdAt,
+			},
+			this.id,
+		);
+	}
 	public equalTo(input: OTP) {
 		return (
 			this._id === input._id &&

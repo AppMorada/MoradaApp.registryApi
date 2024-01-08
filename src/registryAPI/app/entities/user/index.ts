@@ -1,88 +1,108 @@
-import { randomUUID } from 'crypto';
-import { TReplace } from '@registry:utils/replace';
-import { Name } from '../VO/name';
-import { Email } from '../VO/email';
-import { Password } from '../VO/password';
-import { CPF } from '../VO/CPF';
-import { PhoneNumber } from '../VO/phoneNumber';
-import { Level } from '../VO/level';
-import { Block } from '../VO/block';
-import { ApartmentNumber } from '../VO/apartmentNumber';
+import { Name, Email, Password, CPF, PhoneNumber, UUID } from '../VO';
+import { Entity, ValueObject } from '../entities';
 
 interface IPropsUser {
 	name: Name;
 	email: Email;
 	password: Password;
-	block: Block | null;
 	CPF: CPF;
 	phoneNumber: PhoneNumber;
-	apartmentNumber: ApartmentNumber | null;
-	level: Level;
 	createdAt: Date;
 	updatedAt: Date;
-	condominiumId: string;
 }
 
-export type TInputPropsUser = TReplace<
-	TReplace<TReplace<IPropsUser, { createdAt?: Date }>, { updatedAt?: Date }>,
-	{ level?: Level }
->;
+export type TInputPropsUser = {
+	name: string;
+	email: string;
+	password: string;
+	CPF: string;
+	phoneNumber: string;
+	createdAt?: Date;
+	updatedAt?: Date;
+};
 
-export class User {
+export const userDTORules = {
+	name: {
+		minLength: 2,
+		maxLength: 120,
+		type: 'string',
+	},
+	email: {
+		maxLength: 320,
+		type: 'string',
+	},
+	password: {
+		maxLength: 64,
+		minLength: 8,
+		type: 'string',
+	},
+	CPF: {
+		maxLength: 14,
+		minLength: 11,
+		type: 'string',
+	},
+	phoneNumber: {
+		maxLength: 30,
+		minLength: 10,
+		type: 'string',
+	},
+	createdAt: {
+		type: Date,
+	},
+	updatedAt: {
+		type: Date,
+	},
+};
+
+export class User implements Entity {
 	private props: IPropsUser;
-	private readonly _id: string;
+	private readonly _id: UUID;
 
 	constructor(input: TInputPropsUser, id?: string) {
 		this.props = {
-			...input,
-			level: input.level ?? new Level(0),
+			name: new Name(input.name),
+			email: new Email(input.email),
+			password: new Password(input.password),
+			CPF: new CPF(input.CPF),
+			phoneNumber: new PhoneNumber(input.phoneNumber),
 			createdAt: input.createdAt ?? new Date(),
 			updatedAt: input.updatedAt ?? new Date(),
 		};
-		this._id = id ?? randomUUID();
+		this._id = id ? new UUID(id) : UUID.genV4();
 	}
 
-	public equalTo(input: User) {
+	public dereference(): User {
+		return new User(
+			{
+				name: this.name.value,
+				email: this.email.value,
+				password: this.password.value,
+				CPF: this.CPF.value,
+				phoneNumber: this.phoneNumber.value,
+				createdAt: this.createdAt,
+				updatedAt: this.updatedAt,
+			},
+			this.id.value,
+		);
+	}
+
+	public equalTo(input: User): boolean {
 		return (
 			input instanceof User &&
-			this._id === input.id &&
-			this.condominiumId === input.condominiumId &&
 			this.createdAt === input.createdAt &&
 			this.updatedAt === input.updatedAt &&
-			this.phoneNumber.equalTo(input.phoneNumber) &&
-			this.block?.value === input.block?.value &&
-			this.CPF.equalTo(input.CPF) &&
-			this.level.equalTo(input.level) &&
-			this.password.equalTo(input.password) &&
-			this.name.equalTo(input.name) &&
-			this.email.equalTo(input.email)
+			ValueObject.compare(this._id, input.id) &&
+			ValueObject.compare(this.phoneNumber, input.phoneNumber) &&
+			ValueObject.compare(this.CPF, input.CPF) &&
+			ValueObject.compare(this.password, input.password) &&
+			ValueObject.compare(this.name, input.name) &&
+			ValueObject.compare(this.email, input.email)
 		);
 	}
 
 	// Id
-	get id(): string {
+	get id(): UUID {
 		return this._id;
-	}
-
-	// Condominium Id
-	get condominiumId(): string {
-		return this.props.condominiumId;
-	}
-
-	// Block
-	get block(): Block | null {
-		return this.props.block;
-	}
-	set block(input: Block | null) {
-		this.props.block = input;
-	}
-
-	// Apartment Number
-	get apartmentNumber(): ApartmentNumber | null {
-		return this.props.apartmentNumber;
-	}
-	set apartmentNumber(input: ApartmentNumber | null) {
-		this.props.apartmentNumber = input;
 	}
 
 	// Name
@@ -123,14 +143,6 @@ export class User {
 	}
 	set phoneNumber(input: PhoneNumber) {
 		this.props.phoneNumber = input;
-	}
-
-	// Level
-	get level(): Level {
-		return this.props.level;
-	}
-	set level(input: Level) {
-		this.props.level = input;
 	}
 
 	// CreatedAt

@@ -1,4 +1,4 @@
-import { CPF } from '@registry:app/entities/VO/CPF';
+import { CPF } from '@registry:app/entities/VO';
 import { EntitiesEnum } from '@registry:app/entities/entities';
 import { EntitieError } from '@registry:app/errors/entities';
 

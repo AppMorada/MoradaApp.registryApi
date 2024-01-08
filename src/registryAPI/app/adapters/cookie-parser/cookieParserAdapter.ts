@@ -1,4 +1,4 @@
-import { signedCookie } from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import {
 	CookieAdapter,
 	IValidateSignedCookie,
@@ -9,6 +9,6 @@ export class CookieParserAdapter implements CookieAdapter {
 	validateSignedCookie(
 		input: IValidateSignedCookie,
 	): TValidateSignedCookieReturn {
-		return signedCookie(input.cookie, input.key);
+		return cookieParser.signedCookie(input.cookie, input.key);
 	}
 }

@@ -1,7 +1,3 @@
-import { CEP } from '@registry:app/entities/VO/CEP';
-import { CNPJ } from '@registry:app/entities/VO/CNPJ';
-import { Name } from '@registry:app/entities/VO/name';
-import { Num } from '@registry:app/entities/VO/num';
 import { Condominium } from '@registry:app/entities/condominium';
 
 interface IConvertToObject {
@@ -14,16 +10,20 @@ interface IConvertToObject {
 	updatedAt?: Date;
 }
 
-type TClassTOObject = Required<IConvertToObject>;
+export type TCondominiumInObject = Required<IConvertToObject>;
 
 export class CondominiumMapper {
+	/**
+	 * Método usado para converter um objeto de um condomínio em classe
+	 * @param input - Deve conter os dados do condomínio em forma de objeto
+	 **/
 	static toClass(input: IConvertToObject): Condominium {
 		return new Condominium(
 			{
-				name: new Name(input.name),
-				CNPJ: new CNPJ(input.CNPJ),
-				CEP: new CEP(input.CEP),
-				num: new Num(input.num),
+				name: input.name,
+				CNPJ: input.CNPJ,
+				CEP: input.CEP,
+				num: input.num,
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
 			},
@@ -31,9 +31,13 @@ export class CondominiumMapper {
 		);
 	}
 
-	static toObject(input: Condominium): TClassTOObject {
+	/**
+	 * Método usado para converter uma classe de condomínio em objeto
+	 * @param input - Deve conter os dados do condomínio em forma de classe
+	 **/
+	static toObject(input: Condominium): TCondominiumInObject {
 		return {
-			id: input.id,
+			id: input.id.value,
 			num: input.num.value,
 			CEP: input.CEP.value,
 			name: input.name.value,

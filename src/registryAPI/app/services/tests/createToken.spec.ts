@@ -2,33 +2,32 @@ import { JwtService } from '@nestjs/jwt';
 import { InMemoryUser } from '@registry:tests/inMemoryDatabase/user';
 import { CreateTokenService } from '../createToken.service';
 import { userFactory } from '@registry:tests/factories/user';
-import { InMemoryOTP } from '@registry:tests/inMemoryDatabase/otp';
-import { otpFactory } from '@registry:tests/factories/otp';
+import { InMemoryContainer } from '@registry:tests/inMemoryDatabase/inMemoryContainer';
+import { condominiumRelUserFactory } from '@registry:tests/factories/condominiumRelUser';
 
 describe('Create token test', () => {
 	let createTokenService: CreateTokenService;
 	let tokenService: JwtService;
+
+	let inMemoryContainer: InMemoryContainer;
 	let userRepo: InMemoryUser;
-	let otpRepo: InMemoryOTP;
 
 	beforeEach(() => {
-		userRepo = new InMemoryUser();
-		otpRepo = new InMemoryOTP();
+		inMemoryContainer = new InMemoryContainer();
+		userRepo = new InMemoryUser(inMemoryContainer);
 		tokenService = new JwtService();
 
-		createTokenService = new CreateTokenService(tokenService, otpRepo);
+		createTokenService = new CreateTokenService(tokenService);
 	});
 
 	it('should be able to create token', async () => {
 		const user = userFactory();
-		await userRepo.create({ user });
+		const condominiumRelUser = condominiumRelUserFactory();
 
-		const otp = otpFactory();
-		await otpRepo.create({ email: user.email, otp });
+		await userRepo.create({ user, condominiumRelUser });
 
 		const { accessToken, refreshToken } = await createTokenService.exec({
 			user,
-			removeOTP: true,
 		});
 
 		await tokenService.verify(accessToken, {
@@ -37,6 +36,5 @@ describe('Create token test', () => {
 		await tokenService.verify(refreshToken, {
 			secret: process.env.REFRESH_TOKEN_KEY as string,
 		});
-		expect(otpRepo.calls.delete).toEqual(1);
 	});
 });

@@ -1,14 +1,14 @@
-import { CEP } from '@registry:app/entities/VO/CEP';
-import { CNPJ } from '@registry:app/entities/VO/CNPJ';
-import { Name } from '@registry:app/entities/VO/name';
-import { Num } from '@registry:app/entities/VO/num';
 import { Condominium } from '@registry:app/entities/condominium';
 import { Condominium as CondominiumPrisma } from '@prisma/client';
 
 export class CondominiumPrismaMapper {
+	/**
+	 * Mapeia os dados inseridos e os adapta para a utilização no prisma
+	 * @param input - Deve conter os dados de entrada do condomínio
+	 **/
 	static toPrisma(input: Condominium): CondominiumPrisma {
 		return {
-			id: input.id,
+			id: input.id.value,
 			name: input.name.value,
 			CNPJ: input.CNPJ.value,
 			CEP: input.CEP.value,
@@ -18,13 +18,17 @@ export class CondominiumPrismaMapper {
 		};
 	}
 
+	/**
+	 * Mapeia os dados vindos do prisma em classes
+	 * @param input - Deve conter os dados vindos do prisma
+	 **/
 	static toClass(input: CondominiumPrisma): Condominium {
 		return new Condominium(
 			{
-				name: new Name(input.name),
-				CEP: new CEP(input.CEP),
-				CNPJ: new CNPJ(input.CNPJ),
-				num: new Num(input.num),
+				name: input.name,
+				CEP: input.CEP,
+				CNPJ: input.CNPJ,
+				num: input.num,
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
 			},

@@ -1,6 +1,5 @@
-import { Code } from '@registry:app/entities/VO/code';
+import { Code, Level } from '@registry:app/entities/VO';
 import { OTP } from '@registry:app/entities/OTP';
-import { Level } from '@registry:app/entities/VO/level';
 
 interface IConvertToObject {
 	id?: string;
@@ -12,7 +11,7 @@ interface IConvertToObject {
 	createdAt?: Date;
 }
 
-interface IClassToObject {
+export interface IOTPInObject {
 	id: string;
 	ttl: number;
 	userId?: string;
@@ -23,6 +22,9 @@ interface IClassToObject {
 }
 
 export class OTPMapper {
+	/**
+	 * @deprecated
+	 **/
 	static toClass(input: IConvertToObject): OTP {
 		return new OTP(
 			{
@@ -37,7 +39,10 @@ export class OTPMapper {
 		);
 	}
 
-	static toObject(input: OTP): IClassToObject {
+	/**
+	 * @deprecated
+	 **/
+	static toObject(input: OTP): IOTPInObject {
 		return {
 			id: input.id,
 			requiredLevel: input.requiredLevel.value,

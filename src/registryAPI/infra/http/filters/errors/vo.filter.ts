@@ -4,6 +4,7 @@ import { EntitieError } from '@registry:app/errors/entities';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
 
+/** Usado para filtrar erros dos Value Objects */
 @Catch(EntitieError)
 export class EntitieErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

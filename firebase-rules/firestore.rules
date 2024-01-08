@@ -1,0 +1,129 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // INDEX FUNCTIONS
+    function getIndexAfter(path) {
+      return getAfter(/databases/$(database)/documents/Index/$(path))
+    }
+
+    function getIndexBefore(path) {
+      return get(/databases/$(database)/documents/Index/$(path))    
+    }
+
+    function indexExistsAfter(path) {
+      return existsAfter(/databases/$(database)/documents/Index/$(path))
+    }
+
+    function indexExistsBefore(path) {
+      return exists(/databases/$(database)/documents/Index/$(path))
+    }
+
+    // USER FUNCTIONS
+    function getUserAfter(id) {
+      return getAfter(/databases/$(database)/documents/Entities/User/$(id))
+    }
+
+    function getUserBefore(id) {
+      return get(/databases/$(database)/documents/Entities/User/$(id))
+    }
+
+    function userExistsAfter(id) {
+      return existsAfter(/databases/$(database)/documents/Entities/User/$(id))
+    }
+
+    // CONDOMINIUM FUNCTIONS
+    function getCondominiumAfter(id) {
+      return getAfter(/databases/$(database)/documents/Entities/CondominiumsCollection/Condominium/$(id))
+    }
+
+    function getCondominiumBefore(id) {
+      return get(/databases/$(database)/documents/Entities/CondominiumsCollection/Condominium/$(id))
+    }
+
+    function condominiumExistsAfter(id) {
+      return existsAfter(/databases/$(database)/documents/Entities/CondominiumsCollection/Condominium/$(id))
+    }
+
+    // USER RULES
+    match /Entities/UsersDocuments/Employees/{id} {
+      allow read: if true;
+
+      allow create: if
+        getIndexAfter(/User/email/$(getUserAfter(id).data.email)).data.value == id &&
+        getIndexAfter(/User/cpf/$(getUserAfter(id).data.cpf)).data.value == id;
+
+      allow update: if
+        getIndexAfter(/User/email/$(getUserAfter(id).data.email)).data.value == id &&
+        getIndexAfter(/User/cpf/$(getUserAfter(id).data.cpf)).data.value == id &&
+        !indexExistsBefore(/User/email/$(getUserAfter(id).data.email)) &&
+        !indexExistsBefore(/User/cpf/$(getUserAfter(id).data.cpf));
+
+      allow delete: if
+        !indexExistsAfter(/User/email/$(getUserBefore(id).data.email)) &&
+        !indexExistsAfter(/User/cpf/$(getUserBefore(id).data.cpf));
+    }
+
+    match /Index/User/email/{email} {
+      allow read: if true;
+
+      allow create: if
+        getUserAfter(getIndexAfter(/User/email/$(email)).data.value).data.email == email;
+
+      allow delete: if
+        !userExistsAfter(getIndexBefore(/User/email/$(email)).data.value) ||
+        getUserAfter(getIndexBefore(/User/email/$(email)).data.value).data.email != email;
+    }
+
+    match /Index/User/cpf/{cpf} {
+      allow read: if true;
+
+      allow create: if
+        getUserAfter(getIndexAfter(/User/cpf/$(cpf)).data.value).data.cpf == cpf;
+
+      allow delete: if
+        !userExistsAfter(getIndexBefore(/User/cpf/$(cpf)).data.value) ||
+        getUserAfter(getIndexBefore(/User/cpf/$(cpf)).data.value).data.cpf != cpf;
+    }
+
+    // CONDOMINIUM RULES
+    match /Entities/CondominiumsCollection/Condominium/{id} {
+      allow read: if true;
+
+      allow create: if
+        getIndexAfter(/Condominiums/cnpj/$(getUserAfter(id).data.cnpj)).data.value == id &&
+        getIndexAfter(/Condominiums/cep/$(getUserAfter(id).data.cep)).data.value == id;
+
+      allow update: if
+        getIndexAfter(/Condominiums/cnpj/$(getUserAfter(id).data.cnpj)).data.value == id &&
+        getIndexAfter(/Condominiums/cep/$(getUserAfter(id).data.cep)).data.value == id &&
+        !indexExistsBefore(/Condominiums/cnpj/$(getUserAfter(id).data.cnpj)) &&
+        !indexExistsBefore(/Condominiums/cep/$(getUserAfter(id).data.cep));
+
+      allow delete: if
+        !indexExistsAfter(/Condominiums/cnpj/$(getCondominiumBefore(id).data.cnpj)) &&
+        !indexExistsAfter(/Condominiums/cep/$(getCondominiumBefore(id).data.cep));
+    }
+
+    match /Index/Condominiums/cep/{cep} {
+      allow read: if true;
+
+      allow create: if
+        getCondominiumAfter(getIndexAfter(/Condominiums/cep/$(cep)).data.value).data.cep == cep;
+
+      allow delete: if
+        !condominiumExistsAfter(getIndexBefore(/Condominiums/cep/$(cep)).data.value) ||
+        getCondominiumAfter(getIndexBefore(/Condominiums/cep/$(cep)).data.value).data.cep != cep;
+    }
+
+    match /Index/Condominiums/cnpj/{cnpj} {
+      allow read: if true;
+
+      allow create: if
+        getCondominiumAfter(getIndexAfter(/Condominiums/cnpj/$(cnpj)).data.value).data.cnpj == cnpj;
+
+      allow delete: if
+        !condominiumExistsAfter(getIndexBefore(/Condominiums/cnpj/$(cnpj)).data.value) ||
+        getCondominiumAfter(getIndexBefore(/Condominiums/cnpj/$(cnpj)).data.value).data.cnpj != cnpj;
+    }
+  }
+}

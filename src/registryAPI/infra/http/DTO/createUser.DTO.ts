@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { condominiumRelUserDTORules } from '@registry:app/entities/condominiumRelUser';
+import { userDTORules } from '@registry:app/entities/user';
 import {
 	IsEmail,
 	IsNumber,
@@ -10,22 +12,23 @@ import {
 	MinLength,
 } from 'class-validator';
 
+/** Usado para validar o corpo das requisições de criação de usuário */
 export class CreateUserDTO {
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "name" precisa ser uma string',
+		message: 'O campo "name" precisa conter caracteres válidos',
 	})
-	@MaxLength(120, {
-		message: 'O campo "name" precisa conter no máximo 120 caracteres',
+	@MaxLength(userDTORules.name.maxLength, {
+		message: `O campo "name" precisa conter no máximo ${userDTORules.name.maxLength} caracteres`,
 	})
-	@MinLength(2, {
-		message: 'O campo "name" precisa conter no mínimo 2 caracteres',
+	@MinLength(userDTORules.name.minLength, {
+		message: `O campo "name" precisa conter no mínimo ${userDTORules.name.minLength} caracteres`,
 	})
 		name: string;
 
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "email" precisa ser uma string',
+		message: 'O campo "email" precisa conter caracteres válidos',
 	})
 	@IsEmail(
 		{},
@@ -33,41 +36,41 @@ export class CreateUserDTO {
 			message: 'O campo "email" precisa ser um email válido',
 		},
 	)
-	@MaxLength(320, {
-		message: 'O campo "email" precisa conter no máximo 255 caracteres',
+	@MaxLength(userDTORules.email.maxLength, {
+		message: `O campo "email" precisa conter no máximo ${userDTORules.email.maxLength} caracteres`,
 	})
 		email: string;
 
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "password" precisa ser uma string',
+		message: 'O campo "password" precisa conter caracteres válidos',
 	})
-	@MaxLength(64, {
-		message: 'O campo "password" precisa conter no máximo 64 caracteres',
+	@MaxLength(userDTORules.password.maxLength, {
+		message: `O campo "password" precisa conter no máximo ${userDTORules.password.maxLength} caracteres`,
 	})
-	@MinLength(8, {
-		message: 'O campo "password" precisa conter no mínimo 8 caracteres',
+	@MinLength(userDTORules.password.minLength, {
+		message: `O campo "password" precisa conter no mínimo ${userDTORules.password.minLength} caracteres`,
 	})
 		password: string;
 
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "CPF" precisa ser uma string',
+		message: 'O campo "CPF" precisa conter caracteres válidos',
 	})
-	@MinLength(11, {
-		message: 'O campo "CPF" precisa conter no mínimo 11 caracteres',
+	@MinLength(userDTORules.CPF.minLength, {
+		message: `O campo "CPF" precisa conter no mínimo ${userDTORules.CPF.minLength} caracteres`,
 	})
-	@MaxLength(14, {
-		message: 'O campo "CPF" precisa conter no máximo 14 caracteres',
+	@MaxLength(userDTORules.CPF.maxLength, {
+		message: `O campo "CPF" precisa conter no máximo ${userDTORules.CPF.maxLength} caracteres`,
 	})
 		CPF: string;
 
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "block" precisa ser uma string',
+		message: 'O campo "block" precisa conter caracteres válidos',
 	})
-	@MaxLength(6, {
-		message: 'O campo "block" precisa conter no máximo 6 caracteres',
+	@MaxLength(condominiumRelUserDTORules.block.maxLength, {
+		message: `O campo "block" precisa conter no máximo ${condominiumRelUserDTORules.block.maxLength} caracteres`,
 	})
 	@IsOptional()
 		block: string;
@@ -79,25 +82,24 @@ export class CreateUserDTO {
 			message: 'O campo "apartmentNumber" precisa ser um número',
 		},
 	)
-	@Max(2147483647, {
-		message:
-			'O campo "apartmentNumber" precisa ser menor ou igual a 2147483647',
+	@Max(condominiumRelUserDTORules.apartmentNumber.maxLength, {
+		message: `O campo "apartmentNumber" precisa ser menor ou igual a ${condominiumRelUserDTORules.apartmentNumber.maxLength}`,
 	})
-	@Min(0, {
-		message: 'O campo "apartmentNumber" precisa ser maior ou igual a 0',
+	@Min(condominiumRelUserDTORules.apartmentNumber.minLength, {
+		message: `O campo "apartmentNumber" precisa ser maior ou igual a ${condominiumRelUserDTORules.apartmentNumber.minLength}`,
 	})
 	@IsOptional()
 		apartmentNumber: number;
 
 	@ApiProperty()
 	@IsString({
-		message: 'O campo "phoneNumber" precisa ser uma string',
+		message: 'O campo "phoneNumber" precisa conter caracteres válidos',
 	})
-	@MaxLength(30, {
-		message: 'O campo "phoneNumber" precisa conter no máximo 30 caracteres',
+	@MaxLength(userDTORules.phoneNumber.maxLength, {
+		message: `O campo "phoneNumber" precisa conter no máximo ${userDTORules.phoneNumber.maxLength} caracteres`,
 	})
-	@MinLength(10, {
-		message: 'O campo "phoneNumber" precisa conter no mínimo 10 caracteres',
+	@MinLength(userDTORules.phoneNumber.minLength, {
+		message: `O campo "phoneNumber" precisa conter no mínimo ${userDTORules.phoneNumber.minLength} caracteres`,
 	})
 		phoneNumber: string;
 }

@@ -1,21 +1,26 @@
+import { CEP, CNPJ, UUID, Name } from '@registry:app/entities/VO';
 import { Condominium } from '@registry:app/entities/condominium';
 import { EntitiesEnum } from '@registry:app/entities/entities';
 import {
+	CondominiumInterfaces,
 	CondominiumRepo,
-	ICondominiumSearchQuery,
-	ICreateCondominiumInput,
 } from '@registry:app/repositories/condominium';
 import { InMemoryError } from '@registry:tests/errors/inMemoryError';
+import { InMemoryContainer } from '../inMemoryContainer';
 
 export class InMemoryCondominium implements CondominiumRepo {
 	public calls = {
 		create: 0,
 		find: 0,
 	};
-	public condominiums: Condominium[] = [];
+	public condominiums: Condominium[];
 
-	public async create(input: ICreateCondominiumInput): Promise<void> {
-		this.calls.create = this.calls.create + 1;
+	constructor(container: InMemoryContainer) {
+		this.condominiums = container.props.condominiumArr;
+	}
+
+	public async create(input: CondominiumInterfaces.create): Promise<void> {
+		++this.calls.create;
 
 		const existentData = this.condominiums.find((item) =>
 			input.condominium.equalTo(item),
@@ -30,19 +35,30 @@ export class InMemoryCondominium implements CondominiumRepo {
 		this.condominiums.push(input.condominium);
 	}
 
+	async find(input: CondominiumInterfaces.safeSearch): Promise<Condominium>;
+	async find(
+		input: CondominiumInterfaces.search,
+	): Promise<Condominium | undefined>;
+
 	public async find(
-		input: ICondominiumSearchQuery,
+		input: CondominiumInterfaces.search,
 	): Promise<Condominium | undefined> {
-		this.calls.find = this.calls.find + 1;
+		++this.calls.find;
 
 		const existentData = this.condominiums.find((item) => {
 			return (
-				(input.CNPJ && item.CNPJ.equalTo(input.CNPJ)) ||
-				(input.CEP && item.CEP.equalTo(input.CEP)) ||
-				(input.name && item.name.equalTo(input.name)) ||
-				(input.id && item.id === input.id)
+				(input.key instanceof CNPJ && item.CNPJ.equalTo(input.key)) ||
+				(input.key instanceof CEP && item.CEP.equalTo(input.key)) ||
+				(input.key instanceof Name && item.name.equalTo(input.key)) ||
+				(input.key instanceof UUID && item.id.equalTo(input.key))
 			);
 		});
+
+		if (!existentData && input.safeSearch)
+			throw new InMemoryError({
+				entity: EntitiesEnum.condominium,
+				message: 'Condominium not found',
+			});
 
 		return existentData;
 	}

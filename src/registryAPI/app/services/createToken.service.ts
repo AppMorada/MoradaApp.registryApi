@@ -3,19 +3,22 @@ import {
 	IRefreshTokenBody,
 	TokenType,
 } from '@registry:app/auth/tokenTypes';
-import { ApartmentNumber } from '@registry:app/entities/VO/apartmentNumber';
-import { Block } from '@registry:app/entities/VO/block';
-import { Email } from '@registry:app/entities/VO/email';
-import { Level } from '@registry:app/entities/VO/level';
-import { Name } from '@registry:app/entities/VO/name';
-import { PhoneNumber } from '@registry:app/entities/VO/phoneNumber';
+import {
+	ApartmentNumber,
+	Block,
+	Email,
+	Level,
+	Name,
+	PhoneNumber,
+	UUID,
+} from '@registry:app/entities/VO';
 import { User } from '@registry:app/entities/user';
-import { OTPRepo } from '@registry:app/repositories/otp';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { IService } from './_IService';
 
 interface IUserDataCore {
-	id: string;
+	id: UUID;
 	email: Email;
 	block?: Block;
 	apartmentNumber?: ApartmentNumber;
@@ -28,28 +31,20 @@ interface IUserDataCore {
 
 interface IProps {
 	user: User | IUserDataCore;
-	removeOTP?: boolean;
 }
 
+/** Serviço responsável por gerar o token de acesso e o de renovação */
 @Injectable()
-export class CreateTokenService {
-	constructor(
-		private readonly jwtService: JwtService,
-		private readonly otpRepo: OTPRepo,
-	) {}
+export class CreateTokenService implements IService {
+	constructor(private readonly jwtService: JwtService) {}
 
 	private async buildAccessToken(user: User | IUserDataCore) {
 		const exp = parseInt(process.env.ACCESS_TOKEN_EXP as string);
 		const accessJwtBody: Omit<IAccessTokenBody, 'iat' | 'exp'> = {
-			sub: user.id,
+			sub: user.id.value,
 			content: {
 				email: user.email.value,
-				block: user.block ? user.block.value : null,
-				apartmentNumber: user.apartmentNumber
-					? user.apartmentNumber.value
-					: null,
 				name: user.name.value,
-				level: user.level.value,
 				createdAt: user.createdAt,
 				updatedAt: user.updatedAt,
 				phoneNumber: user.phoneNumber.value,
@@ -63,10 +58,10 @@ export class CreateTokenService {
 		});
 	}
 
-	private async buildRefreshToken(email: Email, userId: string) {
+	private async buildRefreshToken(email: Email, userId: UUID) {
 		const exp = parseInt(process.env.REFRESH_TOKEN_EXP as string);
 		const refreshJwtBody: Omit<IRefreshTokenBody, 'iat' | 'exp'> = {
-			sub: userId,
+			sub: userId.value,
 			email: email.value,
 			type: TokenType.refreshToken,
 		};
@@ -77,9 +72,7 @@ export class CreateTokenService {
 		});
 	}
 
-	async exec({ user, removeOTP }: IProps) {
-		if (removeOTP) await this.otpRepo.delete({ email: user.email });
-
+	async exec({ user }: IProps) {
 		const accessToken = await this.buildAccessToken(user);
 		const refreshToken = await this.buildRefreshToken(user.email, user.id);
 

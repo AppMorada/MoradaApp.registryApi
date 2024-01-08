@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto';
+import { createHmac } from 'node:crypto';
 import { CryptAdapter, ICryptCompare, ICryptHmac } from '../crypt';
 import * as bcrypt from 'bcrypt';
 

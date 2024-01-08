@@ -15,7 +15,9 @@ model Condominium {
   CNPJ        String    @db.Char(14)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
-  users       User[]
+  condominiumRelUser  CondominiumRelUser[]
+  Invite              Invite[]
+
 
   @@map("condominiums")
   @@unique([name])
@@ -23,24 +25,49 @@ model Condominium {
   @@unique([CNPJ])
 }
 
-model User {
-  id                String      @id @default(uuid()) @db.Uuid
-  name              String      @db.VarChar(120)
-  email             String      @db.VarChar(320)
-  password          String      @db.VarChar(64)
-  CPF               String      @db.Char(11)
-  block             String?     @db.VarChar(6)
-  apartment_number  Int?
-  phoneNumber       String      @db.VarChar(30)
-  level             Int         @db.SmallInt @default(0)
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @default(now())
+model Invite {
+  id                String        @id @default(uuid()) @db.Uuid
+  email             String        @db.VarChar(320)
+  ttl               Int
+  expiresAt         DateTime
 
-  condominiumId String      @db.Uuid
-  condominium   Condominium @relation(fields: [condominiumId], references: [id])
+  condominiumId     String        @db.Uuid
+  condominium       Condominium   @relation(fields: [condominiumId], references: [id])
+
+  type              Int           @db.SmallInt @default(0)
+
+  @@unique([email, condominiumId])
+  @@map("invites")
+}
+
+model CondominiumRelUser {
+  id                String        @id @default(uuid()) @db.Uuid
+  block             String?       @db.VarChar(6)
+  apartment_number  Int?
+  level             Int           @db.SmallInt @default(0)
+  condominiumId     String        @db.Uuid
+  condominium       Condominium   @relation(fields: [condominiumId], references: [id])
+  userId            String        @db.Uuid
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt         DateTime              @default(now())
+
+  @@unique([userId, condominiumId])
+  @@map("condominiumreluser")
+}
+
+model User {
+  id                  String                @id @default(uuid()) @db.Uuid
+  name                String                @db.VarChar(120)
+  email               String                @db.VarChar(320)
+  password            String                @db.VarChar(64)
+  CPF                 String                @db.Char(11)
+  phoneNumber         String                @db.VarChar(30)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @default(now())
+  condominiumRelUser  CondominiumRelUser[]
 
   @@map("users")
   @@unique([email])
   @@unique([CPF])
-  @@index([level, name])
+  @@index([name])
 }
