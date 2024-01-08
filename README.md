@@ -92,7 +92,7 @@ pnpm dev
 
 Para escutar as modificações que você fez dentro das functions:
 ```
-pnpm build:watch
+pnpm build:watch:custom
 ```
 
 Para executar testes unitários na aplicação:
