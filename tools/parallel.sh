@@ -27,8 +27,8 @@ fi
 /bin/echo -e "  ${BULLET_PT}  ${ORANGE}build:watch.sh${RESET_COLOR}"
 /bin/echo -e "  ${BULLET_PT}  ${ORANGE}functions.sh${RESET_COLOR}"
 
-BUILD_CMD="sh -c ./commands/build:watch.sh"
-FIRESTORE_CMD="sh -c ./commands/firestore.sh"
+BUILD_CMD="sh -c ./tools/build:watch.sh"
+FIRESTORE_CMD="sh -c ./tools/firestore.sh"
 
 REGISTRY_FN_CMD="npm-watch functions:registryapi"
 
