@@ -1,3 +1,4 @@
+import { OTP } from '@registry:app/entities/OTP';
 import { Condominium } from '@registry:app/entities/condominium';
 import { CondominiumRelUser } from '@registry:app/entities/condominiumRelUser';
 import { Invite } from '@registry:app/entities/invite';
@@ -15,6 +16,7 @@ interface IInMemoryContainerProps {
 	condominiumArr: Condominium[];
 	condominiumRelUserArr: CondominiumRelUser[];
 	inviteArr: Invite[];
+	otpArr: { key: string; value: OTP }[];
 }
 
 export class InMemoryContainer {
@@ -23,6 +25,7 @@ export class InMemoryContainer {
 		condominiumArr: [],
 		condominiumRelUserArr: [],
 		inviteArr: [],
+		otpArr: [],
 	};
 
 	erase() {
@@ -31,6 +34,7 @@ export class InMemoryContainer {
 			condominiumRelUserArr: [],
 			inviteArr: [],
 			condominiumArr: [],
+			otpArr: [],
 		};
 	}
 }

@@ -21,6 +21,9 @@ import { NotFoundFilter } from '@registry:infra/http/filters/errors/notFound.fil
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { DatabaseCustomErrorFilter } from '@registry:infra/http/filters/errors/databaseCustomError.filter';
 import { PrismaErrorFilter } from '@registry:infra/http/filters/errors/prisma.filter';
+import { RedisService } from '@registry:infra/storages/cache/redis/redis.service';
+import { PrismaService } from '@registry:infra/storages/db/prisma/prisma.service';
+import { RedisErrorFilter } from '@registry:infra/http/filters/errors/redis-login.filter';
 
 interface IProps {
 	requestListener: Express;
@@ -65,6 +68,7 @@ export class RegistryAPIBootstrap {
 
 	private setGlobalFilters() {
 		this.app.useGlobalFilters(new GenericErrorFilter(this.logger));
+		this.app.useGlobalFilters(new RedisErrorFilter(this.logger));
 		this.app.useGlobalFilters(new PrismaErrorFilter(this.logger));
 		this.app.useGlobalFilters(new DatabaseCustomErrorFilter(this.logger));
 		this.app.useGlobalFilters(new ServiceErrorFilter(this.logger));
@@ -75,6 +79,14 @@ export class RegistryAPIBootstrap {
 		this.app.useGlobalFilters(new ClassValidatorErrorFilter(this.logger));
 		this.app.useGlobalFilters(new ThrottlerErrorFilter(this.logger));
 		this.app.useGlobalFilters(new NotFoundFilter(this.logger));
+	}
+
+	async runStorageLayer() {
+		const redis = this.app.get(RedisService);
+		const prisma = this.app.get(PrismaService);
+
+		await prisma.init();
+		await redis.init();
 	}
 
 	async run(input: IProps) {

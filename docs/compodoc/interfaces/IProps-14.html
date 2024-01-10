@@ -130,7 +130,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/registryAPI/app/entities/invite/index.ts</code>
+            <code>src/registryAPI/app/services/genTFACode.old.service.ts</code>
         </p>
 
 
@@ -149,33 +149,22 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#condominiumId" 
->
-                                            condominiumId
-                                        </a>
-                                </li>
-                                <li>
                                         <a href="#email" 
 >
                                             email
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#expiresAt" 
->
-                                            expiresAt
-                                        </a>
-                                </li>
-                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#ttl" 
 >
                                             ttl
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#type" 
+                                        <a href="#userId" 
 >
-                                            type
+                                            userId
                                         </a>
                                 </li>
                             </ul>
@@ -189,39 +178,6 @@
 
             <section data-compodoc="block-properties">
                 <h3 id="inputs">Properties</h3>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="condominiumId"></a>
-                                        <span class="name "><b>condominiumId</b>
-                                            <a href="#condominiumId">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>condominiumId:         <code><a href="../classes/UUID.html" target="_self" >UUID</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/UUID.html" target="_self" >UUID</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
                     <table class="table table-sm table-bordered">
                         <tbody>
                                 <tr>
@@ -259,39 +215,6 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="expiresAt"></a>
-                                        <span class="name "><b>expiresAt</b>
-                                            <a href="#expiresAt">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>expiresAt:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
                                         <a name="ttl"></a>
                                         <span class="name "><b>ttl</b>
                                             <a href="#ttl">
@@ -315,6 +238,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -325,9 +253,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="type"></a>
-                                        <span class="name "><b>type</b>
-                                            <a href="#type">
+                                        <a name="userId"></a>
+                                        <span class="name "><b>userId</b>
+                                            <a href="#userId">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -335,7 +263,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>type:         <code><a href="../classes/Level.html" target="_self" >Level</a></code>
+                                        <code>userId:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -343,7 +271,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/Level.html" target="_self" >Level</a></code>
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                                         </td>
                                     </tr>
@@ -359,81 +287,63 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Email, Level, UUID } from &#x27;../VO&#x27;;
-import { Entity } from &#x27;../entities&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Email } from &#x27;@registry:app/entities/VO&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { CryptAdapter } from &#x27;@registry:app/adapters/crypt&#x27;;
+import { EmailAdapter } from &#x27;@registry:app/adapters/email&#x27;;
+import { OTPRepo } from &#x27;@registry:app/repositories/otp&#x27;;
+import { OTP } from &#x27;@registry:app/entities/OTP&#x27;;
+import { IService } from &#x27;./_IService&#x27;;
 
-export interface IProps {
+interface IProps {
 	email: Email;
-	ttl: number;
-	expiresAt: Date;
-	condominiumId: UUID;
-	type: Level;
+	userId: string;
+	ttl?: number;
 }
 
-export interface IInputPropsInvite {
-	email: string;
-	ttl: number;
-	expiresAt?: Date;
-	condominiumId: string;
-	type: number;
-}
+@Injectable()
+export class GenOldTFASevice implements IService {
+	constructor(
+		private readonly email: EmailAdapter,
+		private readonly otp: OTPRepo,
+		private readonly crypt: CryptAdapter,
+	) {}
 
-export class Invite implements Entity {
-	private readonly props: IProps;
-	private readonly _id: UUID;
+	private async generateRandomNumbers() {
+		let rawCode: number[] | string &#x3D; [];
 
-	constructor(input: IInputPropsInvite, id?: string) {
-		this.props &#x3D; {
-			email: new Email(input.email),
-			ttl: input.ttl,
-			type: new Level(input.type),
-			condominiumId: new UUID(input.condominiumId),
-			expiresAt: input.expiresAt ?? new Date(Date.now() + input.ttl),
-		};
-		this._id &#x3D; id ? new UUID(id) : UUID.genV4();
-	}
+		for (let i &#x3D; 0; i &lt;&#x3D; 5; i++)
+			rawCode.push(Math.floor(Math.random() * 9));
 
-	dereference(): Invite {
-		return new Invite(
-			{
-				email: this.email.value,
-				ttl: this.ttl,
-				type: this.type.value,
-				condominiumId: this.condominiumId.value,
-				expiresAt: this.expiresAt,
-			},
-			this.id.value,
-		);
+		rawCode &#x3D; rawCode.join().replaceAll(&#x27;,&#x27;, &#x27;&#x27;);
+
+		const hash &#x3D; await this.crypt.hash(rawCode);
+		const code &#x3D; String(hash);
+
+		return { rawCode, code };
 	}
 
-	equalTo(input: Invite): boolean {
-		return (
-			input.id.equalTo(this.id) &amp;&amp;
-			input.type.equalTo(this.type) &amp;&amp;
-			input.email.equalTo(this.email) &amp;&amp;
-			input.ttl &#x3D;&#x3D;&#x3D; this.ttl &amp;&amp;
-			input.expiresAt &#x3D;&#x3D;&#x3D; this.expiresAt &amp;&amp;
-			input.condominiumId.equalTo(this.condominiumId)
-		);
-	}
+	async exec(input: IProps) {
+		const { rawCode, code } &#x3D; await this.generateRandomNumbers();
+		const otp &#x3D; new OTP({
+			code,
+			userId: input.userId,
+			ttl: input.ttl ?? 1000 * 60 * 2
+		});
 
-	get email(): Email {
-		return this.props.email;
-	}
-	get ttl(): number {
-		return this.props.ttl;
-	}
-	get expiresAt(): Date {
-		return this.props.expiresAt;
-	}
-	get type(): Level {
-		return this.props.type;
-	}
-	get condominiumId(): UUID {
-		return this.props.condominiumId;
-	}
-	get id(): UUID {
-		return this._id;
+		await this.otp.create({
+			email: input.email,
+			otp,
+		});
+
+		await this.email.send({
+			from: &#x60;${process.env.NAME_SENDER} &lt;${process.env.EMAIL_SENDER}&gt;&#x60;,
+			to: input.email.value,
+			subject: &#x60;${process.env.PROJECT_NAME} - Solicitação de login&#x60;,
+			body: &#x60;&lt;h1&gt;Seja bem-vindo!&lt;/h1&gt;
+				&lt;p&gt;Não compartilhe este código com ninguém&lt;/p&gt;
+				&lt;p&gt;${rawCode}&lt;/p&gt;&#x60;,
+		});
 	}
 }
 </code></pre>

@@ -29,6 +29,8 @@ import { ValueObject } from '@registry:app/entities/entities';
 import { JwtGuard } from '@registry:app/auth/guards/jwt.guard';
 import { DeleteUserService } from '@registry:app/services/deleteUser.service';
 import { GetCondominiumRelUserService } from '@registry:app/services/getCondominiumRel.service';
+import { GenOldTFASevice } from '@registry:app/services/genTFACode.old.service';
+import { CheckOTPGuard } from '@registry:app/auth/guards/checkOTP.guard';
 
 @Throttle({
 	default: {
@@ -45,6 +47,7 @@ export class UserController {
 		private readonly createToken: CreateTokenService,
 		private readonly deleteUserService: DeleteUserService,
 		private readonly genTFA: GenTFAService,
+		private readonly oldTFA: GenOldTFASevice,
 		private readonly logger: LoggerAdapter,
 	) {}
 
@@ -147,6 +150,28 @@ export class UserController {
 				condominiumRels,
 			},
 		};
+	}
+
+	@UseGuards(CheckPasswordGuard)
+	@Post('/old/launch-tfa')
+	@HttpCode(204)
+	async launchTFAOld(@Req() req: Request) {
+		const user = req.inMemoryData.user as User;
+		await this.oldTFA.exec({
+			email: user.email,
+			userId: user.id,
+		});
+	}
+
+	@UseGuards(CheckOTPGuard)
+	@Post('/old/login')
+	@HttpCode(200)
+	async oldLogin(
+		@Res({ passthrough: true }) res: Response,
+		@Req() req: Request,
+	) {
+		const user = req.inMemoryData.user as User;
+		return await this.processTokens(res, user);
 	}
 
 	@UseGuards(CheckTFACodeGuard)

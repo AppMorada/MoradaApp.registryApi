@@ -130,7 +130,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/registryAPI/app/services/genInvite.service.ts</code>
+            <code>src/registryAPI/app/services/createUser.service.ts</code>
         </p>
 
 
@@ -149,29 +149,29 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#condominiumId" 
+                                            <span class="modifier">Optional</span>
+                                        <a href="#apartmentNumber" 
 >
-                                            condominiumId
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#email" 
->
-                                            email
+                                            apartmentNumber
                                         </a>
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
-                                        <a href="#key" 
+                                        <a href="#block" 
 >
-                                            key
+                                            block
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
-                                        <a href="#requiredLevel" 
+                                        <a href="#invite" 
 >
-                                            requiredLevel
+                                            invite
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#user" 
+>
+                                            user
                                         </a>
                                 </li>
                             </ul>
@@ -189,9 +189,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="condominiumId"></a>
-                                        <span class="name "><b>condominiumId</b>
-                                            <a href="#condominiumId">
+                                        <a name="apartmentNumber"></a>
+                                        <span class="name "><b>apartmentNumber</b>
+                                            <a href="#apartmentNumber">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -199,7 +199,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>condominiumId:         <code><a href="../classes/UUID.html" target="_self" >UUID</a></code>
+                                        <code>apartmentNumber:     <code>ApartmentNumber | null</code>
 </code>
                                     </td>
                                 </tr>
@@ -207,73 +207,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/UUID.html" target="_self" >UUID</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="email"></a>
-                                        <span class="name "><b>email</b>
-                                            <a href="#email">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>email:         <code><a href="../classes/Email.html" target="_self" >Email</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/Email.html" target="_self" >Email</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="key"></a>
-                                        <span class="name "><b>key</b>
-                                            <a href="#key">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>key:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            <i>Type : </i>    <code>ApartmentNumber | null</code>
 
                                         </td>
                                     </tr>
@@ -293,9 +227,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="requiredLevel"></a>
-                                        <span class="name "><b>requiredLevel</b>
-                                            <a href="#requiredLevel">
+                                        <a name="block"></a>
+                                        <span class="name "><b>block</b>
+                                            <a href="#block">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -303,7 +237,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>requiredLevel:         <code><a href="../classes/Level.html" target="_self" >Level</a></code>
+                                        <code>block:         <code><a href="../classes/Block.html" target="_self" >Block | null</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -311,7 +245,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/Level.html" target="_self" >Level</a></code>
+                                            <i>Type : </i>        <code><a href="../classes/Block.html" target="_self" >Block | null</a></code>
 
                                         </td>
                                     </tr>
@@ -321,6 +255,72 @@
                                             <i>Optional</i>
                                         </td>
                                     </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="invite"></a>
+                                        <span class="name "><b>invite</b>
+                                            <a href="#invite">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>invite:         <code><a href="../classes/Invite.html" target="_self" >Invite</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../classes/Invite.html" target="_self" >Invite</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="user"></a>
+                                        <span class="name "><b>user</b>
+                                            <a href="#user">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>user:         <code><a href="../classes/User.html" target="_self" >User</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../classes/User.html" target="_self" >User</a></code>
+
+                                        </td>
+                                    </tr>
+
 
 
 
@@ -333,70 +333,49 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CryptAdapter } from &#x27;@registry:app/adapters/crypt&#x27;;
-import { EmailAdapter } from &#x27;@registry:app/adapters/email&#x27;;
-import { Email, Level, UUID } from &#x27;@registry:app/entities/VO&#x27;;
+import { ApartmentNumber, Block, Password } from &#x27;@registry:app/entities/VO&#x27;;
+import { User } from &#x27;@registry:app/entities/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { generateStringCodeContent } from &#x27;@registry:utils/generateStringCodeContent&#x27;;
-import { Invite } from &#x27;@registry:app/entities/invite&#x27;;
 import { InviteRepo } from &#x27;@registry:app/repositories/invite&#x27;;
 import { IService } from &#x27;./_IService&#x27;;
+import { CondominiumRelUser } from &#x27;@registry:app/entities/condominiumRelUser&#x27;;
+import { Invite } from &#x27;@registry:app/entities/invite&#x27;;
 
 interface IProps {
-	email: Email;
-	condominiumId: UUID;
-	requiredLevel?: Level;
-	key?: string;
+	user: User;
+	invite: Invite;
+	apartmentNumber?: ApartmentNumber | null;
+	block?: Block | null;
 }
 
-/** Serviço responsável por criar um convite */
+/** Serviço responsável por criar um novo usuário */
 @Injectable()
-export class GenInviteService implements IService {
+export class CreateUserService implements IService {
 	constructor(
-		private readonly cryptAdapter: CryptAdapter,
-		private readonly emailAdapter: EmailAdapter,
 		private readonly inviteRepo: InviteRepo,
+		private readonly crypt: CryptAdapter,
 	) {}
 
-	private async generateInvite({
-		invite,
-		key,
-	}: {
-		invite: Invite;
-		key: string;
-	}) {
-		const inputData &#x3D; generateStringCodeContent({
-			id: invite.id,
-			email: invite.email,
-			requiredLevel: invite.type,
-			condominiumId: invite.condominiumId,
+	async exec({ ...input }: IProps) {
+		const hashPass &#x3D; await this.crypt.hash(input.user.password.value);
+
+		const user &#x3D; input.user.dereference();
+		user.password &#x3D; new Password(hashPass);
+
+		const condominiumRelUser &#x3D; new CondominiumRelUser({
+			apartmentNumber: input.apartmentNumber
+				? input.apartmentNumber.value
+				: undefined,
+			block: input.block ? input.block.value : undefined,
+			level: input.invite.type.value,
+			condominiumId: input.invite.condominiumId.value,
+			userId: input.user.id.value,
 		});
 
-		return await this.cryptAdapter.hashWithHmac({ key, data: inputData });
-	}
-
-	async exec(input: IProps): Promise&lt;Invite&gt; {
-		const invite &#x3D; new Invite({
-			email: input.email.value,
-			condominiumId: input.condominiumId.value,
-			type: input.requiredLevel?.value ?? 0,
-			ttl: 1000 * 60 * 60 * 24 * 7,
+		await this.inviteRepo.transferToUserResources({
+			user,
+			condominiumRelUser,
 		});
-		const inviteAsHash &#x3D; await this.generateInvite({
-			invite,
-			key: input.key ?? (process.env.INVITE_TOKEN_KEY as string),
-		});
-
-		await this.inviteRepo.create({ invite });
-		await this.emailAdapter.send({
-			from: &#x60;${process.env.NAME_SENDER} &lt;${process.env.EMAIL_SENDER}&gt;&#x60;,
-			to: input.email.value,
-			subject: &#x60;${process.env.PROJECT_NAME} - Convite para o condomínio&#x60;,
-			body: &#x60;&lt;h1&gt;Seja bem-vindo!&lt;/h1&gt;
-				&lt;p&gt;Não compartilhe este link com ninguém&lt;/p&gt;
-				&lt;a href&#x3D;&quot;#&quot;&gt;https://[EXEMPLO DE DOMÍNIO]/[PÁGINA DO FRONT PARA VALIDAR O CONVITE]/${inviteAsHash}&lt;/a&gt;&#x60;,
-		});
-
-		return invite;
 	}
 }
 </code></pre>

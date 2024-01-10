@@ -15,10 +15,7 @@ export interface IDeleteOTPInput {
 }
 
 export abstract class OTPRepo {
-	/** @deprecated */
 	abstract create(input: ICreateOTPInput): Promise<void>;
-	/** @deprecated */
 	abstract find(input: IFindOTPInput): Promise<OTP | undefined>;
-	/** @deprecated */
 	abstract delete(input: IDeleteOTPInput): Promise<void>;
 }

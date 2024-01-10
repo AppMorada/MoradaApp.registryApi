@@ -7,6 +7,7 @@ import {
 	OTPRepo,
 } from '@registry:app/repositories/otp';
 import { InMemoryError } from '@registry:tests/errors/inMemoryError';
+import { InMemoryContainer } from '../inMemoryContainer';
 
 export class InMemoryOTP implements OTPRepo {
 	public calls = {
@@ -14,10 +15,14 @@ export class InMemoryOTP implements OTPRepo {
 		find: 0,
 		delete: 0,
 	};
-	public otps: Array<{ key: string; value: OTP }> = [];
+	public otps: Array<{ key: string; value: OTP }>;
+
+	constructor(container: InMemoryContainer) {
+		this.otps = container.props.otpArr;
+	}
 
 	public async create(input: ICreateOTPInput): Promise<void> {
-		this.calls.create = this.calls.create + 1;
+		++this.calls.create;
 
 		const existentData = this.otps.find(
 			(item) => `mockOTP:${input.email.value}` === item.key,
@@ -36,7 +41,7 @@ export class InMemoryOTP implements OTPRepo {
 	}
 
 	public async find(input: IFindOTPInput): Promise<OTP | undefined> {
-		this.calls.find = this.calls.find + 1;
+		++this.calls.find;
 
 		const existentData = this.otps.find(
 			(item) => `mockOTP:${input.email.value}` === item.key,
@@ -46,7 +51,7 @@ export class InMemoryOTP implements OTPRepo {
 	}
 
 	public async delete(input: IDeleteOTPInput): Promise<void> {
-		this.calls.delete = this.calls.delete + 1;
+		++this.calls.delete;
 
 		const existentDataIndex = this.otps.findIndex(
 			(item) => `mockOTP:${input.email.value}` === item.key,

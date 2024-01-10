@@ -14,12 +14,15 @@ import { GatewayModule } from '../gateways/gateway.module';
 import { GenTFAService } from '@registry:app/services/genTFA.service';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { FirestoreModule } from '@registry:infra/storages/db/firestore/firestore.module';
 import { GetCondominiumRelUserService } from '@registry:app/services/getCondominiumRel.service';
+import { RedisModule } from '@registry:infra/storages/cache/redis/redis.module';
+import { PrismaModule } from '@registry:infra/storages/db/prisma/prisma.module';
+import { GenOldTFASevice } from '@registry:app/services/genTFACode.old.service';
 
 @Module({
 	imports: [
-		FirestoreModule,
+		RedisModule,
+		PrismaModule,
 		AdaptersModule,
 		GatewayModule,
 		ThrottlerModule.forRoot([
@@ -43,6 +46,7 @@ import { GetCondominiumRelUserService } from '@registry:app/services/getCondomin
 		DeleteUserService,
 		GenInviteService,
 		GenTFAService,
+		GenOldTFASevice,
 		GetCondominiumRelUserService,
 		{
 			provide: APP_GUARD,

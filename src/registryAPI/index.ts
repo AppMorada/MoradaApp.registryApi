@@ -12,5 +12,6 @@ const bootstrap = new RegistryAPIBootstrap();
 bootstrap.run({ requestListener: expressApp });
 
 export const RegistryAPI = async (req: Request, res: Response) => {
+	await bootstrap.runStorageLayer();
 	expressApp(req, res);
 };

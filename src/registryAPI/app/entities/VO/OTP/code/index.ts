@@ -3,7 +3,6 @@ import { EntitiesEnum } from '@registry:app/entities/entities';
 import { ValueObject } from '@registry:app/entities/entities';
 
 export class Code implements ValueObject<Code, string> {
-	/** @deprecated **/
 	constructor(private readonly _value: string) {
 		if (_value.length > 100 || _value.length < 6)
 			throw new EntitieError({

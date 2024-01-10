@@ -1,35 +1,30 @@
-import { randomUUID } from 'crypto';
-import { Code, Level } from '../VO';
-import { Entity } from '../entities';
+import { Code, UUID } from '../VO';
+import { Entity, ValueObject } from '../entities';
 
 interface IOTPProps {
-	userId?: string;
-	requiredLevel: Level;
-	condominiumId: string;
+	userId: UUID;
 	code: Code;
 	ttl: number;
 	createdAt: Date;
 }
 
 export type TInputOTPProps = {
-	userId?: string;
-	requiredLevel?: Level;
-	condominiumId: string;
-	code: Code;
-	ttl?: number;
+	userId: string;
+	code: string;
+	ttl: number;
 	createdAt?: Date;
 };
 
 export class OTP implements Entity {
-	private readonly _id: string;
+	private readonly _id: UUID;
 	private readonly props: IOTPProps;
 
-	/** @deprecated **/
 	constructor(input: TInputOTPProps, id?: string) {
-		this._id = id ?? randomUUID();
+		this._id = ValueObject.build(UUID, id).or(UUID.genV4()).exec();
 		this.props = {
 			...input,
-			requiredLevel: input.requiredLevel ?? new Level(0),
+			code: new Code(input.code),
+			userId: new UUID(input.userId),
 			ttl: input.ttl ?? 1000 * 60 * 2,
 			createdAt: input.createdAt ?? new Date(),
 		};
@@ -38,37 +33,25 @@ export class OTP implements Entity {
 	dereference(): OTP {
 		return new OTP(
 			{
-				userId: this.userId,
-				requiredLevel: new Level(this.requiredLevel.value),
-				condominiumId: this.condominiumId,
-				code: new Code(this.code.value),
+				userId: this.userId.value,
+				code: this.code.value,
 				ttl: this.ttl,
 				createdAt: this.createdAt,
 			},
-			this.id,
+			this.id.value,
 		);
 	}
 	public equalTo(input: OTP) {
 		return (
-			this._id === input._id &&
-			this.requiredLevel.equalTo(input.requiredLevel) &&
+			this._id.equalTo(input._id) &&
 			this.props.ttl === input.ttl &&
-			this.props.condominiumId === input.condominiumId &&
-			this.props.userId === input.userId &&
+			this.props.userId.equalTo(input.userId) &&
 			this.props.code.equalTo(input.code) &&
 			this.props.createdAt === input.createdAt
 		);
 	}
 
-	get requiredLevel(): Level {
-		return this.props.requiredLevel;
-	}
-
-	get condominiumId(): string {
-		return this.props.condominiumId;
-	}
-
-	get userId(): string | undefined {
+	get userId(): UUID {
 		return this.props.userId;
 	}
 
@@ -76,7 +59,7 @@ export class OTP implements Entity {
 		return this.props.ttl;
 	}
 
-	get id(): string {
+	get id(): UUID {
 		return this._id;
 	}
 

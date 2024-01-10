@@ -123,17 +123,10 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/registryAPI/app/services/createUser.service.ts</code>
+            <code>src/registryAPI/app/services/createUser.old.service.ts</code>
         </p>
 
 
-            <p class="comment">
-                <h3>Description</h3>
-            </p>
-            <p class="comment">
-                <p>Serviço responsável por criar um novo usuário</p>
-
-            </p>
 
 
 
@@ -172,12 +165,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(inviteRepo: <a href="../classes/InviteRepo.html" target="_self">InviteRepo</a>, crypt: <a href="../classes/CryptAdapter.html" target="_self">CryptAdapter</a>)</code>
+<code>constructor(userRepo: <a href="../classes/UserRepo.html" target="_self">UserRepo</a>, crypt: <a href="../classes/CryptAdapter.html" target="_self">CryptAdapter</a>, otpRepo: <a href="../classes/OTPRepo.html" target="_self">OTPRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/registryAPI/app/services/createUser.service.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/registryAPI/app/services/createUser.old.service.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -195,10 +188,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>inviteRepo</td>
+                                                        <td>userRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/InviteRepo.html" target="_self" >InviteRepo</a></code>
+                                                                        <code><a href="../classes/UserRepo.html" target="_self" >UserRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -211,6 +204,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../classes/CryptAdapter.html" target="_self" >CryptAdapter</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>otpRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/OTPRepo.html" target="_self" >OTPRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -247,15 +252,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exec(undefined: <a href="../interfaces/IProps.html" target="_self">IProps</a>)</code>
+                    <code>exec(input: <a href="../interfaces/IProps.html" target="_self">IProps</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">src/registryAPI/app/services/createUser.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">src/registryAPI/app/services/createUser.old.service.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -276,6 +281,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
+                                                <td>input</td>
                                             <td>
                                                             <code><a href="../interfaces/IProps.html" target="_self" >IProps</a></code>
                                             </td>
@@ -306,50 +312,39 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CryptAdapter } from &#x27;@registry:app/adapters/crypt&#x27;;
-import { ApartmentNumber, Block, Password } from &#x27;@registry:app/entities/VO&#x27;;
-import { User } from &#x27;@registry:app/entities/user&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { InviteRepo } from &#x27;@registry:app/repositories/invite&#x27;;
-import { IService } from &#x27;./_IService&#x27;;
-import { CondominiumRelUser } from &#x27;@registry:app/entities/condominiumRelUser&#x27;;
-import { Invite } from &#x27;@registry:app/entities/invite&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &quot;@nestjs/common&quot;;
+import { CryptAdapter } from &quot;@registry:app/adapters/crypt&quot;;
+import { OTPRepo } from &quot;@registry:app/repositories/otp&quot;;
+import { UserRepo } from &quot;@registry:app/repositories/user&quot;;
+import { IService } from &quot;./_IService&quot;;
+import { Password } from &quot;@registry:app/entities/VO&quot;;
+import { User } from &quot;@registry:app/entities/user&quot;;
+import { CondominiumRelUser } from &quot;@registry:app/entities/condominiumRelUser&quot;;
 
 interface IProps {
 	user: User;
-	invite: Invite;
-	apartmentNumber?: ApartmentNumber | null;
-	block?: Block | null;
+	condominiumRelUser: CondominiumRelUser;
 }
 
-/** Serviço responsável por criar um novo usuário */
 @Injectable()
 export class CreateUserService implements IService {
 	constructor(
-		private readonly inviteRepo: InviteRepo,
+		private readonly userRepo: UserRepo,
 		private readonly crypt: CryptAdapter,
+		private readonly otpRepo: OTPRepo,
 	) {}
 
-	async exec({ ...input }: IProps) {
+	async exec(input: IProps) {
 		const hashPass &#x3D; await this.crypt.hash(input.user.password.value);
 
 		const user &#x3D; input.user.dereference();
 		user.password &#x3D; new Password(hashPass);
 
-		const condominiumRelUser &#x3D; new CondominiumRelUser({
-			apartmentNumber: input.apartmentNumber
-				? input.apartmentNumber.value
-				: undefined,
-			block: input.block ? input.block.value : undefined,
-			level: input.invite.type.value,
-			condominiumId: input.invite.condominiumId.value,
-			userId: input.user.id.value,
+		await this.userRepo.create({ 
+			user, 
+			condominiumRelUser: input.condominiumRelUser 
 		});
-
-		await this.inviteRepo.transferToUserResources({
-			user,
-			condominiumRelUser,
-		});
+		await this.otpRepo.delete({ email: input.user.email });
 	}
 }
 </code></pre>

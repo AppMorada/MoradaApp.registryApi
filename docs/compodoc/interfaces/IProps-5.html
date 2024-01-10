@@ -130,7 +130,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/registryAPI/app/errors/services.ts</code>
+            <code>src/registryAPI/app/errors/guard.ts</code>
         </p>
 
 
@@ -152,12 +152,6 @@
                                         <a href="#message" 
 >
                                             message
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#tag" 
->
-                                            tag
                                         </a>
                                 </li>
                             </ul>
@@ -204,67 +198,24 @@
 
                         </tbody>
                     </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="tag"></a>
-                                        <span class="name "><b>tag</b>
-                                            <a href="#tag">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>tag:         <code><a href="../miscellaneous/enumerations.html#ServiceErrorsTags" target="_self" >ServiceErrorsTags</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#ServiceErrorsTags" target="_self" >ServiceErrorsTags</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
             </section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export enum ServiceErrorsTags {
-	wrongServiceUsage &#x3D; &#x27;WrongServiceUsage&#x27;,
-	unauthorized &#x3D; &#x27;Unauthorized&#x27;,
-	alreadyExist &#x3D; &#x27;Conflict&#x27;,
-}
-
-interface IProps {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">interface IProps {
 	message: string;
-	tag: ServiceErrorsTags;
 }
 
-export class ServiceErrors extends Error {
-	readonly tag: ServiceErrorsTags;
-
+export class GuardErrors extends Error {
 	/**
-	 * Erro customizado usado na camada de services, use-o caso seja necessário disparar algum erro rastreável pelos filters
-	 * @param input - Deve conter a mensagem do erro e o identificador em forma de tag usado para mapear os erros na camada dos filters, use os enums vindos de ServiceErrorsTags
+	 * Erro customizado usado na camada de guards, use-o caso seja necessário disparar algum erro rastreável pelos filters
+	 * @param input - Deve conter a mensagem do erro
 	 **/
 	constructor(input: IProps) {
 		super();
 
-		this.name &#x3D; &#x27;Service Error&#x27;;
-		this.tag &#x3D; input.tag;
+		this.name &#x3D; &#x27;Guard Error&#x27;;
 		this.message &#x3D; input.message;
 	}
 }

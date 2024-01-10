@@ -150,11 +150,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#toClass" class="deprecated-name">toClass</a>
+                                <a href="#toClass" >toClass</a>
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#toObject" class="deprecated-name">toObject</a>
+                                <a href="#toObject" >toObject</a>
                             </li>
                         </ul>
                     </td>
@@ -182,14 +182,9 @@
                     <a name="toClass"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span class="deprecated-name"><b>toClass</b></span>
+                        <span ><b>toClass</b></span>
                         <a href="#toClass"><span class="icon ion-ios-link"></span></a>
                     </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
                 </td>
             </tr>
             <tr>
@@ -202,14 +197,16 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/registryAPI/app/mapper/otp.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">src/registryAPI/app/mapper/otp.ts:25</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Método usado para converter um objeto de OTP em classe</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -220,6 +217,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -234,6 +232,12 @@
                                             </td>
 
 
+                                            <td>
+                                                    <ul>
+<li>Deve conter os dados em forma de objeto</li>
+</ul>
+
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -256,14 +260,9 @@
                     <a name="toObject"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span class="deprecated-name"><b>toObject</b></span>
+                        <span ><b>toObject</b></span>
                         <a href="#toObject"><span class="icon ion-ios-link"></span></a>
                     </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
                 </td>
             </tr>
             <tr>
@@ -276,14 +275,16 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">src/registryAPI/app/mapper/otp.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">src/registryAPI/app/mapper/otp.ts:41</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Método usado para converter uma classe de OTP em um objeto</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -294,6 +295,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -308,6 +310,12 @@
                                             </td>
 
 
+                                            <td>
+                                                    <ul>
+<li>Deve conter os dados em forma de classe</li>
+</ul>
+
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -333,15 +341,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Code, Level } from &#x27;@registry:app/entities/VO&#x27;;
-import { OTP } from &#x27;@registry:app/entities/OTP&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OTP } from &#x27;@registry:app/entities/OTP&#x27;;
 
 interface IConvertToObject {
 	id?: string;
-	ttl?: number;
-	userId?: string;
-	requiredLevel: number;
-	condominiumId: string;
+	ttl: number;
+	userId: string;
 	code: string;
 	createdAt?: Date;
 }
@@ -349,25 +354,23 @@ interface IConvertToObject {
 export interface IOTPInObject {
 	id: string;
 	ttl: number;
-	userId?: string;
-	requiredLevel: number;
-	condominiumId: string;
+	userId: string;
 	code: string;
 	createdAt: Date;
 }
 
 export class OTPMapper {
+
 	/**
-	 * @deprecated
+	 * Método usado para converter um objeto de OTP em classe
+	 * @param input - Deve conter os dados em forma de objeto
 	 **/
 	static toClass(input: IConvertToObject): OTP {
 		return new OTP(
 			{
 				ttl: input.ttl,
 				userId: input.userId,
-				requiredLevel: new Level(input.requiredLevel),
-				condominiumId: input.condominiumId,
-				code: new Code(input.code),
+				code: input.code,
 				createdAt: input.createdAt,
 			},
 			input.id,
@@ -375,15 +378,14 @@ export class OTPMapper {
 	}
 
 	/**
-	 * @deprecated
+	 * Método usado para converter uma classe de OTP em um objeto
+	 * @param input - Deve conter os dados em forma de classe
 	 **/
 	static toObject(input: OTP): IOTPInObject {
 		return {
-			id: input.id,
-			requiredLevel: input.requiredLevel.value,
+			id: input.id.value,
 			ttl: input.ttl,
-			condominiumId: input.condominiumId,
-			userId: input.userId,
+			userId: input.userId.value,
 			code: input.code.value,
 			createdAt: input.createdAt,
 		};

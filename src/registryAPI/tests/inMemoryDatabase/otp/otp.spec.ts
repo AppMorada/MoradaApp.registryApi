@@ -3,11 +3,16 @@ import { InMemoryOTP } from '.';
 import { EntitiesEnum } from '@registry:app/entities/entities';
 import { otpFactory } from '@registry:tests/factories/otp';
 import { userFactory } from '@registry:tests/factories/user';
+import { InMemoryContainer } from '../inMemoryContainer';
 
 describe('InMemoryData test: OTP', () => {
+	let container: InMemoryContainer;
 	let sut: InMemoryOTP;
 
-	beforeEach(() => (sut = new InMemoryOTP()));
+	beforeEach(() => {
+		container = new InMemoryContainer();
+		sut = new InMemoryOTP(container);
+	});
 
 	it('should be able to create one OTP', async () => {
 		const user = userFactory();

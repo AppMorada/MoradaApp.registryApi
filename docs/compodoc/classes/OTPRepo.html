@@ -150,15 +150,15 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Abstract</span>
-                                <a href="#create" class="deprecated-name">create</a>
+                                <a href="#create" >create</a>
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
-                                <a href="#delete" class="deprecated-name">delete</a>
+                                <a href="#delete" >delete</a>
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
-                                <a href="#find" class="deprecated-name">find</a>
+                                <a href="#find" >find</a>
                             </li>
                         </ul>
                     </td>
@@ -186,14 +186,9 @@
                     <a name="create"></a>
                     <span class="name">
                             <span class="modifier">Abstract</span>
-                        <span class="deprecated-name"><b>create</b></span>
+                        <span ><b>create</b></span>
                         <a href="#create"><span class="icon ion-ios-link"></span></a>
                     </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
                 </td>
             </tr>
             <tr>
@@ -206,8 +201,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">src/registryAPI/app/repositories/otp.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/registryAPI/app/repositories/otp.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -260,14 +255,9 @@
                     <a name="delete"></a>
                     <span class="name">
                             <span class="modifier">Abstract</span>
-                        <span class="deprecated-name"><b>delete</b></span>
+                        <span ><b>delete</b></span>
                         <a href="#delete"><span class="icon ion-ios-link"></span></a>
                     </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
                 </td>
             </tr>
             <tr>
@@ -280,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">src/registryAPI/app/repositories/otp.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">src/registryAPI/app/repositories/otp.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -334,14 +324,9 @@
                     <a name="find"></a>
                     <span class="name">
                             <span class="modifier">Abstract</span>
-                        <span class="deprecated-name"><b>find</b></span>
+                        <span ><b>find</b></span>
                         <a href="#find"><span class="icon ion-ios-link"></span></a>
                     </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
                 </td>
             </tr>
             <tr>
@@ -354,8 +339,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">src/registryAPI/app/repositories/otp.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">src/registryAPI/app/repositories/otp.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -428,11 +413,8 @@ export interface IDeleteOTPInput {
 }
 
 export abstract class OTPRepo {
-	/** @deprecated */
 	abstract create(input: ICreateOTPInput): Promise&lt;void&gt;;
-	/** @deprecated */
 	abstract find(input: IFindOTPInput): Promise&lt;OTP | undefined&gt;;
-	/** @deprecated */
 	abstract delete(input: IDeleteOTPInput): Promise&lt;void&gt;;
 }
 </code></pre>
