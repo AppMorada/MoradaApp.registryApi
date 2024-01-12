@@ -1,0 +1,1 @@
+export { RegistryAPI } from './registryAPI';

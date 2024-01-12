@@ -1,13 +1,13 @@
 {
   "firestore": {
-    "rules": "src/infra/gateways/saas-collection/firebase/rules/firestore.rules",
-    "indexes": "src/infra/gateways/saas-collection/firebase/firestore/firestore.indexes.json"
+    "rules": "firebase-rules/firestore.rules",
+    "indexes": "firebase-rules/firestore.indexes.json"
   },
   "storage": {
-    "rules": "src/infra/gateways/saas-collection/firebase/rules/storage.rules"
+    "rules": "firebase-rules/storage.rules"
   },
   "database": {
-    "rules": "src/infra/gateways/saas-collection/firebase/rules/database.rules.json"
+    "rules": "firebase-rules/database.rules.json"
   },
   "functions": [
     {

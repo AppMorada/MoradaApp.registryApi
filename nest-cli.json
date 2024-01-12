@@ -3,18 +3,18 @@
   "collection": "@nestjs/schematics",
   "monorepo": false,
   "sourceRoot": "src",
-  "entryFile": "main",
+  "entryFile": "entrypoint",
   "language": "ts",
   "generateOptions": {
     "spec": false
   },
   "compilerOptions": {
-    "manualRestart": true,
-    "tsConfigPath": "./tsconfig.build.json",
-    "webpack": false,
-    "deleteOutDir": true,
-    "assets": [],
-    "watchAssets": false,
-    "plugins": []
+    "typeCheck": true,
+    "builder": {
+      "type": "swc",
+      "options": {
+        "swcrcPath": "./.swcrc"
+      }
+    }
   }
 }

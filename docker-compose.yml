@@ -34,20 +34,13 @@ services:
       - firebase-cache:/root/.cache/firebase
       - firebase-configs:/root/.config
     ports:
-      - 9091:9091 # Firebase Authentication
-      - 5002:5002 # Clound Functions
       - 8081:8081 # Cloud Firestore
-      - 9001:9001 # Realtime Database
-      - 5001:5001 # Firebase Hosting
-      - 8086:8086 # Cloud Pub/Sub
-      - 9191:9191 # Cloud Storage
       - 4001:4001 # Emulator Suite UI
       - 4500:4500 # Logging
       - 4400:4400 # Hub
       - 9229:9229 # Debugger
-    depends_on:
-      - redis_db
-      - db
+      - 3000:3000 # Google cloud functions
+      - 9150:9150
 
 volumes:
   db:

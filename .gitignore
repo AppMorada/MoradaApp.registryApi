@@ -13,6 +13,7 @@ log.db-lock
 .env
 .env.prod
 .env.test
+*.txt
 
 .pnpm-store
 database-debug*.*log
@@ -20,3 +21,4 @@ firestore-debug*.*log
 firebase-debug*.*log
 pubsub-debug*.*log
 ui-debug*.*log
+project-metadata.dev.json

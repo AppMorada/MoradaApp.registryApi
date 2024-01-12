@@ -18,6 +18,7 @@ env:
   NAME_SENDER: ${{secrets.NAME_SENDER}}
   EMAIL_SENDER: ${{secrets.EMAIL_SENDER}}
   PASS_SENDER: ${{secrets.PASS_SENDER}}
+  TFA_TOKEN_KEY: ${{secrets.TFA_TOKEN_KEY}}
   LOGS: ${{secrets.LOGS}}
 
 on:
