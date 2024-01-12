@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { RegistryAPI as RegistryFunction } from './registryAPI';
 
-export const RegistryAPITest = functions
+export const RegistryAPI = functions
 	.region('southamerica-east1')
 	.runWith({
 		maxInstances: 3,
