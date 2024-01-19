@@ -1,5 +1,6 @@
 export enum RedisErrorsTags {
 	alreadyExist = 'Entitie already exists',
+	connectionTimeout = 'Connection timeout',
 }
 
 interface IProps {

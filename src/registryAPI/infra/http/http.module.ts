@@ -8,6 +8,7 @@ import { RedisModule } from '@registry:infra/storages/cache/redis/redis.module';
 import { PrismaModule } from '@registry:infra/storages/db/prisma/prisma.module';
 import { CondominiumModule } from './controllers/condominium/index.module';
 import { UserModule } from './controllers/user/index.module';
+import { HealthModule } from './controllers/health/index.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './controllers/user/index.module';
 				ttl: 30000,
 			},
 		]),
+		HealthModule,
 		CondominiumModule,
 		UserModule,
 	],

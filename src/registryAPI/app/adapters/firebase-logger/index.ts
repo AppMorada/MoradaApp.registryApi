@@ -1,4 +1,4 @@
-import { ILoggerDefaultProps, LoggerAdapter, TECEProps } from '../logger';
+import { ILoggerDefaultProps, LoggerAdapter, TErrProps } from '../logger';
 import { warn, info, debug, error, log } from 'firebase-functions/logger';
 
 export class FirebaseLoggerAdapter implements LoggerAdapter {
@@ -34,7 +34,7 @@ export class FirebaseLoggerAdapter implements LoggerAdapter {
 		});
 	}
 
-	async error({ stack, ...input }: TECEProps): Promise<void> {
+	async error({ stack, ...input }: TErrProps): Promise<void> {
 		const description =
 			process.env.LOGS !== 'SUPRESS_ONLY_STACK'
 				? `${stack ? '\n[STACK] ' + stack : input.description}`
@@ -47,7 +47,7 @@ export class FirebaseLoggerAdapter implements LoggerAdapter {
 		});
 	}
 
-	async critical({ stack, ...input }: TECEProps): Promise<void> {
+	async critical({ stack, ...input }: TErrProps): Promise<void> {
 		const description =
 			process.env.LOGS !== 'SUPRESS_ONLY_STACK'
 				? `${stack ? '\n[STACK] ' + stack : input.description}`
@@ -60,7 +60,7 @@ export class FirebaseLoggerAdapter implements LoggerAdapter {
 		});
 	}
 
-	async emergencial({ stack, ...input }: TECEProps): Promise<void> {
+	async emergencial({ stack, ...input }: TErrProps): Promise<void> {
 		const description =
 			process.env.LOGS !== 'SUPRESS_ONLY_STACK'
 				? `${stack ? '\n[STACK] ' + stack : input.description}`

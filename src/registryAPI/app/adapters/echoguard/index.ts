@@ -1,5 +1,5 @@
 import { Echo } from 'echoguard';
-import { ILoggerDefaultProps, LoggerAdapter, TECEProps } from '../logger';
+import { ILoggerDefaultProps, LoggerAdapter, TErrProps } from '../logger';
 
 export class EchoguardAdapter implements LoggerAdapter {
 	async log(input: ILoggerDefaultProps): Promise<void> {
@@ -22,7 +22,7 @@ export class EchoguardAdapter implements LoggerAdapter {
 		Echo.create({ ...input, level: Echo.LogsLevelEnum.alert });
 	}
 
-	async error({ stack, ...input }: TECEProps): Promise<void> {
+	async error({ stack, ...input }: TErrProps): Promise<void> {
 		const description =
 			process.env.LOGS !== 'SUPRESS_ONLY_STACK'
 				? `${stack ? '\n[STACK] ' + stack : input.description}`
@@ -35,7 +35,7 @@ export class EchoguardAdapter implements LoggerAdapter {
 		});
 	}
 
-	async critical({ stack, ...input }: TECEProps): Promise<void> {
+	async critical({ stack, ...input }: TErrProps): Promise<void> {
 		const description =
 			process.env.LOGS !== 'SUPRESS_ONLY_STACK'
 				? `${stack ? '\n[STACK] ' + stack : input.description}`
@@ -48,7 +48,7 @@ export class EchoguardAdapter implements LoggerAdapter {
 		});
 	}
 
-	async emergencial({ stack, ...input }: TECEProps): Promise<void> {
+	async emergencial({ stack, ...input }: TErrProps): Promise<void> {
 		const description =
 			process.env.LOGS !== 'SUPRESS_ONLY_STACK'
 				? `${stack ? '\n[STACK] ' + stack : input.description}`
