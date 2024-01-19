@@ -9,6 +9,7 @@ import { InviteUserDTO } from '@registry:infra/http/DTO/inviteUser.DTO';
 import { checkClassValidatorErrors } from '@registry:utils/convertValidatorErr';
 import { InviteRepo } from '@registry:app/repositories/invite';
 import { Invite } from '@registry:app/entities/invite';
+import { mapInviteKeyBasedOnLevel } from '@registry:utils/mapInviteKeyBasedOnLevel';
 
 interface IValidate {
 	email: Email;
@@ -24,19 +25,8 @@ export class HmacInviteGuard implements CanActivate {
 		private readonly inviteRepo: InviteRepo,
 	) {}
 
-	private mapKeyBasedOnLevel(input: number | undefined) {
-		switch (input) {
-		case 1:
-			return process.env.INVITE_ADMIN_TOKEN_KEY;
-		case 2:
-			return process.env.INVITE_SUPER_ADMIN_TOKEN_KEY;
-		default:
-			return process.env.INVITE_TOKEN_KEY;
-		}
-	}
-
 	private async validate(input: IValidate): Promise<boolean> {
-		const key = this.mapKeyBasedOnLevel(input.invite.type.value);
+		const key = mapInviteKeyBasedOnLevel(input.invite.type.value);
 
 		const invite = generateStringCodeContent({
 			condominiumId: input.invite.condominiumId,

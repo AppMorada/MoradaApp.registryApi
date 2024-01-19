@@ -23,7 +23,7 @@ if ! test -f ./project-metadata.dev.json || ! test -d ./dist; then
 fi
 
 /bin/echo -e "${INFO_FLAG} Executing the following commands in parallel:"
-/bin/echo -e "  ${BULLET_PT}  ${ORANGE}firestore.sh${RESET_COLOR}"
+# /bin/echo -e "  ${BULLET_PT}  ${ORANGE}firestore.sh${RESET_COLOR}"
 /bin/echo -e "  ${BULLET_PT}  ${ORANGE}build_watch.sh${RESET_COLOR}"
 /bin/echo -e "  ${BULLET_PT}  ${ORANGE}functions.sh${RESET_COLOR}"
 
@@ -35,7 +35,6 @@ REGISTRY_FN_CMD="npm-watch functions:registryapi"
 
 pnpm dotenv -e .env -- \
     concurrently \
-    -n buildproj,firestore,fn:registryapi --timings -c "magenta.bold,yellow.bold,green.bold" \
+    -n buildproj,fn:registryapi --timings -c "magenta.bold,green.bold" \
     "${BUILD_CMD}" \
-    "${FIRESTORE_CMD}" \
     "${REGISTRY_FN_CMD}"
