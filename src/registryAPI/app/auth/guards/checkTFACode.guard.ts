@@ -2,7 +2,7 @@ import { CryptAdapter } from '@registry:app/adapters/crypt';
 import { Email } from '@registry:app/entities/VO';
 import { GuardErrors } from '@registry:app/errors/guard';
 import { UserRepo } from '@registry:app/repositories/user';
-import { LaunchTFADTO } from '@registry:infra/http/DTO/launch-tfa.DTO';
+import { FinishLoginWithTFADTO } from '@registry:infra/http/DTO/finishLoginWithTFA.DTO';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { checkClassValidatorErrors } from '@registry:utils/convertValidatorErr';
 import { plainToClass } from 'class-transformer';
@@ -47,7 +47,7 @@ export class CheckTFACodeGuard implements CanActivate {
 				throw new GuardErrors({ message: 'O código é inválido' });
 			})();
 
-		const body = plainToClass(LaunchTFADTO, req.body);
+		const body = plainToClass(FinishLoginWithTFADTO, req.body);
 		await checkClassValidatorErrors({ body });
 
 		const user = await this.userRepo.find({

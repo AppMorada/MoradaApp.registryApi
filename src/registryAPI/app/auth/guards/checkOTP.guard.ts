@@ -5,7 +5,7 @@ import { Email } from '@registry:app/entities/VO';
 import { GuardErrors } from '@registry:app/errors/guard';
 import { OTPRepo } from '@registry:app/repositories/otp';
 import { UserRepo } from '@registry:app/repositories/user';
-import { LaunchOTPDTO } from '@registry:infra/http/DTO/launchOTP.DTO';
+import { FinishLoginWithOTPDTO } from '@registry:infra/http/DTO/finishLoginWithOTP.DTO';
 import { checkClassValidatorErrors } from '@registry:utils/convertValidatorErr';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
@@ -18,7 +18,7 @@ export class CheckOTPGuard implements CanActivate {
 		private readonly crypt: CryptAdapter,
 	) {}
 
-	private async getContent(body: LaunchOTPDTO, req: Request) {
+	private async getContent(body: FinishLoginWithOTPDTO, req: Request) {
 		const email = new Email(body.email);
 		const user =
 			req?.inMemoryData?.user ??
@@ -56,7 +56,7 @@ export class CheckOTPGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
 
-		const body = plainToClass(LaunchOTPDTO, req.body);
+		const body = plainToClass(FinishLoginWithOTPDTO, req.body);
 		await checkClassValidatorErrors({ body });
 
 		const { otp, hashedOtp, user, email } = await this.getContent(

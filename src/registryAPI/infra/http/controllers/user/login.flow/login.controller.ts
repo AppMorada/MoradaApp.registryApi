@@ -1,4 +1,5 @@
 import {
+	Body,
 	Controller,
 	Get,
 	HttpCode,
@@ -18,6 +19,9 @@ import { GenTFAService } from '@registry:app/services/genTFA.service';
 import { GenOldTFASevice } from '@registry:app/services/genTFACode.old.service';
 import { Request, Response } from 'express';
 import { USER_PREFIX } from '../consts';
+import { StartLoginDTO } from '@registry:infra/http/DTO/login.DTO';
+import { FinishLoginWithOTPDTO } from '@registry:infra/http/DTO/finishLoginWithOTP.DTO';
+import { FinishLoginWithTFADTO } from '@registry:infra/http/DTO/finishLoginWithTFA.DTO';
 
 @Controller(USER_PREFIX)
 export class LoginUserController {
@@ -59,7 +63,11 @@ export class LoginUserController {
 	@UseGuards(CheckPasswordGuard)
 	@Post('/old/launch-tfa')
 	@HttpCode(204)
-	async launchTFAOld(@Req() req: Request) {
+	async launchTFAOld(
+		@Req() req: Request,
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		@Body() _: StartLoginDTO,
+	) {
 		const user = req.inMemoryData.user as User;
 		await this.oldTFA.exec({
 			email: user.email,
@@ -79,6 +87,8 @@ export class LoginUserController {
 	async oldLogin(
 		@Res({ passthrough: true }) res: Response,
 		@Req() req: Request,
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		@Body() _: FinishLoginWithOTPDTO,
 	) {
 		const user = req.inMemoryData.user as User;
 		return await this.processTokens(res, user);
@@ -93,7 +103,11 @@ export class LoginUserController {
 	@UseGuards(CheckPasswordGuard)
 	@Post('launch-tfa')
 	@HttpCode(204)
-	async launchTFA(@Req() req: Request) {
+	async launchTFA(
+		@Req() req: Request,
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		@Body() _: StartLoginDTO,
+	) {
 		const user = req.inMemoryData.user as User;
 		await this.genTFA.exec({
 			email: user.email,
@@ -113,6 +127,8 @@ export class LoginUserController {
 	async login(
 		@Res({ passthrough: true }) res: Response,
 		@Req() req: Request,
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		@Body() _: FinishLoginWithTFADTO,
 	) {
 		const user = req.inMemoryData.user as User;
 		return await this.processTokens(res, user);

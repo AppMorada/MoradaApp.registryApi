@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, Length, MaxLength } from 'class-validator';
 
-export class LaunchOTPDTO {
+export class FinishLoginWithOTPDTO {
 	@ApiProperty()
 	@IsString({
 		message: 'O campo "email" precisa ser uma string',

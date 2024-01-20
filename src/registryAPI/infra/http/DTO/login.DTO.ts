@@ -3,7 +3,7 @@ import { userDTORules } from '@registry:app/entities/user';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 
 /** Usado para validar o corpo das requisições de login */
-export class LoginDTO {
+export class StartLoginDTO {
 	@ApiProperty()
 	@IsString({
 		message: 'O campo "email" precisa conter caracteres válidos',
