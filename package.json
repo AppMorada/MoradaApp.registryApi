@@ -76,7 +76,7 @@
 		"firebase-admin": "^11.11.1",
 		"firebase-functions": "^4.5.0",
 		"ioredis": "^5.3.2",
-		"nodemailer": "^6.9.7",
+		"nodemailer": "^6.9.8",
 		"prisma": "^5.7.0",
 		"reflect-metadata": "^0.1.14",
 		"rxjs": "^7.8.1",
