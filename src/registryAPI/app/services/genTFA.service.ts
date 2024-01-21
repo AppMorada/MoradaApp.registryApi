@@ -1,10 +1,11 @@
 import { CryptAdapter } from '@registry:app/adapters/crypt';
-import { EmailAdapter } from '@registry:app/adapters/email';
 import { Email, UUID } from '@registry:app/entities/VO';
 import { Injectable } from '@nestjs/common';
 import { UserRepo } from '@registry:app/repositories/user';
 import { generateStringCodeContent } from '@registry:utils/generateStringCodeContent';
 import { IService } from './_IService';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EVENT_ID, EventsTypes } from '@registry:infra/events/ids';
 
 interface IProps {
 	email: Email;
@@ -15,9 +16,9 @@ interface IProps {
 @Injectable()
 export class GenTFAService implements IService {
 	constructor(
-		private readonly email: EmailAdapter,
 		private readonly userRepo: UserRepo,
 		private readonly crypt: CryptAdapter,
+		private readonly eventEmitter: EventEmitter2,
 	) {}
 
 	private async genCode(input: UUID) {
@@ -43,13 +44,16 @@ export class GenTFAService implements IService {
 
 	async exec(input: IProps) {
 		const code = await this.genCode(input.userId);
-		await this.email.send({
-			from: `${process.env.NAME_SENDER} <${process.env.EMAIL_SENDER}>`,
+
+		const payload: EventsTypes.Email.ISendProps = {
 			to: input.email.value,
 			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
 				<a href="#">https://[EXEMPLO DE DOMÍNIO]/[PÁGINA DO FRONT PARA VALIDAR O CÓDIGO]/${code}</a>`,
-		});
+		};
+		this.eventEmitter.emit(EVENT_ID.EMAIL.SEND, payload);
+
+		return { code };
 	}
 }

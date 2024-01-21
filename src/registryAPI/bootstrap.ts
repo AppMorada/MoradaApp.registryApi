@@ -24,6 +24,8 @@ import { PrismaErrorFilter } from '@registry:infra/http/filters/errors/prisma.fi
 import { RedisService } from '@registry:infra/storages/cache/redis/redis.service';
 import { PrismaService } from '@registry:infra/storages/db/prisma/prisma.service';
 import { RedisErrorFilter } from '@registry:infra/http/filters/errors/redis-login.filter';
+import { HealthCheckErrorFilter } from '@registry:infra/http/filters/errors/healthCheckError.filter';
+import { AxiosCheckErrorFilter } from '@registry:infra/http/filters/errors/serviceUnavailableException.filter';
 
 interface IProps {
 	requestListener: Express;
@@ -37,6 +39,9 @@ export class RegistryAPIBootstrap {
 		this.app = await NestFactory.create<NestExpressApplication>(
 			AppModule,
 			new ExpressAdapter(requestListener),
+			{
+				bufferLogs: true,
+			},
 		);
 
 		this.app.enableShutdownHooks();
@@ -68,6 +73,8 @@ export class RegistryAPIBootstrap {
 
 	private setGlobalFilters() {
 		this.app.useGlobalFilters(new GenericErrorFilter(this.logger));
+		this.app.useGlobalFilters(new HealthCheckErrorFilter());
+		this.app.useGlobalFilters(new AxiosCheckErrorFilter(this.logger));
 		this.app.useGlobalFilters(new RedisErrorFilter(this.logger));
 		this.app.useGlobalFilters(new PrismaErrorFilter(this.logger));
 		this.app.useGlobalFilters(new DatabaseCustomErrorFilter(this.logger));

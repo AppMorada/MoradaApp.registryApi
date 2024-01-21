@@ -24,6 +24,6 @@ import { InvitePrismaRepo } from './repositories/invite.service';
 			useClass: UserPrismaRepo,
 		},
 	],
-	exports: [InviteRepo, CondominiumRepo, UserRepo],
+	exports: [InviteRepo, CondominiumRepo, UserRepo, PrismaService],
 })
 export class PrismaModule {}

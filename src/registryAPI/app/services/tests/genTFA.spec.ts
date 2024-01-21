@@ -1,26 +1,66 @@
 import { CryptSpy } from '@registry:tests/adapters/cryptSpy';
-import { EmailSpy } from '@registry:tests/adapters/emailSpy';
 import { GenTFAService } from '../genTFA.service';
 import { userFactory } from '@registry:tests/factories/user';
 import { InMemoryUser } from '@registry:tests/inMemoryDatabase/user';
 import { InMemoryContainer } from '@registry:tests/inMemoryDatabase/inMemoryContainer';
 import { condominiumRelUserFactory } from '@registry:tests/factories/condominiumRelUser';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserRepo } from '@registry:app/repositories/user';
+import { CryptAdapter } from '@registry:app/adapters/crypt';
+import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
+import { EVENT_ID, EventsTypes } from '@registry:infra/events/ids';
 
 describe('Gen TFA Service', () => {
 	let genTFA: GenTFAService;
-
-	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUser;
-	let emailAdapter: EmailSpy;
+	let app: TestingModule;
 	let cryptAdapter: CryptSpy;
+	let userRepo: InMemoryUser;
+	let eventEmitter: EventEmitter2;
 
-	beforeEach(() => {
-		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
-		emailAdapter = new EmailSpy();
-		cryptAdapter = new CryptSpy();
+	beforeEach(async () => {
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		EventEmitter2.prototype.emit = jest.fn(
+			(..._: Parameters<typeof EventEmitter2.prototype.emit>) => true,
+		);
 
-		genTFA = new GenTFAService(emailAdapter, userRepo, cryptAdapter);
+		app = await Test.createTestingModule({
+			imports: [
+				EventEmitterModule.forRoot({
+					wildcard: false,
+					delimiter: '.',
+					newListener: false,
+					removeListener: false,
+					maxListeners: 10,
+					verboseMemoryLeak: true,
+					ignoreErrors: false,
+				}),
+			],
+			providers: [
+				{
+					provide: UserRepo,
+					useFactory: () => {
+						const container = new InMemoryContainer();
+						return new InMemoryUser(container);
+					},
+				},
+				{
+					provide: CryptAdapter,
+					useClass: CryptSpy,
+				},
+				GenTFAService,
+			],
+		}).compile();
+
+		cryptAdapter = app.get(CryptAdapter);
+		userRepo = app.get(UserRepo);
+		genTFA = app.get(GenTFAService);
+		eventEmitter = app.get(EventEmitter2);
+
+		eventEmitter.once(EVENT_ID.EMAIL.SEND, () => true);
+	});
+
+	afterEach(async () => {
+		await app.close();
 	});
 
 	it('should be able to gen a TFA', async () => {
@@ -29,13 +69,24 @@ describe('Gen TFA Service', () => {
 
 		await userRepo.create({ user, condominiumRelUser });
 
-		await genTFA.exec({
+		const { code } = await genTFA.exec({
 			email: user.email,
 			userId: user.id,
 		});
 
 		expect(userRepo.calls.create).toEqual(1);
+
+		const payload: EventsTypes.Email.ISendProps = {
+			to: user.email.value,
+			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,
+			body: `<h1>Seja bem-vindo!</h1>
+				<p>Não compartilhe este código com ninguém</p>
+				<a href="#">https://[EXEMPLO DE DOMÍNIO]/[PÁGINA DO FRONT PARA VALIDAR O CÓDIGO]/${code}</a>`,
+		};
+		expect(eventEmitter.emit).toHaveBeenCalledWith(
+			EVENT_ID.EMAIL.SEND,
+			payload,
+		);
 		expect(cryptAdapter.calls.hashWithHmac).toEqual(1);
-		expect(emailAdapter.calls.send).toEqual(1);
 	});
 });
