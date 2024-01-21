@@ -3,7 +3,7 @@ import { userDTORules } from '@registry:app/entities/user';
 import { IsEmail, IsString, MaxLength } from 'class-validator';
 
 /** Usado para validar o corpo das requisições de inicialização do processo de autenticação de dois fatores */
-export class LaunchTFADTO {
+export class FinishLoginWithTFADTO {
 	@ApiProperty()
 	@IsString({
 		message: 'O campo "email" precisa conter caracteres válidos',

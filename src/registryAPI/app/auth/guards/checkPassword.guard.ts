@@ -2,7 +2,7 @@ import { CryptAdapter } from '@registry:app/adapters/crypt';
 import { Email, Password } from '@registry:app/entities/VO';
 import { GuardErrors } from '@registry:app/errors/guard';
 import { UserRepo } from '@registry:app/repositories/user';
-import { LoginDTO } from '@registry:infra/http/DTO/login.DTO';
+import { StartLoginDTO } from '@registry:infra/http/DTO/login.DTO';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { checkClassValidatorErrors } from '@registry:utils/convertValidatorErr';
 import { plainToClass } from 'class-transformer';
@@ -31,7 +31,7 @@ export class CheckPasswordGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
 
-		const body = plainToClass(LoginDTO, req.body);
+		const body = plainToClass(StartLoginDTO, req.body);
 		await checkClassValidatorErrors({ body });
 
 		const email = new Email(body.email);

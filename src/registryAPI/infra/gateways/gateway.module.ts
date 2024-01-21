@@ -1,7 +1,8 @@
 import { CepGateway } from '@registry:app/gateways/CEP.gateway';
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ViacepGateway } from './APIs/viacep.gateway';
 
+@Global()
 @Module({
 	providers: [
 		{

@@ -34,13 +34,12 @@ services:
       - firebase-cache:/root/.cache/firebase
       - firebase-configs:/root/.config
     ports:
-      - 8081:8081 # Cloud Firestore
-      - 4001:4001 # Emulator Suite UI
-      - 4500:4500 # Logging
-      - 4400:4400 # Hub
+      # - 8081:8081 # Cloud Firestore
+      # - 4001:4001 # Emulator Suite UI
+      # - 4500:4500 # Logging
+      # - 4400:4400 # Hub
       - 9229:9229 # Debugger
       - 3000:3000 # Google cloud functions
-      - 9150:9150
 
 volumes:
   db:

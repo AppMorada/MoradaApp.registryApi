@@ -1,4 +1,5 @@
 export enum LayersEnum {
+	healthCheck = 'Health-Check-layer',
 	start = 'Start-layer',
 	interceptors = 'Interceptor-Layer',
 	services = 'Service-Layer',
@@ -19,7 +20,7 @@ export interface ILoggerDefaultProps {
 	layer: LayersEnum;
 }
 
-export type TECEProps = ILoggerDefaultProps & { stack?: string };
+export type TErrProps = ILoggerDefaultProps & { stack?: string };
 
 export abstract class LoggerAdapter {
 	abstract log(input: ILoggerDefaultProps): Promise<void>;
@@ -27,7 +28,7 @@ export abstract class LoggerAdapter {
 	abstract debug(input: ILoggerDefaultProps): Promise<void>;
 	abstract warn(input: ILoggerDefaultProps): Promise<void>;
 	abstract alert(input: ILoggerDefaultProps): Promise<void>;
-	abstract error(input: TECEProps): Promise<void>;
-	abstract critical(input: TECEProps): Promise<void>;
-	abstract emergencial(input: TECEProps): Promise<void>;
+	abstract error(input: TErrProps): Promise<void>;
+	abstract critical(input: TErrProps): Promise<void>;
+	abstract emergencial(input: TErrProps): Promise<void>;
 }
