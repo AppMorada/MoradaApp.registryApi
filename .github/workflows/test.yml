@@ -24,33 +24,21 @@ env:
 on:
   push:
     branches:
-      - "perf/**"
-      - "feat/**"
-      - "chore/**"
-      - "fix/**"
-      - "build/**"
-      - "test/**"
+      - "feature/**"
+      - "bugfix/**"
+      - "release/**"
+      - "hotfix/**"
+      - "support/**"
       - "dependabot/**"
-      - "docs/**"
-      - "refactor/**"
-      - "style/**"
-      - "ci/**"
-      - "revert/**"
       - "!main"
   pull_request:
     branches:
-      - "perf/**"
-      - "feat/**"
-      - "chore/**"
-      - "fix/**"
-      - "build/**"
-      - "test/**"
+      - "feature/**"
+      - "bugfix/**"
+      - "release/**"
+      - "hotfix/**"
+      - "support/**"
       - "dependabot/**"
-      - "docs/**"
-      - "refactor/**"
-      - "style/**"
-      - "ci/**"
-      - "revert/**"
       - "!main"
 
 jobs:
