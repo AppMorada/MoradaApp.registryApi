@@ -1,7 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { HEALTH_PREFIX } from './consts';
 import {
-	DiskHealthIndicator,
 	HealthCheck,
 	HealthCheckService,
 	HttpHealthIndicator,
@@ -16,7 +15,6 @@ import { RedisService } from '@registry:infra/storages/cache/redis/redis.service
 export class HealthController {
 	constructor(
 		private readonly health: HealthCheckService,
-		private readonly disk: DiskHealthIndicator,
 		private readonly mem: MemoryHealthIndicator,
 		private readonly http: HttpHealthIndicator,
 		private readonly prismaIndicator: PrismaHealthIndicator,
@@ -29,16 +27,13 @@ export class HealthController {
 	@HealthCheck()
 	check() {
 		const repo = 'https://github.com/AppMorada/MoradaApp.Api';
+		const max_mem_heap = parseInt(`${process.env.MAX_MEMORY_HEAP}`);
+		const max_mem_rss = parseInt(`${process.env.MAX_MEMORY_RSS}`);
 
 		return this.health.check([
 			() => this.http.pingCheck('http', repo),
-			() =>
-				this.disk.checkStorage('disk_storage', {
-					path: '/',
-					thresholdPercent: 0.8,
-				}),
-			() => this.mem.checkHeap('memory_heap', 150 * 1024 * 1024),
-			() => this.mem.checkHeap('memory_rss', 270 * 1024 * 1024),
+			() => this.mem.checkHeap('memory_heap', max_mem_heap),
+			() => this.mem.checkHeap('memory_rss', max_mem_rss),
 			() =>
 				this.prismaIndicator.pingCheck(
 					'prisma_client',
