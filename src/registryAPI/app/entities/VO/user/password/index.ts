@@ -13,7 +13,7 @@ export class Password implements ValueObject<Password, string> {
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Valor incorreto de Password',
+				message: `A quantidade de caracteres da senha deve ser menor que ${userDTORules.password.maxLength} e maior que ${userDTORules.password.minLength}`,
 			});
 	}
 

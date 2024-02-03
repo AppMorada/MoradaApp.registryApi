@@ -10,7 +10,8 @@ export class UUID implements ValueObject<UUID, string> {
 			/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 		if (!input.match(regexp))
 			throw new EntitieError({
-				message: 'UUID não está formatado corretamente',
+				message:
+					'O número de identificação não está formatado corretamente',
 				entity: EntitiesEnum.vo,
 			});
 

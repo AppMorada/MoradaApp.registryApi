@@ -1,20 +1,11 @@
-import {
-	BadRequestException,
-	Body,
-	Controller,
-	Post,
-	Req,
-	Res,
-	UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { LayersEnum, LoggerAdapter } from '@registry:app/adapters/logger';
+import { LoggerAdapter } from '@registry:app/adapters/logger';
 import { HmacInviteGuard } from '@registry:app/auth/guards/hmac-invite.guard';
 import { ApartmentNumber, Block, Email } from '@registry:app/entities/VO';
 import { ValueObject } from '@registry:app/entities/entities';
 import { Invite } from '@registry:app/entities/invite';
 import { User } from '@registry:app/entities/user';
-import { ServiceErrors } from '@registry:app/errors/services';
 import { UserMapper } from '@registry:app/mapper/user';
 import { CreateTokenService } from '@registry:app/services/createToken.service';
 import { CreateUserService } from '@registry:app/services/createUser.service';
@@ -23,6 +14,7 @@ import { CreateUserDTO } from '@registry:infra/http/DTO/createUser.DTO';
 import { InviteUserDTO } from '@registry:infra/http/DTO/inviteUser.DTO';
 import { Request, Response } from 'express';
 import { USER_PREFIX } from '../consts';
+import { validateObligatoryFieldsForCommonUser } from '@registry:infra/http/DTO/conditionalsValidations/commonUserCreation';
 
 @Controller(USER_PREFIX)
 export class CreateUserController {
@@ -70,26 +62,11 @@ export class CreateUserController {
 		@Body() body: CreateUserDTO,
 	) {
 		const invite = req.inMemoryData.invite as Invite;
-		// PASSAR PARA OUTRO DOMÍNIO
-		if (
-			(!body.apartmentNumber && invite.type.value === 0) ||
-			(!body.block && invite.type.value === 0)
-		) {
-			this.logger.error({
-				name: 'Omissão de campos',
-				layer: LayersEnum.dto,
-				description:
-					'apartmentNumber e block não devem ser omitidos em usuários comuns',
-			});
-
-			throw new BadRequestException({
-				message: [
-					'apartmentNumber e block não devem ser omitidos em usuários comuns',
-				],
-				error: 'Bad Request',
-				statusCode: 400,
-			});
-		}
+		validateObligatoryFieldsForCommonUser({
+			invite,
+			body,
+			logger: this.logger,
+		});
 
 		const { apartmentNumber, block, ...coreInfo } = body;
 		const user = UserMapper.toClass({ ...coreInfo });
@@ -115,14 +92,7 @@ export class CreateUserController {
 		@Res({ passthrough: true }) res: Response,
 		@Body() body: InviteUserDTO,
 	) {
-		await this.genInvite
-			.reexec({ email: new Email(body.email) })
-			.catch((err) => {
-				if (err instanceof ServiceErrors) throw err;
-
-				res.status(204);
-			});
-
+		await this.genInvite.reexec({ email: new Email(body.email) });
 		res.status(204);
 	}
 }

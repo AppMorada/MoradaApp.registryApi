@@ -13,7 +13,8 @@ export class Level implements ValueObject<Level, number> {
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Valor incorreto de Level',
+				message:
+					'O nível hierarquico do usuário não esta nos valores aceitos',
 			});
 	}
 

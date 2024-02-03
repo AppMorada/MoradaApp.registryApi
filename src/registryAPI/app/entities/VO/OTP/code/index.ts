@@ -7,7 +7,8 @@ export class Code implements ValueObject<Code, string> {
 		if (_value.length > 100 || _value.length < 6)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Incorrect range of length in Code value.',
+				message:
+					'A quantidade de caracteres do código deve ser menor que 100 e maior que 6',
 			});
 	}
 

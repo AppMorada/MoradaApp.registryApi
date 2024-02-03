@@ -13,7 +13,8 @@ export class UUIDGroup implements ValueObject<UUIDGroup, Set<string>> {
 		for (const item of input) {
 			if (!UUID.check(item))
 				throw new EntitieError({
-					message: 'Coleção de UUIDs possui valores incorretos',
+					message:
+						'A coleção de números de identificação possui valores incorretos',
 					entity: EntitiesEnum.vo,
 				});
 		}

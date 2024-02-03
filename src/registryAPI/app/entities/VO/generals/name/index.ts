@@ -11,7 +11,7 @@ export class Name implements ValueObject<Name, string> {
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Valor incorreto de Name',
+				message: `A quantidade de caracteres do nome deve ser menor que ${userDTORules.name.maxLength} e maior que ${userDTORules.name.minLength}`,
 			});
 	}
 

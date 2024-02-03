@@ -20,12 +20,19 @@ export class CheckOTPGuard implements CanActivate {
 
 	private async getContent(body: FinishLoginWithOTPDTO, req: Request) {
 		const email = new Email(body.email);
-		const user =
-			req?.inMemoryData?.user ??
-			(await this.userRepo.find({
-				key: email,
-				safeSearch: true,
-			}));
+		const fetchUser = async () => {
+			return await this.userRepo
+				.find({
+					key: email,
+					safeSearch: true,
+				})
+				.catch(() => {
+					throw new GuardErrors({
+						message: 'Usuário não existe',
+					});
+				});
+		};
+		const user = req?.inMemoryData?.user ?? (await fetchUser());
 
 		const otp = new OTP({
 			userId: user.id.value,

@@ -37,7 +37,13 @@ export class CheckPasswordGuard implements CanActivate {
 		const email = new Email(body.email);
 		const password = new Password(body.password);
 
-		const user = await this.userRepo.find({ key: email, safeSearch: true });
+		const user = await this.userRepo
+			.find({ key: email, safeSearch: true })
+			.catch(() => {
+				throw new GuardErrors({
+					message: 'Usuário não existe',
+				});
+			});
 		await this.validate(password, user.password.value);
 
 		req.inMemoryData = {

@@ -19,8 +19,8 @@ export class ThrottlerErrorFilter implements ExceptionFilter {
 			stack: exception.stack,
 		});
 
-		return response.status(400).json({
-			statusCode: 400,
+		return response.status(429).json({
+			statusCode: 429,
 			name: 'Muitas requisições',
 			message: 'Muitas requisições realizadas',
 		});
