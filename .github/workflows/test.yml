@@ -64,7 +64,7 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Generate Content Prisma
+      - name: Generate Prisma content
         run: pnpm prisma generate
       - name: Run unit tests
         run: pnpm run test

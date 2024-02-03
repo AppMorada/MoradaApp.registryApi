@@ -75,6 +75,9 @@ jobs:
       - name: Install firebase tools
         run: pnpm install -g firebase-tools
 
+      - name: Generate Prisma content
+        run: pnpm prisma generate
+
       - name: Prepare Google Application Credentials
         run: |
           echo "${{secrets.GOOGLE_APP_CREDENTIALS_BASE64}}" | base64 --decode > "google-application-credentials.json"
