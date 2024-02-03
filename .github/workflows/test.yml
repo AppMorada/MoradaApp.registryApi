@@ -24,6 +24,7 @@ env:
 on:
   push:
     branches:
+      - "develop"
       - "feature/**"
       - "bugfix/**"
       - "release/**"
@@ -33,6 +34,7 @@ on:
       - "!main"
   pull_request:
     branches:
+      - "develop"
       - "feature/**"
       - "bugfix/**"
       - "release/**"
