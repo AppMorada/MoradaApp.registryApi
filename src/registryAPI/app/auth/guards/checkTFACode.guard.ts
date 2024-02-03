@@ -50,10 +50,16 @@ export class CheckTFACodeGuard implements CanActivate {
 		const body = plainToClass(FinishLoginWithTFADTO, req.body);
 		await checkClassValidatorErrors({ body });
 
-		const user = await this.userRepo.find({
-			key: new Email(body.email),
-			safeSearch: true,
-		});
+		const user = await this.userRepo
+			.find({
+				key: new Email(body.email),
+				safeSearch: true,
+			})
+			.catch(() => {
+				throw new GuardErrors({
+					message: 'Usuário não existe',
+				});
+			});
 		const validationRes = await this.validate(user, token);
 		if (!validationRes)
 			throw new GuardErrors({

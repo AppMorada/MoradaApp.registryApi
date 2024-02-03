@@ -13,7 +13,7 @@ export class ApartmentNumber implements ValueObject<ApartmentNumber, number> {
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Valor incorreto de ApartmentNumber',
+				message: `O número do apartamento deve ser menor que ${condominiumRelUserDTORules.apartmentNumber.maxLength} e maior que ${condominiumRelUserDTORules.apartmentNumber.minLength}`,
 			});
 	}
 

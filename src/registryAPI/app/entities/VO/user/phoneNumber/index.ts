@@ -13,7 +13,7 @@ export class PhoneNumber implements ValueObject<PhoneNumber, string> {
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Valor incorreto de PhoneNumber',
+				message: `A quantidade de caracteres do número de telefone deve ser menor que ${userDTORules.phoneNumber.maxLength} e maior que ${userDTORules.phoneNumber.minLength}`,
 			});
 	}
 

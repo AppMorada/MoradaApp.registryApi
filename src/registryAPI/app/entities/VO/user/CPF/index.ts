@@ -48,7 +48,7 @@ export class CPF implements ValueObject<CPF, string> {
 		if (toValidate !== validator)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Invalid CPF.',
+				message: 'Valor incorreto de CPF',
 			});
 
 		if (this._value.length !== userDTORules.CPF.minLength)

@@ -14,7 +14,7 @@ export class Num implements ValueObject<Num, number> {
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Valor incorreto Num',
+				message: `O número da rua do condomínio deve ser menor que ${condominiumDTORules.num.maxLength} e maior que ${condominiumDTORules.num.minLength}`,
 			});
 	}
 

@@ -6,8 +6,6 @@ import { userFactory } from '@registry:tests/factories/user';
 import { condominiumRelUserFactory } from '@registry:tests/factories/condominiumRelUser';
 import { otpFactory } from '@registry:tests/factories/otp';
 import { createMockExecutionContext } from '@registry:tests/guards/executionContextSpy';
-import { InMemoryError } from '@registry:tests/errors/inMemoryError';
-import { EntitiesEnum } from '@registry:app/entities/entities';
 import { CryptSpy } from '@registry:tests/adapters/cryptSpy';
 import { GuardErrors } from '@registry:app/errors/guard';
 
@@ -69,9 +67,8 @@ describe('Check OTP Guard test', () => {
 		});
 
 		await expect(checkOTPGuard.canActivate(context)).rejects.toThrow(
-			new InMemoryError({
-				entity: EntitiesEnum.user,
-				message: 'User not found',
+			new GuardErrors({
+				message: 'Usuário não existe',
 			}),
 		);
 

@@ -10,7 +10,7 @@ export class Block implements ValueObject<Block, string> {
 		if (_value.length > condominiumRelUserDTORules.block.maxLength)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Valor incorreto de Block',
+				message: `O número de caracteres do bloco do apartamento deve ser menor que ${condominiumRelUserDTORules.block.maxLength}`,
 			});
 	}
 

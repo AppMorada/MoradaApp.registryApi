@@ -10,7 +10,7 @@ export class Email implements ValueObject<Email, string> {
 		if (_value.length > userDTORules.email.maxLength)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: 'Valor incorreto de Email',
+				message: 'Valor incorreto de email',
 			});
 	}
 

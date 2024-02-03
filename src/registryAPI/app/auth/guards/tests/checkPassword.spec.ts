@@ -6,8 +6,6 @@ import { CheckPasswordGuard } from '../checkPassword.guard';
 import { userFactory } from '@registry:tests/factories/user';
 import { condominiumRelUserFactory } from '@registry:tests/factories/condominiumRelUser';
 import { createMockExecutionContext } from '@registry:tests/guards/executionContextSpy';
-import { InMemoryError } from '@registry:tests/errors/inMemoryError';
-import { EntitiesEnum } from '@registry:app/entities/entities';
 import { GuardErrors } from '@registry:app/errors/guard';
 
 describe('Password guard test', () => {
@@ -87,9 +85,8 @@ describe('Password guard test', () => {
 		});
 
 		await expect(checkPasswordGuard.canActivate(context)).rejects.toThrow(
-			new InMemoryError({
-				entity: EntitiesEnum.user,
-				message: 'User not found',
+			new GuardErrors({
+				message: 'Usuário não existe',
 			}),
 		);
 	});

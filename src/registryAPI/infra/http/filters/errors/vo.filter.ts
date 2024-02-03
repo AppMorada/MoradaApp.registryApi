@@ -23,8 +23,7 @@ export class EntitieErrorFilter implements ExceptionFilter {
 
 			return response.status(400).json({
 				statusCode: 400,
-				message:
-					'Valores malformados foram detectados, certifique-se de que o conteúdo possui uma boa integridade',
+				message: [exception.message],
 			});
 		}
 
