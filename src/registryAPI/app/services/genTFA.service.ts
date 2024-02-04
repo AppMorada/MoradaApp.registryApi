@@ -45,12 +45,13 @@ export class GenTFAService implements IService {
 	async exec(input: IProps) {
 		const code = await this.genCode(input.userId);
 
+		const frontendUrl = String(process.env.FRONT_END_AUTH_URL);
 		const payload: EventsTypes.Email.ISendProps = {
 			to: input.email.value,
 			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
-				<a href="#">https://[EXEMPLO DE DOMÍNIO]/[PÁGINA DO FRONT PARA VALIDAR O CÓDIGO]/${code}</a>`,
+				<a href="${frontendUrl}${code}">${frontendUrl}${code}</a>`,
 		};
 		this.eventEmitter.emit(EVENT_ID.EMAIL.SEND, payload);
 

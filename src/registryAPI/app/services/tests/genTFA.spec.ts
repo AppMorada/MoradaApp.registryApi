@@ -76,12 +76,13 @@ describe('Gen TFA Service', () => {
 
 		expect(userRepo.calls.create).toEqual(1);
 
+		const frontendUrl = String(process.env.FRONT_END_URL);
 		const payload: EventsTypes.Email.ISendProps = {
 			to: user.email.value,
 			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
-				<a href="#">https://[EXEMPLO DE DOMÍNIO]/[PÁGINA DO FRONT PARA VALIDAR O CÓDIGO]/${code}</a>`,
+				<a href="${frontendUrl}${code}">${frontendUrl}${code}</a>`,
 		};
 		expect(eventEmitter.emit).toHaveBeenCalledWith(
 			EVENT_ID.EMAIL.SEND,
