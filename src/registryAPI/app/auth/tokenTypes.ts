@@ -1,3 +1,7 @@
+export const authHeaders = {
+	userToken: 'user-token',
+};
+
 export enum TokenType {
 	accessToken = 'Access Token',
 	refreshToken = 'Refresh Token',

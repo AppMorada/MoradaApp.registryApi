@@ -9,6 +9,7 @@ import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 import { generateStringCodeContent } from '@registry:utils/generateStringCodeContent';
 import { User } from '@registry:app/entities/user';
+import { authHeaders } from '../tokenTypes';
 
 /** Usado para validar o códigos gerados nos fluxos de autenticação de dois fatores */
 @Injectable()
@@ -41,11 +42,11 @@ export class CheckTFACodeGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
 
-		const token =
-			req.headers?.authorization?.split('Bearer ')[1] ??
-			(function () {
-				throw new GuardErrors({ message: 'O código é inválido' });
-			})();
+		const token = req?.headers?.[authHeaders.userToken]
+			? String(req?.headers[authHeaders.userToken]).split(' ')[1]
+			: '';
+
+		if (!token) throw new GuardErrors({ message: 'O código é inválido' });
 
 		const body = plainToClass(FinishLoginWithTFADTO, req.body);
 		await checkClassValidatorErrors({ body });

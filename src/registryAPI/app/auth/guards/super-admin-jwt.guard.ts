@@ -6,7 +6,7 @@ import {
 	Injectable,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IAccessTokenBody } from '../tokenTypes';
+import { IAccessTokenBody, authHeaders } from '../tokenTypes';
 import { UserRepo } from '@registry:app/repositories/user';
 import { UUID } from '@registry:app/entities/VO';
 import { GuardErrors } from '@registry:app/errors/guard';
@@ -34,7 +34,9 @@ export class SuperAdminJwt implements CanActivate {
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
-		const rawToken = req?.headers?.authorization;
+		const rawToken = req?.headers?.[authHeaders.userToken]
+			? String(req?.headers[authHeaders.userToken])
+			: '';
 
 		const condominiumId = req.params?.condominiumId;
 		if (!condominiumId)

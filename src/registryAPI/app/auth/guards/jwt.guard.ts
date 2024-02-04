@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepo } from '@registry:app/repositories/user';
-import { IAccessTokenBody } from '../tokenTypes';
+import { IAccessTokenBody, authHeaders } from '../tokenTypes';
 import { GuardErrors } from '@registry:app/errors/guard';
 import { Request } from 'express';
 import { UUID } from '@registry:app/entities/VO';
@@ -28,7 +28,9 @@ export class JwtGuard implements CanActivate {
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
-		const rawToken = req?.headers?.authorization;
+		const rawToken = req?.headers?.[authHeaders.userToken]
+			? String(req?.headers[authHeaders.userToken])
+			: '';
 
 		const token = rawToken?.split(' ')[1];
 		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
