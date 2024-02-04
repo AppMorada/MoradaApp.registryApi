@@ -77,12 +77,13 @@ describe('Gen invite test', () => {
 		expect(inviteRepo.calls.create).toEqual(1);
 		expect(crypt.calls.hashWithHmac).toEqual(1);
 
+		const frontendUrl = String(process.env.FRONT_END_INVITE_URL);
 		const payload: EventsTypes.Email.ISendProps = {
 			to: user.email.value,
 			subject: `${process.env.PROJECT_NAME} - Convite para o condomínio`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este link com ninguém</p>
-				<a href="#">https://[EXEMPLO DE DOMÍNIO]/[PÁGINA DO FRONT PARA VALIDAR O CONVITE]/${hashedValue}</a>`,
+				<a href="${frontendUrl}${hashedValue}">${frontendUrl}${hashedValue}</a>`,
 		};
 		expect(eventEmitter.emit).toHaveBeenCalledWith(
 			EVENT_ID.EMAIL.SEND,
