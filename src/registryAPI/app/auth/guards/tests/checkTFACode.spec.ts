@@ -54,7 +54,7 @@ describe('Check TFA Code guard test', () => {
 		const code = await genCode(user);
 		const context = createMockExecutionContext({
 			headers: {
-				'user-token': `Bearer ${code}`,
+				authorization: `Bearer ${code}`,
 			},
 			body: {
 				email: user.email.value,
@@ -89,7 +89,7 @@ describe('Check TFA Code guard test', () => {
 
 		const context = createMockExecutionContext({
 			headers: {
-				'user-token': `Bearer ${btoa(
+				authorization: `Bearer ${btoa(
 					JSON.stringify({ msg: 'wrong' }),
 				)}.${btoa(JSON.stringify({ msg: 'token' }))}`,
 			},
