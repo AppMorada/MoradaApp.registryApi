@@ -47,12 +47,13 @@ export class GenInviteService implements IService {
 	}
 
 	private sendEmail(input: Pick<IProps, 'email'> & { inviteAsHash: string }) {
+		const frontendUrl = String(process.env.FRONT_END_INVITE_URL);
 		const payload: EventsTypes.Email.ISendProps = {
 			to: input.email.value,
 			subject: `${process.env.PROJECT_NAME} - Convite para o condomínio`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este link com ninguém</p>
-				<a href="#">https://[EXEMPLO DE DOMÍNIO]/[PÁGINA DO FRONT PARA VALIDAR O CONVITE]/${input.inviteAsHash}</a>`,
+				<a href="${frontendUrl}${input.inviteAsHash}">${frontendUrl}${input.inviteAsHash}</a>`,
 		};
 		this.eventEmitter.emit(EVENT_ID.EMAIL.SEND, payload);
 	}
