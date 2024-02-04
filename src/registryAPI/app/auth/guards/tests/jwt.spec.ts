@@ -37,7 +37,7 @@ describe('Jwt guard test', () => {
 
 		const context = createMockExecutionContext({
 			headers: {
-				authorization: `Bearer ${tokens.accessToken}`,
+				'user-token': `Bearer ${tokens.accessToken}`,
 			},
 		});
 
@@ -53,7 +53,7 @@ describe('Jwt guard test', () => {
 
 		const context = createMockExecutionContext({
 			headers: {
-				authorization: `Bearer ${tokens.accessToken}`,
+				'user-token': `Bearer ${tokens.accessToken}`,
 			},
 		});
 
@@ -77,7 +77,7 @@ describe('Jwt guard test', () => {
 	it('should throw one error - malformed token', async () => {
 		const context = createMockExecutionContext({
 			headers: {
-				authorization: 'Bearer malformedtoken',
+				'user-token': 'Bearer malformedtoken',
 			},
 		});
 		await expect(jwtGuard.canActivate(context)).rejects.toThrow(
