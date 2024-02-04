@@ -76,7 +76,7 @@ describe('Gen TFA Service', () => {
 
 		expect(userRepo.calls.create).toEqual(1);
 
-		const frontendUrl = String(process.env.FRONT_END_URL);
+		const frontendUrl = String(process.env.FRONT_END_AUTH_URL);
 		const payload: EventsTypes.Email.ISendProps = {
 			to: user.email.value,
 			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,

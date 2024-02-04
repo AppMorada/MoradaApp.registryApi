@@ -6,7 +6,7 @@ import {
 	Injectable,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IAccessTokenBody, authHeaders } from '../tokenTypes';
+import { IAccessTokenBody } from '../tokenTypes';
 import { UserRepo } from '@registry:app/repositories/user';
 import { GuardErrors } from '@registry:app/errors/guard';
 import { Request } from 'express';
@@ -34,9 +34,6 @@ export class AdminJwt implements CanActivate {
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
-		const rawToken = req?.headers?.[authHeaders.userToken]
-			? String(req?.headers[authHeaders.userToken])
-			: '';
 
 		const condominiumId = req.params?.condominiumId;
 		if (!condominiumId)
@@ -46,7 +43,7 @@ export class AdminJwt implements CanActivate {
 				message: 'Condomínio não especificado',
 			});
 
-		const token = rawToken?.split(' ')[1];
+		const token = String(req?.headers?.authorization).split(' ')[1];
 		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
 
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;

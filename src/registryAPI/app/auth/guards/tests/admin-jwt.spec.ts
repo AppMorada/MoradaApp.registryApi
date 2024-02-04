@@ -44,7 +44,7 @@ describe('Admin Jwt guard test', () => {
 				condominiumId: condominiumRelUser.condominiumId.value,
 			},
 			headers: {
-				'user-token': `Bearer ${tokens.accessToken}`,
+				authorization: `Bearer ${tokens.accessToken}`,
 			},
 		});
 
@@ -69,7 +69,7 @@ describe('Admin Jwt guard test', () => {
 				condominiumId: condominiumRelUser.condominiumId.value,
 			},
 			headers: {
-				'user-token': `Bearer ${tokens.accessToken}`,
+				authorization: `Bearer ${tokens.accessToken}`,
 			},
 		});
 
@@ -90,7 +90,7 @@ describe('Admin Jwt guard test', () => {
 
 		const context = createMockExecutionContext({
 			headers: {
-				'user-token': `Bearer ${tokens.accessToken}`,
+				authorization: `Bearer ${tokens.accessToken}`,
 			},
 		});
 
@@ -112,7 +112,7 @@ describe('Admin Jwt guard test', () => {
 				condominiumId: UUID.genV4().value,
 			},
 			headers: {
-				'user-token': `Bearer ${tokens.accessToken}`,
+				authorization: `Bearer ${tokens.accessToken}`,
 			},
 		});
 
@@ -143,7 +143,7 @@ describe('Admin Jwt guard test', () => {
 				condominiumId: UUID.genV4().value,
 			},
 			headers: {
-				'user-token': 'Bearer malformedtoken',
+				authorization: 'Bearer malformedtoken',
 			},
 		});
 		await expect(adminJwtGuard.canActivate(context)).rejects.toThrow(
