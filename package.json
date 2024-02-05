@@ -12,7 +12,7 @@
 		"build:watch:custom": "sh -c ./tools/build_watch.sh",
 		"firestore": "sh -c ./tools/firestore.sh",
 		"dev": "sh -c ./tools/parallel.sh",
-		"start": "functions:registryapi",
+		"start": "functions-framework --target=RegistryAPI --port=3030",
 		"functions:watch": "npm-watch functions:registryapi",
 		"functions:registryapi": "sh -c \"./tools/functions.sh RegistryAPI\"",
 		"lint": "eslint \"{src,tests}/**/*.ts\"",
