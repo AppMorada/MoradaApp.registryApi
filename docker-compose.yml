@@ -9,7 +9,7 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_DB: "mydb"
-      POSTGRES_USER: "default"
+      POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: password
     volumes:
       - db:/var/lib/postgresql/data

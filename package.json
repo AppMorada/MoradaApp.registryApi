@@ -4,7 +4,7 @@
 	"author": "MoradaAPP",
 	"license": "MIT",
 	"engines": {
-		"node": "18"
+		"node": "21"
 	},
 	"scripts": {
 		"build": "nest build",

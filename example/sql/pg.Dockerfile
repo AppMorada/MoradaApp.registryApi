@@ -14,3 +14,4 @@ RUN ["/usr/local/bin/docker-entrypoint.sh", "postgres"]
 FROM postgres:11-alpine
 
 COPY --from=dumper /data $PGDATA
+VOLUME [ "/data" ]

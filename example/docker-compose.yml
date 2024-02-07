@@ -9,8 +9,6 @@ services:
     hostname: db
     ports:
       - "5432:5432"
-    volumes:
-      - db:/var/lib/postgresql/data
 
   redis_db:
     image: redis:7.0.5-bullseye
@@ -24,17 +22,16 @@ services:
 
   app:
     env_file:
-      - path: ./.env
+      - path: ../.env
     build:
-      dockerfile: ./prod.Dockerfile
+      context: ../
+      dockerfile: ./example/Dockerfile
     hostname: app
     restart: always
     ports:
       - 3030:3030
 
 volumes:
-  db:
-    driver: local
   cache:
     driver: local
 

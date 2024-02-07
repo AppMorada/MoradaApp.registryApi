@@ -1,10 +1,7 @@
-FROM node:18.18-slim AS base
+FROM node:latest AS base
 
 RUN mkdir -p /usr/node/app
 WORKDIR /usr/node/app
-
-RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install -y openssl default-jre musl-dev
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
