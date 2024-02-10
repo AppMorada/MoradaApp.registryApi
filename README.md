@@ -6,17 +6,14 @@ Esta é uma API feita em NestJS e projetada para atender os serviços do projeto
 Adiante, nossos servidores back-end devem contar com as seguintes dependências e ferramentas para que esteja em perfeito funcionamento:
 
 1. **Mailtrap**: em ambiente de desenvolvimento, usamos o Mailtrap para realizar o envio de emails dentro da plataforma;
-2. **Postgres**: por hora, em ambiente de desenvolvimento, estamos armazenando nossos dados no Postgres pela provedora [Clever Cloud](https://console.clever-cloud.com/). Caso você faça parte da equipe de desenvolvimento, entre em contato com o time de back-end para a obtenção das credenciais de acesso ao banco de dados focado em desenvolvimento;
-3. **Redis**: para gerar dados que possuem prazo de expiração ou realizar o cache das entidades do sistema, usamos o banco de dados de cache 'Redis', na provedora Render, assim como no Postgres, contate-nos para obter as credenciais de acesso relacionados a este banco de dados;
+2. **Postgres**: banco de dados SQL do projeto; 
+3. **Redis**: para gerar dados que possuem prazo de expiração ou realizar o cache das entidades do sistema, usamos o banco de dados de cache 'Redis';
 4. **PNPM**: para gerenciar nossas dependências estamos usando o Performant Node Package Manager ([PNPM](https://pnpm.io/pt/)). Por quê? A resposta é simples, o pnpm é capaz de gerar links simbólicos de cada dependência utilizada no projeto, como consequência, o mesmo é capaz de reutilizar as bibliotecas que já existem em uma máquina, reduzindo de maneira significativa o espaço consumido pelo nosso sistema;
 5. **Docker**: o Docker é uma plataforma de virtualização de contêineres que permite isolar e empacotar aplicativos e seus ambientes de execução em contêineres, facilitando a preparação do ambiente do sistema e viabilizando o deploy da aplicação em inúmeras provedoras de nuvem. Sendo assim, basta executar os comandos que serão passados logo mais, e você já será capaz de possuir todos os servidores prontos para execução rapidamente. Matando assim, a necessidade de se passar horas na frente do computador configurando serviço a serviço para rodar na sua máquina;
 6. **Docker Compose**: é um orquestrador de contêineres do Docker, responsável por manter o sistema funcionando em conjunto, podendo configurar redes internas, mapear as portas de cada serviço e entre outras inúmeras funcionalidades essenciais;
-7. **Firebase (em análise)**: é um provedor de Saas utilizado para conseguirmos acesso serviços previamente prontos e com suas infraestruturas provisionadas.
-
-**AVISO**: lembre-se de que se você esta no time de back-end, você já possui muitas credenciais relacionadas a estes serviços predefinidas dentro do .env.example, juntamente com as explicações de cada variável usada!
 
 ### Preparação
-Primeiramente, antes de começar a "levantar" o sistema, você deve ter instalado em sua máquina todas as dependências citadas acima _- sim, você deve ter o Postgres e Redis minimamente configurado em sua máquina, pois você será capaz de se conectar manualmente nestas instâncias em produção, apesar de já não ser uma questão extremamente prioritária -_ segue abaixo as instruções de instalação para cada sistema operacional:
+Primeiramente, antes de começar a "levantar" o sistema, você deve ter instalado em sua máquina todas as dependências citadas acima, segue abaixo as instruções de instalação para cada sistema operacional:
 
 - **Docker**
     1. [Linux](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
@@ -26,16 +23,9 @@ Primeiramente, antes de começar a "levantar" o sistema, você deve ter instalad
     1. [Linux](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04)
     2. [Windows]()
 
-- **Redis**
-    1. [Linux && Windows](https://redis.io/docs/getting-started/installation/)
-
-- **Postgres**
-    1. [Linux](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart)
-    2. [Windows]()
-
 - **PNPM**: execute ```npm i pnpm -g```
 
-- **Mailtrap [back-end apenas]**:
+- **Mailtrap**:
     1. Crie uma conta na plataforma por [aqui](https://mailtrap.io/).
     2. Acesse o menu da lateral a esquerda
     3. Entre em **Email Testing** > **Inboxes** > **[Seu usuário]**
@@ -50,13 +40,13 @@ Primeiramente, antes de começar a "levantar" o sistema, você deve ter instalad
 
 ## Como usar
 
-Depois de muita configuração, vamos colocar tudo em funcionamento. Primeiramente, execute o docker compose up para levantar o sistema com base no docker-compose.yml definido na pasta root:
+Feito isso, você pode optar por utilizar o sistema otimizado para a execução local usando o docker-compose.local.yml ou então usar o docker-compose.yml para usar o back-end em ambiente dedicado ao desenvolvimento do ponto de vista de um desenvolvedor back-end:
 
 ```
-docker compose up
+docker compose -f <docker compose de sua preferência> up
 ```
 
-Com o sistema ativo, adentre no mesmo usando o bash para entrar na instância app (o contêiner em NodeJS + NestJS):
+Feito isso, se você tiver optado por utilizar o docker-compose.local.yml, o tutorial acaba aqui. No entanto, se estiver usando o outro arquivo, adentre na aplicação usando o bash para entrar na instância app (o contêiner em NodeJS + NestJS):
 ```
 docker compose exec app bash
 ```
@@ -119,6 +109,3 @@ Documentação do Postgres [aqui](https://www.postgresql.org/docs/current/).
 ## Coleções de requisições
 Sinta-se a vontade consultando a nossa api tanto pelo [Swagger](https://wild-leather-jacket-cow.cyclic.cloud/api) quanto pelo [Postman](https://documenter.getpostman.com/view/25622444/2s9YR85Z9K).
 
-| Documentos extras |
-|-------------------|
-| [Planos para a sprint 2](docs/plans/sprint2.md)|
