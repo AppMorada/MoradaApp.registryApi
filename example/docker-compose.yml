@@ -21,8 +21,7 @@ services:
       - cache:/data
 
   app:
-    env_file:
-      - path: ../.env
+    env_file: ../.env
     build:
       context: ../
       dockerfile: ./example/Dockerfile
