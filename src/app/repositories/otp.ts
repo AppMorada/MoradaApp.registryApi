@@ -1,0 +1,21 @@
+import { OTP } from '@app/entities/OTP';
+import { Email } from '@app/entities/VO';
+
+export interface ICreateOTPInput {
+	otp: OTP;
+	email: Email;
+}
+
+export interface IFindOTPInput {
+	email: Email;
+}
+
+export interface IDeleteOTPInput {
+	email: Email;
+}
+
+export abstract class OTPRepo {
+	abstract create(input: ICreateOTPInput): Promise<void>;
+	abstract find(input: IFindOTPInput): Promise<OTP | undefined>;
+	abstract delete(input: IDeleteOTPInput): Promise<void>;
+}
