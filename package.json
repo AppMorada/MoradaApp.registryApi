@@ -36,7 +36,7 @@
 		]
 	},
 	"prisma": {
-		"schema": "./src/registryAPI/infra/storages/db/prisma/schema.prisma"
+		"schema": "./src/infra/storages/db/prisma/schema.prisma"
 	},
 	"dependencies": {
 		"@google-cloud/functions-framework": "^3.3.0",
