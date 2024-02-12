@@ -26,16 +26,7 @@ on:
     branches:
       - "develop"
       - "feature/**"
-      - "bugfix/**"
-      - "release/**"
-      - "hotfix/**"
-      - "support/**"
-      - "dependabot/**"
-      - "!main"
-  pull_request:
-    branches:
-      - "develop"
-      - "feature/**"
+      - "refactor/**"
       - "bugfix/**"
       - "release/**"
       - "hotfix/**"
