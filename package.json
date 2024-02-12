@@ -1,6 +1,6 @@
 {
 	"name": "MoradaApp.Api",
-	"main": "dist/firestore.js",
+	"main": "dist/index.js",
 	"author": "MoradaAPP",
 	"license": "MIT",
 	"engines": {
@@ -9,12 +9,10 @@
 	"scripts": {
 		"build": "nest build",
 		"build:watch": "nest build -w",
-		"build:watch:custom": "sh -c ./tools/build_watch.sh",
 		"firestore": "sh -c ./tools/firestore.sh",
-		"dev": "sh -c ./tools/parallel.sh",
-		"start": "functions-framework --target=RegistryAPI --port=3030",
-		"functions:watch": "npm-watch functions:registryapi",
-		"functions:registryapi": "sh -c \"./tools/functions.sh RegistryAPI\"",
+		"dev": "nest start --watch",
+		"start": "nest start",
+		"start:prod": "node ./dist/index.js",
 		"lint": "eslint \"{src,tests}/**/*.ts\"",
 		"lint:fix": "eslint --fix",
 		"format": "prettier --write",
@@ -25,16 +23,6 @@
 		"set-hooks": "husky install",
 		"pre-commit": "lint-staged --allow-empty",
 		"gen-docs": "sh -c \"./tools/docs.sh\""
-	},
-	"watch": {
-		"functions:registryapi": {
-			"quiet": true,
-			"patterns": [
-				"dist"
-			],
-			"delay": 1500,
-			"extensions": "js"
-		}
 	},
 	"config": {
 		"commitizen": {
