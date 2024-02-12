@@ -33,17 +33,6 @@ on:
       - "support/**"
       - "dependabot/**"
       - "!main"
-  pull_request:
-    branches:
-      - "refactor/**"
-      - "develop"
-      - "feature/**"
-      - "bugfix/**"
-      - "release/**"
-      - "hotfix/**"
-      - "support/**"
-      - "dependabot/**"
-      - "!main"
 
 jobs:
   unit-test:
