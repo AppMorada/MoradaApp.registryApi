@@ -9,6 +9,11 @@ import { UserRepo } from '@app/repositories/user';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
+import { GetKeyService } from '../getKey.service';
+import { KeyRepo, KeysEnum } from '@app/repositories/key';
+import { InMemoryKey } from '@tests/inMemoryDatabase/key';
+import { Key } from '@app/entities/key';
+import { randomBytes } from 'crypto';
 
 describe('Gen TFA Service', () => {
 	let genTFA: GenTFAService;
@@ -23,6 +28,7 @@ describe('Gen TFA Service', () => {
 			(..._: Parameters<typeof EventEmitter2.prototype.emit>) => true,
 		);
 
+		const container = new InMemoryContainer();
 		app = await Test.createTestingModule({
 			imports: [
 				EventEmitterModule.forRoot({
@@ -38,15 +44,17 @@ describe('Gen TFA Service', () => {
 			providers: [
 				{
 					provide: UserRepo,
-					useFactory: () => {
-						const container = new InMemoryContainer();
-						return new InMemoryUser(container);
-					},
+					useValue: new InMemoryUser(container),
+				},
+				{
+					provide: KeyRepo,
+					useValue: new InMemoryKey(container),
 				},
 				{
 					provide: CryptAdapter,
 					useClass: CryptSpy,
 				},
+				GetKeyService,
 				GenTFAService,
 			],
 		}).compile();
@@ -57,6 +65,18 @@ describe('Gen TFA Service', () => {
 		eventEmitter = app.get(EventEmitter2);
 
 		eventEmitter.once(EVENT_ID.EMAIL.SEND, () => true);
+
+		const tfaKey = new Key({
+			ttl: 1000 * 60 * 60,
+			name: KeysEnum.TFA_TOKEN_KEY,
+			actual: {
+				content: randomBytes(100).toString('hex'),
+				buildedAt: Date.now(),
+			},
+		});
+
+		const keyRepo = app.get<InMemoryKey>(KeyRepo);
+		await keyRepo.create(tfaKey);
 	});
 
 	afterEach(async () => {

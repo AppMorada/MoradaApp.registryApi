@@ -9,49 +9,83 @@ import { generateStringCodeContent } from '@utils/generateStringCodeContent';
 import { User } from '@app/entities/user';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { GuardErrors } from '@app/errors/guard';
+import { InMemoryKey } from '@tests/inMemoryDatabase/key';
+import { GetKeyService } from '@app/services/getKey.service';
+import { ValidateTFAService } from '@app/services/validateTFA.service';
+import { KeysEnum } from '@app/repositories/key';
+import { Key } from '@app/entities/key';
+import { randomBytes } from 'crypto';
+import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 
 jest.mock('nodemailer');
 
 describe('Check TFA Code guard test', () => {
 	let inMemoryContainer: InMemoryContainer;
 	let userRepo: InMemoryUser;
+	let keyRepo: InMemoryKey;
+	let getKeyService: GetKeyService;
 	let cryptAdapter: CryptAdapter;
+	let validateTFAService: ValidateTFAService;
+
 	let checkTFACodeGuard: CheckTFACodeGuard;
 
-	async function genCode(user: User) {
-		let code = generateStringCodeContent({
+	async function genCode(user: User, key: Key) {
+		const code = generateStringCodeContent({
 			email: user.email,
 			id: user.id,
 		});
-		const key = process.env.TFA_TOKEN_KEY as string;
 
 		const metadata = JSON.stringify({
-			iat: Date.now(),
-			exp: Date.now() + 1000 * 60 * 60 * 3,
+			iat: Math.floor(Date.now() / 1000),
+			exp: Math.floor((Date.now() + 1000 * 60 * 60 * 3) / 1000),
 		});
-		code = `${btoa(metadata)}.${btoa(code)}`;
+		const hash = encodeURIComponent(
+			`${btoa(metadata)}.${btoa(code)}`.replaceAll('=', ''),
+		);
 
 		const inviteSignature = await cryptAdapter.hashWithHmac({
-			data: code,
-			key,
+			data: hash,
+			key: key.actual.content,
 		});
-		return `${btoa(metadata)}.${btoa(inviteSignature)}`;
+		return encodeURIComponent(
+			`${btoa(metadata)}.${btoa(inviteSignature)}`.replaceAll('=', ''),
+		);
 	}
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
 		userRepo = new InMemoryUser(inMemoryContainer);
+		keyRepo = new InMemoryKey(inMemoryContainer);
+
+		getKeyService = new GetKeyService(keyRepo);
 		cryptAdapter = new BcryptAdapter();
 
-		checkTFACodeGuard = new CheckTFACodeGuard(userRepo, cryptAdapter);
+		validateTFAService = new ValidateTFAService(
+			getKeyService,
+			cryptAdapter,
+		);
+
+		checkTFACodeGuard = new CheckTFACodeGuard(userRepo, validateTFAService);
+
+		const tfaKey = new Key({
+			name: KeysEnum.TFA_TOKEN_KEY,
+			actual: {
+				content: randomBytes(100).toString('hex'),
+				buildedAt: Date.now(),
+			},
+			ttl: 1000 * 60 * 60,
+		});
+
+		await keyRepo.create(tfaKey);
 	});
 
 	it('should be able to validate the CheckTFACodeGuard', async () => {
 		const user = userFactory();
 		const condominiumRelUser = condominiumRelUserFactory();
 		await userRepo.create({ user, condominiumRelUser });
+		const key = await keyRepo.getSignature(KeysEnum.TFA_TOKEN_KEY);
 
-		const code = await genCode(user);
+		const code = await genCode(user, key);
 		const context = createMockExecutionContext({
 			headers: {
 				authorization: `Bearer ${code}`,
@@ -99,8 +133,10 @@ describe('Check TFA Code guard test', () => {
 		});
 
 		await expect(checkTFACodeGuard.canActivate(context)).rejects.toThrow(
-			new GuardErrors({
-				message: 'O código é inválido',
+			new ServiceErrors({
+				message:
+					'O código de autenticação de dois fatores precisa ter os campos "iat" e "exp"',
+				tag: ServiceErrorsTags.unauthorized,
 			}),
 		);
 

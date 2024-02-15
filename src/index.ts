@@ -20,6 +20,7 @@ import { PrismaErrorFilter } from '@infra/http/filters/errors/prisma.filter';
 import { RedisErrorFilter } from '@infra/http/filters/errors/redis-login.filter';
 import { HealthCheckErrorFilter } from '@infra/http/filters/errors/healthCheckError.filter';
 import { AxiosCheckErrorFilter } from '@infra/http/filters/errors/serviceUnavailableException.filter';
+import { FirestoreCustomErrorFilter } from '@infra/http/filters/errors/firestoreCustomError.filter';
 
 export class RegistryAPIBootstrap {
 	private app: NestExpressApplication;
@@ -63,6 +64,7 @@ export class RegistryAPIBootstrap {
 		this.app.useGlobalFilters(new AxiosCheckErrorFilter(this.logger));
 		this.app.useGlobalFilters(new RedisErrorFilter(this.logger));
 		this.app.useGlobalFilters(new PrismaErrorFilter(this.logger));
+		this.app.useGlobalFilters(new FirestoreCustomErrorFilter(this.logger));
 		this.app.useGlobalFilters(new DatabaseCustomErrorFilter(this.logger));
 		this.app.useGlobalFilters(new ServiceErrorFilter(this.logger));
 		this.app.useGlobalFilters(new EntitieErrorFilter(this.logger));

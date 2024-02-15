@@ -16,6 +16,9 @@ import { User } from '@app/entities/user';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IService } from './_IService';
+import { Key } from '@app/entities/key';
+import { GetKeyService } from './getKey.service';
+import { KeysEnum } from '@app/repositories/key';
 
 interface IUserDataCore {
 	id: UUID;
@@ -36,10 +39,16 @@ interface IProps {
 /** Serviço responsável por gerar o token de acesso e o de renovação */
 @Injectable()
 export class CreateTokenService implements IService {
-	constructor(private readonly jwtService: JwtService) {}
+	constructor(
+		private readonly jwtService: JwtService,
+		private readonly getKey: GetKeyService,
+	) {}
 
-	private async buildAccessToken(user: User | IUserDataCore) {
-		const exp = parseInt(process.env.ACCESS_TOKEN_EXP as string);
+	private async buildAccessToken(
+		user: User | IUserDataCore,
+		accessTokenKey: Key,
+	) {
+		const exp = accessTokenKey.ttl;
 		const accessJwtBody: Omit<IAccessTokenBody, 'iat' | 'exp'> = {
 			sub: user.id.value,
 			content: {
@@ -53,13 +62,17 @@ export class CreateTokenService implements IService {
 		};
 
 		return await this.jwtService.signAsync(accessJwtBody, {
-			secret: process.env.ACCESS_TOKEN_KEY,
-			expiresIn: exp,
+			secret: accessTokenKey.actual.content,
+			expiresIn: Math.floor(exp / 1000),
 		});
 	}
 
-	private async buildRefreshToken(email: Email, userId: UUID) {
-		const exp = parseInt(process.env.REFRESH_TOKEN_EXP as string);
+	private async buildRefreshToken(
+		email: Email,
+		userId: UUID,
+		refreshTokenKey: Key,
+	) {
+		const exp = refreshTokenKey.ttl;
 		const refreshJwtBody: Omit<IRefreshTokenBody, 'iat' | 'exp'> = {
 			sub: userId.value,
 			email: email.value,
@@ -67,15 +80,31 @@ export class CreateTokenService implements IService {
 		};
 
 		return await this.jwtService.signAsync(refreshJwtBody, {
-			secret: process.env.REFRESH_TOKEN_KEY,
-			expiresIn: exp,
+			secret: refreshTokenKey.actual.content,
+			expiresIn: Math.floor(exp / 1000),
 		});
 	}
 
 	async exec({ user }: IProps) {
-		const accessToken = await this.buildAccessToken(user);
-		const refreshToken = await this.buildRefreshToken(user.email, user.id);
+		const { key: accessTokenKey } = await this.getKey.exec({
+			name: KeysEnum.ACCESS_TOKEN_KEY,
+		});
+		const { key: refreshTokenKey } = await this.getKey.exec({
+			name: KeysEnum.REFRESH_TOKEN_KEY,
+		});
 
-		return { accessToken, refreshToken };
+		const accessToken = await this.buildAccessToken(user, accessTokenKey);
+		const refreshToken = await this.buildRefreshToken(
+			user.email,
+			user.id,
+			refreshTokenKey,
+		);
+
+		return {
+			accessToken,
+			accessTokenExp: Math.floor(accessTokenKey.ttl / 1000),
+			refreshToken,
+			refreshTokenExp: Math.floor(refreshTokenKey.ttl / 1000),
+		};
 	}
 }

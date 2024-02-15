@@ -9,6 +9,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { InviteRepo } from '@app/repositories/invite';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
+import { KeyRepo, KeysEnum } from '@app/repositories/key';
+import { InMemoryKey } from '@tests/inMemoryDatabase/key';
+import { GetKeyService } from '../getKey.service';
+import { Key } from '@app/entities/key';
+import { randomBytes } from 'crypto';
 
 describe('Gen invite test', () => {
 	let genInvite: GenInviteService;
@@ -23,6 +28,8 @@ describe('Gen invite test', () => {
 		EventEmitter2.prototype.emit = jest.fn(
 			(..._: Parameters<typeof EventEmitter2.prototype.emit>) => true,
 		);
+
+		const container = new InMemoryContainer();
 
 		app = await Test.createTestingModule({
 			imports: [
@@ -39,15 +46,17 @@ describe('Gen invite test', () => {
 			providers: [
 				{
 					provide: InviteRepo,
-					useFactory: () => {
-						const container = new InMemoryContainer();
-						return new InMemoryInvite(container);
-					},
+					useValue: new InMemoryInvite(container),
+				},
+				{
+					provide: KeyRepo,
+					useValue: new InMemoryKey(container),
 				},
 				{
 					provide: CryptAdapter,
 					useClass: CryptSpy,
 				},
+				GetKeyService,
 				GenInviteService,
 			],
 		}).compile();
@@ -59,6 +68,18 @@ describe('Gen invite test', () => {
 		genInvite = app.get(GenInviteService);
 
 		eventEmitter.once(EVENT_ID.EMAIL.SEND, () => true);
+
+		const inviteKey = new Key({
+			ttl: 1000 * 60 * 60,
+			name: KeysEnum.INVITE_TOKEN_KEY,
+			actual: {
+				content: randomBytes(100).toString('hex'),
+				buildedAt: Date.now(),
+			},
+		});
+
+		const keyRepo = app.get<InMemoryKey>(KeyRepo);
+		await keyRepo.create(inviteKey);
 	});
 
 	afterEach(async () => {
