@@ -7,8 +7,15 @@ describe('Key Entitie Test', () => {
 
 		expect(key.equalTo({ key: anotherKey })).toBe(true);
 
+		const actualTime = Date.now();
 		const anotherKey2 = keyFactory({
 			name: 'another key',
+			ttl: 60 * 60 * 1000,
+			renewTime: actualTime + 60 * 60 * 1000,
+			actual: {
+				buildedAt: actualTime - 10000,
+				content: key.actual.content,
+			},
 		});
 		expect(key.equalTo({ key: anotherKey2 })).toBe(false);
 	});
