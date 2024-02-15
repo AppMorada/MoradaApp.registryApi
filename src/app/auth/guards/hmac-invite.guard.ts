@@ -10,6 +10,7 @@ import { checkClassValidatorErrors } from '@utils/convertValidatorErr';
 import { InviteRepo } from '@app/repositories/invite';
 import { Invite } from '@app/entities/invite';
 import { mapInviteKeyBasedOnLevel } from '@utils/mapInviteKeyBasedOnLevel';
+import { GetKeyService } from '@app/services/getKey.service';
 
 interface IValidate {
 	email: Email;
@@ -23,10 +24,14 @@ export class HmacInviteGuard implements CanActivate {
 	constructor(
 		private readonly crypt: CryptAdapter,
 		private readonly inviteRepo: InviteRepo,
+		private readonly getKey: GetKeyService,
 	) {}
 
 	private async validate(input: IValidate): Promise<boolean> {
-		const key = mapInviteKeyBasedOnLevel(input.invite.type.value);
+		const key = await mapInviteKeyBasedOnLevel(
+			input.invite.type.value,
+			this.getKey,
+		);
 
 		const invite = generateStringCodeContent({
 			condominiumId: input.invite.condominiumId,
@@ -35,7 +40,7 @@ export class HmacInviteGuard implements CanActivate {
 			id: input.invite.id,
 		});
 		const hashedInvite = await this.crypt
-			.hashWithHmac({ data: invite, key: key as string })
+			.hashWithHmac({ data: invite, key })
 			.catch(() => {
 				throw new GuardErrors({
 					message: 'Falha ao tentar gerar um HMAC do convite',

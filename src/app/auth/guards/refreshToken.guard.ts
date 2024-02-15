@@ -1,18 +1,19 @@
 import { CookieAdapter } from '@app/adapters/cookie';
 import { GuardErrors } from '@app/errors/guard';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IRefreshTokenBody, TokenType } from '../tokenTypes';
 import { UserRepo } from '@app/repositories/user';
 import { Email } from '@app/entities/VO';
+import { KeysEnum } from '@app/repositories/key';
+import { ValidateTokenService } from '@app/services/validateToken.service';
 
 /** Usado para validar os tokens do tipo "RefreshToken" */
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
 	constructor(
 		private readonly cookieAdapter: CookieAdapter,
-		private readonly jwtService: JwtService,
+		private readonly validateToken: ValidateTokenService,
 		private readonly userRepo: UserRepo,
 	) {}
 
@@ -31,17 +32,12 @@ export class RefreshTokenGuard implements CanActivate {
 	}
 
 	private async checkToken(token: string) {
-		const data: IRefreshTokenBody = await this.jwtService
-			.verifyAsync(token, {
-				secret: process.env.REFRESH_TOKEN_KEY,
-			})
-			.catch(() => {
-				throw new GuardErrors({
-					message: `Dado armazenado no ${TokenType.refreshToken} é inválido`,
-				});
-			});
+		const { decodedToken } = await this.validateToken.exec({
+			name: KeysEnum.REFRESH_TOKEN_KEY,
+			token: token,
+		});
 
-		return data;
+		return decodedToken as IRefreshTokenBody;
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {

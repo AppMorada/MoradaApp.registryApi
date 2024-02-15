@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AdaptersModule } from '@app/adapters/adapter.module';
-import { JwtService } from '@nestjs/jwt';
 import { GatewayModule } from '../gateways/gateway.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -9,10 +8,17 @@ import { PrismaModule } from '@infra/storages/db/prisma/prisma.module';
 import { CondominiumModule } from './controllers/condominium/index.module';
 import { UserModule } from './controllers/user/index.module';
 import { HealthModule } from './controllers/health/index.module';
+import { FirestoreModule } from '@infra/storages/db/firestore/firestore.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { AuthModule } from '@app/auth/auth.module';
 
 @Module({
 	imports: [
+		CacheModule.register({
+			isGlobal: true,
+		}),
 		RedisModule,
+		FirestoreModule,
 		PrismaModule,
 		AdaptersModule,
 		GatewayModule,
@@ -25,9 +31,9 @@ import { HealthModule } from './controllers/health/index.module';
 		HealthModule,
 		CondominiumModule,
 		UserModule,
+		AuthModule,
 	],
 	providers: [
-		JwtService,
 		{
 			provide: APP_GUARD,
 			useClass: ThrottlerGuard,

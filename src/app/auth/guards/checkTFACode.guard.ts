@@ -1,4 +1,3 @@
-import { CryptAdapter } from '@app/adapters/crypt';
 import { Email } from '@app/entities/VO';
 import { GuardErrors } from '@app/errors/guard';
 import { UserRepo } from '@app/repositories/user';
@@ -7,36 +6,16 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { checkClassValidatorErrors } from '@utils/convertValidatorErr';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
-import { generateStringCodeContent } from '@utils/generateStringCodeContent';
-import { User } from '@app/entities/user';
+import { KeysEnum } from '@app/repositories/key';
+import { ValidateTFAService } from '@app/services/validateTFA.service';
 
 /** Usado para validar o códigos gerados nos fluxos de autenticação de dois fatores */
 @Injectable()
 export class CheckTFACodeGuard implements CanActivate {
 	constructor(
 		private readonly userRepo: UserRepo,
-		private readonly crypt: CryptAdapter,
+		private readonly validateTFA: ValidateTFAService,
 	) {}
-
-	private async validate(user: User, codeUsedOnInput: string) {
-		const metadata = codeUsedOnInput.split('.')[0];
-		const code = generateStringCodeContent({
-			email: user.email,
-			id: user.id,
-		});
-
-		const signature = await this.crypt.hashWithHmac({
-			data: `${metadata}.${btoa(code)}`,
-			key: process.env.TFA_TOKEN_KEY as string,
-		});
-		const codeForValidation = `${metadata}.${btoa(signature)}`;
-
-		const parsedMetadata = JSON.parse(atob(metadata));
-		return (
-			codeForValidation === codeUsedOnInput &&
-			parsedMetadata?.exp >= Date.now()
-		);
-	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
@@ -57,11 +36,12 @@ export class CheckTFACodeGuard implements CanActivate {
 					message: 'Usuário não existe',
 				});
 			});
-		const validationRes = await this.validate(user, token);
-		if (!validationRes)
-			throw new GuardErrors({
-				message: 'O código é inválido',
-			});
+
+		await this.validateTFA.exec({
+			user,
+			code: token,
+			name: KeysEnum.TFA_TOKEN_KEY,
+		});
 
 		req.inMemoryData = { ...req.inMemoryData, user };
 		return true;
