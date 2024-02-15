@@ -14,11 +14,16 @@ import { Request } from 'express';
 import { CondominiumRelUser } from '@app/entities/condominiumRelUser';
 import { AdminJwt } from '@app/auth/guards/admin-jwt.guard';
 import { CONDOMINIUM_PREFIX } from '../consts';
+import { GetKeyService } from '@app/services/getKey.service';
+import { KeysEnum } from '@app/repositories/key';
 
 @Controller(CONDOMINIUM_PREFIX)
 export class InviteCondominiumController {
 	/** Acesse /api para ver as rotas disponíveis **/
-	constructor(private readonly genInvite: GenInviteService) {}
+	constructor(
+		private readonly genInvite: GenInviteService,
+		private readonly getKey: GetKeyService,
+	) {}
 
 	@Post(':condominiumId/invite-admin')
 	@UseGuards(SuperAdminJwt)
@@ -28,10 +33,13 @@ export class InviteCondominiumController {
 			.condominiumRelUser as CondominiumRelUser;
 		const email = new Email(body.email);
 
+		const { key } = await this.getKey.exec({
+			name: KeysEnum.INVITE_ADMIN_TOKEN_KEY,
+		});
 		await this.genInvite.exec({
 			requiredLevel: new Level(1),
 			condominiumId: condominiumRelUser.condominiumId,
-			key: process.env.INVITE_ADMIN_TOKEN_KEY,
+			key: key.actual.content,
 			email,
 		});
 	}

@@ -11,23 +11,60 @@ import { GuardErrors } from '@app/errors/guard';
 import { UUID } from '@app/entities/VO';
 import { AdminJwt } from '../admin-jwt.guard';
 import { BadRequestException, HttpStatus } from '@nestjs/common';
+import { InMemoryKey } from '@tests/inMemoryDatabase/key';
+import { ValidateTokenService } from '@app/services/validateToken.service';
+import { GetKeyService } from '@app/services/getKey.service';
+import { Key } from '@app/entities/key';
+import { KeysEnum } from '@app/repositories/key';
+import { randomBytes } from 'crypto';
+import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 
 describe('Admin Jwt guard test', () => {
 	let jwtService: JwtService;
 	let createTokenService: CreateTokenService;
+	let validateTokenService: ValidateTokenService;
+	let getKeyService: GetKeyService;
 	let adminJwtGuard: AdminJwt;
 
 	let inMemoryContainer: InMemoryContainer;
 	let userRepo: InMemoryUser;
+	let keyRepo: InMemoryKey;
 
 	beforeEach(async () => {
 		jwtService = new JwtService();
-		createTokenService = new CreateTokenService(jwtService);
-
 		inMemoryContainer = new InMemoryContainer();
 		userRepo = new InMemoryUser(inMemoryContainer);
+		keyRepo = new InMemoryKey(inMemoryContainer);
 
-		adminJwtGuard = new AdminJwt(jwtService, userRepo);
+		getKeyService = new GetKeyService(keyRepo);
+		createTokenService = new CreateTokenService(jwtService, getKeyService);
+
+		validateTokenService = new ValidateTokenService(
+			jwtService,
+			getKeyService,
+		);
+		adminJwtGuard = new AdminJwt(validateTokenService, userRepo);
+
+		const accessTokenKey = new Key({
+			name: KeysEnum.ACCESS_TOKEN_KEY,
+			actual: {
+				content: randomBytes(100).toString('hex'),
+				buildedAt: Date.now(),
+			},
+			ttl: 1000 * 60 * 60,
+		});
+
+		const refreshTokenKey = new Key({
+			name: KeysEnum.REFRESH_TOKEN_KEY,
+			actual: {
+				content: randomBytes(100).toString('hex'),
+				buildedAt: Date.now(),
+			},
+			ttl: 1000 * 60 * 60,
+		});
+
+		await keyRepo.create(accessTokenKey);
+		await keyRepo.create(refreshTokenKey);
 	});
 
 	it('should be able to validate admin jwt guard', async () => {
@@ -147,7 +184,10 @@ describe('Admin Jwt guard test', () => {
 			},
 		});
 		await expect(adminJwtGuard.canActivate(context)).rejects.toThrow(
-			new GuardErrors({ message: 'JWT inválido' }),
+			new ServiceErrors({
+				message: 'O token precisa ter os campos "iat" e "exp"',
+				tag: ServiceErrorsTags.unauthorized,
+			}),
 		);
 	});
 });

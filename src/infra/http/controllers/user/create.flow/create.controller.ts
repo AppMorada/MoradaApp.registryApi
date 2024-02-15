@@ -27,17 +27,16 @@ export class CreateUserController {
 	) {}
 
 	private async processTokens(res: Response, user: User) {
-		const { accessToken, refreshToken } = await this.createToken.exec({
-			user,
-		});
+		const { accessToken, refreshToken, refreshTokenExp } =
+			await this.createToken.exec({
+				user,
+			});
 
-		const expires = new Date(
-			Date.now() + Number(process.env.REFRESH_TOKEN_EXP),
-		);
+		const expires = new Date(Date.now() + refreshTokenExp);
 
 		res.cookie('refresh-token', refreshToken, {
 			expires,
-			maxAge: parseInt(process.env.REFRESH_TOKEN_EXP as string) * 1000,
+			maxAge: refreshTokenExp * 1000,
 			path: '/',
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production' && true,
