@@ -6,6 +6,8 @@ import { generateStringCodeContent } from '@utils/generateStringCodeContent';
 import { IService } from './_IService';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
+import { GetKeyService } from './getKey.service';
+import { KeysEnum } from '@app/repositories/key';
 
 interface IProps {
 	email: Email;
@@ -19,6 +21,7 @@ export class GenTFAService implements IService {
 		private readonly userRepo: UserRepo,
 		private readonly crypt: CryptAdapter,
 		private readonly eventEmitter: EventEmitter2,
+		private readonly getKey: GetKeyService,
 	) {}
 
 	private async genCode(input: UUID) {
@@ -27,19 +30,25 @@ export class GenTFAService implements IService {
 			email: user.email,
 			id: user.id,
 		});
-		const key = process.env.TFA_TOKEN_KEY as string;
+		const { key } = await this.getKey.exec({
+			name: KeysEnum.TFA_TOKEN_KEY,
+		});
 
 		const metadata = JSON.stringify({
-			iat: Date.now(),
-			exp: Date.now() + 1000 * 60 * 60 * 3,
+			iat: Math.floor(Date.now() / 1000),
+			exp: Math.floor((Date.now() + 1000 * 60 * 60 * 3) / 1000),
 		});
-		code = `${btoa(metadata)}.${btoa(code)}`;
+		code = encodeURIComponent(
+			`${btoa(metadata)}.${btoa(code)}`.replaceAll('=', ''),
+		);
 
 		const inviteSignature = await this.crypt.hashWithHmac({
 			data: code,
-			key,
+			key: key.actual.content,
 		});
-		return `${btoa(metadata)}.${btoa(inviteSignature)}`;
+		return encodeURIComponent(
+			`${btoa(metadata)}.${btoa(inviteSignature)}`.replaceAll('=', ''),
+		);
 	}
 
 	async exec(input: IProps) {

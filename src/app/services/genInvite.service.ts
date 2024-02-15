@@ -9,6 +9,8 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { mapInviteKeyBasedOnLevel } from '@utils/mapInviteKeyBasedOnLevel';
+import { GetKeyService } from './getKey.service';
+import { KeysEnum } from '@app/repositories/key';
 
 interface IProps {
 	email: Email;
@@ -24,6 +26,7 @@ export class GenInviteService implements IService {
 		private readonly cryptAdapter: CryptAdapter,
 		private readonly inviteRepo: InviteRepo,
 		private readonly eventEmitter: EventEmitter2,
+		private readonly getKey: GetKeyService,
 	) {}
 
 	private async generateInvite({
@@ -62,9 +65,13 @@ export class GenInviteService implements IService {
 			type: input.requiredLevel?.value ?? 0,
 			ttl: 1000 * 60 * 60 * 24 * 7,
 		});
+
 		const inviteAsHash = await this.generateInvite({
 			invite,
-			key: input.key ?? (process.env.INVITE_TOKEN_KEY as string),
+			key:
+				input.key ??
+				(await this.getKey.exec({ name: KeysEnum.INVITE_TOKEN_KEY }))
+					.key.actual.content,
 		});
 
 		await this.inviteRepo.create({ invite });
@@ -74,9 +81,6 @@ export class GenInviteService implements IService {
 	}
 
 	async reexec(input: { email: Email }) {
-		// Faria sentido renovar o tempo de expiração do convite?
-		// Haja visto que esta ações não está mais no controle dos administradores.
-
 		const invite = await this.inviteRepo.find({
 			key: input.email,
 			safeSearch: true,
@@ -89,7 +93,10 @@ export class GenInviteService implements IService {
 				tag: ServiceErrorsTags.unauthorized,
 			});
 
-		const key = mapInviteKeyBasedOnLevel(invite.type.value);
+		const key = await mapInviteKeyBasedOnLevel(
+			invite.type.value,
+			this.getKey,
+		);
 		const inviteAsHash = await this.generateInvite({ invite, key });
 
 		this.sendEmail({ email: input.email, inviteAsHash });

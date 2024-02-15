@@ -1,29 +1,27 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { UserRepo } from '@app/repositories/user';
 import { IAccessTokenBody } from '../tokenTypes';
 import { GuardErrors } from '@app/errors/guard';
 import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
+import { KeysEnum } from '@app/repositories/key';
+import { ValidateTokenService } from '@app/services/validateToken.service';
 
 /** Usado para validar um JWT vindo do authorization header */
 @Injectable()
 export class JwtGuard implements CanActivate {
 	constructor(
-		private readonly jwtService: JwtService,
 		private readonly userRepo: UserRepo,
+		private readonly validateToken: ValidateTokenService,
 	) {}
 
 	private async checkToken(token: string) {
-		const tokenData: IAccessTokenBody = await this.jwtService
-			.verifyAsync(token, {
-				secret: process.env.ACCESS_TOKEN_KEY,
-			})
-			.catch(() => {
-				throw new GuardErrors({ message: 'JWT inválido' });
-			});
+		const { decodedToken } = await this.validateToken.exec({
+			name: KeysEnum.ACCESS_TOKEN_KEY,
+			token: token,
+		});
 
-		return tokenData;
+		return decodedToken as IAccessTokenBody;
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
