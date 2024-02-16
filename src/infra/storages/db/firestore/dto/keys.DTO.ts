@@ -18,7 +18,7 @@ export function firestoreKeyDTO(body: any, logger?: LoggerAdapter) {
 		const output = schema.parse(body);
 		return output;
 	} catch (err) {
-		logger?.error({
+		logger?.fatal({
 			name: err.name,
 			description: err.message,
 			layer: LayersEnum.database,

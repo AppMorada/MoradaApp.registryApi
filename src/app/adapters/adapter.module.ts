@@ -8,7 +8,7 @@ import { FetchAdapter } from './fetch/fetchAdapter';
 import { LoggerAdapter } from './logger';
 import { CookieAdapter } from './cookie';
 import { CookieParserAdapter } from './cookie-parser/cookieParserAdapter';
-import { FirebaseLoggerAdapter } from './firebase-logger';
+import { PinoLoggerAdapter } from './pino';
 
 @Global()
 @Module({
@@ -27,7 +27,7 @@ import { FirebaseLoggerAdapter } from './firebase-logger';
 		},
 		{
 			provide: LoggerAdapter,
-			useClass: FirebaseLoggerAdapter,
+			useClass: PinoLoggerAdapter,
 		},
 		{
 			provide: CookieAdapter,
