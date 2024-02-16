@@ -5,7 +5,6 @@ import {
 	ExecutionContext,
 	CallHandler,
 } from '@nestjs/common';
-import { DateFormats } from '@utils/dateFormats';
 import { randomUUID } from 'crypto';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
@@ -18,26 +17,20 @@ export class LogInterceptor implements NestInterceptor {
 
 	intercept(content: ExecutionContext, next: CallHandler): Observable<any> {
 		const req = content.switchToHttp().getRequest<Request>();
-		const date = new Date();
-		const anonymous = randomUUID();
+		const sessionId = randomUUID();
+		req.sessionId = sessionId;
 
 		this.logger.info({
 			name: `"${req.path}" acessado`,
-			description: `Um usuário não identificado esta acessando a rota "${
-				req.path
-			}" às "${DateFormats.prettify(
-				date,
-			)}" usando o id temporário "${anonymous}" e o método "${
-				req.method
-			}"`,
+			description: `SessionId(${sessionId}) - Method(${req.method})`,
 			layer: LayersEnum.interceptors,
 		});
 
 		return next.handle().pipe(
 			tap(() => {
 				this.logger.info({
-					name: `"${req.path}" acesso finalizado`,
-					description: `Acesso bem sucedido por "${anonymous}"`,
+					name: `"${req.path}" acesso finalizado sem erros`,
+					description: `SessionId(${sessionId}) - Method(${req.method})`,
 					layer: LayersEnum.interceptors,
 				});
 			}),

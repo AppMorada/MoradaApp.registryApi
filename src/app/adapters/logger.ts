@@ -27,8 +27,6 @@ export abstract class LoggerAdapter {
 	abstract info(input: ILoggerDefaultProps): Promise<void>;
 	abstract debug(input: ILoggerDefaultProps): Promise<void>;
 	abstract warn(input: ILoggerDefaultProps): Promise<void>;
-	abstract alert(input: ILoggerDefaultProps): Promise<void>;
 	abstract error(input: TErrProps): Promise<void>;
-	abstract critical(input: TErrProps): Promise<void>;
-	abstract emergencial(input: TErrProps): Promise<void>;
+	abstract fatal(input: TErrProps): Promise<void>;
 }

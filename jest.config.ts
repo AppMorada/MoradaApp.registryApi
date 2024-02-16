@@ -10,7 +10,7 @@ const config: Config = {
   },
   clearMocks: true,
   collectCoverageFrom: ['**/*.ts'],
-  coverageDirectory: 'coverage',
+  coverageDirectory: './coverage',
   testEnvironment: 'node',
 
   setupFilesAfterEnv: ['./.jest/env.ts'],
