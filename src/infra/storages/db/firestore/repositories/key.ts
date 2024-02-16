@@ -30,6 +30,12 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 	async watchSignatures(): Promise<void> {
 		this.signatures.forEach((name) => {
 			this.signaturesCollection.doc(name).onSnapshot(async (item) => {
+				this.loggerAdapter.info({
+					name: 'Dynamic signatures',
+					layer: LayersEnum.database,
+					description: `Reading ${name} signature and syncing internal cache system`,
+				});
+
 				if (!item.exists) {
 					const err = new FirestoreCustomError({
 						tag: FirestoreCustomErrorTag.entityDoesntExist,

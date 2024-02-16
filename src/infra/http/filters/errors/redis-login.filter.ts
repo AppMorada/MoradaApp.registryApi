@@ -4,7 +4,7 @@ import {
 	RedisErrorsTags,
 	RedisLogicError,
 } from '@infra/storages/cache/redis/error';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 interface IRedisError {
 	name: string;
@@ -29,6 +29,7 @@ export class RedisErrorFilter implements ExceptionFilter {
 	catch(exception: RedisLogicError, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
+		const request = context.getRequest<Request>();
 
 		const error = this.possibleErrors.find((item) => {
 			return item.tag === exception.tag;
@@ -36,7 +37,7 @@ export class RedisErrorFilter implements ExceptionFilter {
 
 		if (error) {
 			this.logger.error({
-				name: `${error.name} - ${exception.name}`,
+				name: `SessionId(${request.sessionId}): ${error.name} - ${exception.name}`,
 				layer: LayersEnum.cache,
 				description: error.message,
 				stack: exception.stack,
@@ -48,7 +49,7 @@ export class RedisErrorFilter implements ExceptionFilter {
 		}
 
 		this.logger.error({
-			name: exception.name,
+			name: `SessionId(${request.sessionId}): ${exception.name}`,
 			layer: LayersEnum.cache,
 			description: exception.message,
 			stack: exception.stack,
