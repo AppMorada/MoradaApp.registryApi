@@ -1,10 +1,10 @@
-import { Injectable, OnApplicationShutdown } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { initializeApp } from 'firebase-admin/app';
 import { Firestore } from 'firebase-admin/firestore';
 import admin from 'firebase-admin';
 
 @Injectable()
-export class FirestoreService implements OnApplicationShutdown {
+export class FirestoreService {
 	private readonly _instance: Firestore;
 
 	constructor() {
@@ -20,13 +20,5 @@ export class FirestoreService implements OnApplicationShutdown {
 
 	get instance(): Firestore {
 		return this._instance;
-	}
-
-	async close() {
-		await this._instance.terminate();
-	}
-
-	async onApplicationShutdown() {
-		await this._instance.terminate();
 	}
 }

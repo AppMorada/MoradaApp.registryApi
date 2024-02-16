@@ -1,7 +1,7 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 interface IPrismaError {
 	name: string;
@@ -48,6 +48,7 @@ export class PrismaErrorFilter implements ExceptionFilter {
 	) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
+		const request = context.getRequest<Request>();
 
 		const error = this.possibleErrors.find((item) => {
 			return item.code === exception.code;
@@ -55,7 +56,7 @@ export class PrismaErrorFilter implements ExceptionFilter {
 
 		if (error) {
 			this.logger.error({
-				name: `${error.name} - ${exception.code}`,
+				name: `SessionId(${request.sessionId}): ${error.name} - ${exception.code}`,
 				layer: LayersEnum.database,
 				description: error.message,
 				stack: exception.stack,
@@ -68,7 +69,7 @@ export class PrismaErrorFilter implements ExceptionFilter {
 		}
 
 		this.logger.error({
-			name: `${exception.name} - ${exception.code}`,
+			name: `SessionId(${request.sessionId}): ${exception.name} - ${exception.code}`,
 			layer: LayersEnum.database,
 			description: exception.message,
 			stack: exception.stack,

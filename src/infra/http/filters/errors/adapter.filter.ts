@@ -1,7 +1,7 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { AdapterError } from '@app/errors/adapter';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 /** Usado para filtrar erros dos Adapters */
 @Catch(AdapterError)
@@ -11,9 +11,10 @@ export class AdapterErrorFilter implements ExceptionFilter {
 	catch(exception: AdapterError, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
+		const request = context.getRequest<Request>();
 
 		this.logger.error({
-			name: exception.name,
+			name: `SessionId(${request.sessionId}): ${exception.name}`,
 			layer: LayersEnum.adapter,
 			description: exception.message,
 			stack: exception.stack,

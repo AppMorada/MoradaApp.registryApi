@@ -62,6 +62,7 @@ export class CreateUserController {
 	) {
 		const invite = req.inMemoryData.invite as Invite;
 		validateObligatoryFieldsForCommonUser({
+			req,
 			invite,
 			body,
 			logger: this.logger,

@@ -1,7 +1,7 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 interface IServiceErrors {
 	name: string;
@@ -17,7 +17,7 @@ export class ServiceErrorFilter implements ExceptionFilter {
 
 	private possibleErrors: IServiceErrors[] = [
 		{
-			name: 'Credenciais inválidas',
+			name: 'Ação não autorizada',
 			tag: ServiceErrorsTags.unauthorized,
 			message: 'Acesso não autorizado',
 			httpCode: 401,
@@ -40,6 +40,7 @@ export class ServiceErrorFilter implements ExceptionFilter {
 	catch(exception: ServiceErrors, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
+		const request = context.getRequest<Request>();
 
 		const error = this.possibleErrors.find((item) => {
 			return item.tag === exception.tag;
@@ -47,7 +48,7 @@ export class ServiceErrorFilter implements ExceptionFilter {
 
 		if (error) {
 			this.logger.error({
-				name: `${error.name} - ${exception.name}`,
+				name: `SessionId(${request.sessionId}): ${error.name} - ${exception.name}`,
 				layer: LayersEnum.services,
 				description: error.message,
 				stack: exception.stack,
@@ -60,7 +61,7 @@ export class ServiceErrorFilter implements ExceptionFilter {
 		}
 
 		this.logger.error({
-			name: exception.name,
+			name: `SessionId(${request.sessionId}): ${exception.name}`,
 			layer: LayersEnum.services,
 			description: exception.message,
 			stack: exception.stack,
