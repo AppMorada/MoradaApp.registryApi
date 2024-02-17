@@ -8,11 +8,11 @@ export class NestjsCacheSecret implements SecretRepo {
 	constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
 
 	async add(input: Secret): Promise<void> {
-		await this.cache.set(input.key, input.value, 0);
+		await this.cache.set(`#SECRET[${input.key}]`, input.value, 0);
 	}
 
 	async get(key: string): Promise<Secret | undefined> {
-		const secretValue = await this.cache.get<string>(key);
+		const secretValue = await this.cache.get<string>(`#SECRET[${key}]`);
 		if (!secretValue) return undefined;
 		return new Secret({ key, value: secretValue });
 	}
