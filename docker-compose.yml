@@ -6,7 +6,7 @@ services:
     restart: always
     hostname: db
     ports:
-      - "5432:5432"
+      - "7845:5432"
     environment:
       POSTGRES_DB: "mydb"
       POSTGRES_USER: "postgres"
@@ -19,7 +19,7 @@ services:
     restart: always
     hostname: redis
     ports:
-      - "6379:6379"
+      - "9845:6379"
     command: redis-server --loglevel warning --requirepass password
     volumes:
       - cache:/data
@@ -62,12 +62,11 @@ services:
       - firebase-cache:/root/.cache/firebase
       - firebase-configs:/root/.config
     ports:
-      - 8081:8081 # Cloud Firestore
       - 4001:4001 # Emulator Suite UI
       # - 4500:4500 # Logging
       # - 4400:4400 # Hub
       - 9229:9229 # Debugger
-      - 3000:3000 # Google cloud functions
+      - 4845:3000
 
 volumes:
   db:
