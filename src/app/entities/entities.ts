@@ -2,6 +2,7 @@ import { EntitieError } from '@app/errors/entities';
 import { IClass } from '@utils/class';
 
 export enum EntitiesEnum {
+	secret = 'secret',
 	key = 'key',
 	condominium = 'Condominium',
 	user = 'User',

@@ -14,6 +14,11 @@ import { KeyRepo, KeysEnum } from '@app/repositories/key';
 import { InMemoryKey } from '@tests/inMemoryDatabase/key';
 import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
+import { SecretRepo } from '@app/repositories/secret';
+import { InMemorySecret } from '@tests/inMemoryDatabase/secret';
+import { LoggerAdapter } from '@app/adapters/logger';
+import { LoggerSpy } from '@tests/adapters/logger.spy';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 describe('Gen TFA Service', () => {
 	let genTFA: GenTFAService;
@@ -21,6 +26,7 @@ describe('Gen TFA Service', () => {
 	let cryptAdapter: CryptSpy;
 	let userRepo: InMemoryUser;
 	let eventEmitter: EventEmitter2;
+	let getEnv: GetEnvService;
 
 	beforeEach(async () => {
 		/* eslint-disable @typescript-eslint/no-unused-vars */
@@ -43,6 +49,14 @@ describe('Gen TFA Service', () => {
 			],
 			providers: [
 				{
+					provide: LoggerAdapter,
+					useValue: new LoggerSpy(),
+				},
+				{
+					provide: SecretRepo,
+					useValue: new InMemorySecret(container),
+				},
+				{
 					provide: UserRepo,
 					useValue: new InMemoryUser(container),
 				},
@@ -54,6 +68,7 @@ describe('Gen TFA Service', () => {
 					provide: CryptAdapter,
 					useClass: CryptSpy,
 				},
+				GetEnvService,
 				GetKeyService,
 				GenTFAService,
 			],
@@ -63,6 +78,8 @@ describe('Gen TFA Service', () => {
 		userRepo = app.get(UserRepo);
 		genTFA = app.get(GenTFAService);
 		eventEmitter = app.get(EventEmitter2);
+
+		getEnv = app.get(GetEnvService);
 
 		eventEmitter.once(EVENT_ID.EMAIL.SEND, () => true);
 
@@ -96,13 +113,19 @@ describe('Gen TFA Service', () => {
 
 		expect(userRepo.calls.create).toEqual(1);
 
-		const frontendUrl = String(process.env.FRONT_END_AUTH_URL);
+		const { env: FRONT_END_AUTH_URL } = await getEnv.exec({
+			env: EnvEnum.FRONT_END_AUTH_URL,
+		});
+		const { env: PROJECT_NAME } = await getEnv.exec({
+			env: EnvEnum.PROJECT_NAME,
+		});
+
 		const payload: EventsTypes.Email.ISendProps = {
 			to: user.email.value,
-			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,
+			subject: `${PROJECT_NAME} - Solicitação de login`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
-				<a href="${frontendUrl}${code}">${frontendUrl}${code}</a>`,
+				<a href="${FRONT_END_AUTH_URL}${code}">${FRONT_END_AUTH_URL}${code}</a>`,
 		};
 		expect(eventEmitter.emit).toHaveBeenCalledWith(
 			EVENT_ID.EMAIL.SEND,

@@ -1,7 +1,8 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { IHttpClientCall, HttpAdapter, IHttpClientCallReturn } from '../http';
 import { AdapterError } from '@app/errors/adapter';
 
+@Injectable()
 export class FetchAdapter implements HttpAdapter {
 	async call(input: IHttpClientCall): Promise<IHttpClientCallReturn> {
 		let statusCode: number | undefined;

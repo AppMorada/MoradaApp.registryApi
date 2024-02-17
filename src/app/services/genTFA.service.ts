@@ -8,6 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
 import { GetKeyService } from './getKey.service';
 import { KeysEnum } from '@app/repositories/key';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 interface IProps {
 	email: Email;
@@ -22,6 +23,7 @@ export class GenTFAService implements IService {
 		private readonly crypt: CryptAdapter,
 		private readonly eventEmitter: EventEmitter2,
 		private readonly getKey: GetKeyService,
+		private readonly getEnv: GetEnvService,
 	) {}
 
 	private async genCode(input: UUID) {
@@ -54,13 +56,19 @@ export class GenTFAService implements IService {
 	async exec(input: IProps) {
 		const code = await this.genCode(input.userId);
 
-		const frontendUrl = String(process.env.FRONT_END_AUTH_URL);
+		const { env: FRONT_END_AUTH_URL } = await this.getEnv.exec({
+			env: EnvEnum.FRONT_END_AUTH_URL,
+		});
+		const { env: PROJECT_NAME } = await this.getEnv.exec({
+			env: EnvEnum.PROJECT_NAME,
+		});
+
 		const payload: EventsTypes.Email.ISendProps = {
 			to: input.email.value,
-			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,
+			subject: `${PROJECT_NAME} - Solicitação de login`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
-				<a href="${frontendUrl}${code}">${frontendUrl}${code}</a>`,
+				<a href="${FRONT_END_AUTH_URL}${code}">${FRONT_END_AUTH_URL}${code}</a>`,
 		};
 		this.eventEmitter.emit(EVENT_ID.EMAIL.SEND, payload);
 

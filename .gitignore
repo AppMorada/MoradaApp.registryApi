@@ -23,3 +23,5 @@ pubsub-debug*.*log
 ui-debug*.*log
 project-metadata.dev.json
 .vscode/launch.json
+
+gcp-envs.yaml

@@ -4,7 +4,9 @@ import {
 	IValidateSignedCookie,
 	TValidateSignedCookieReturn,
 } from '../cookie';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class CookieParserAdapter implements CookieAdapter {
 	validateSignedCookie(
 		input: IValidateSignedCookie,
