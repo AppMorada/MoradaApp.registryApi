@@ -9,7 +9,6 @@ export class InMemoryKey implements KeyRepo {
 	calls = {
 		create: 0,
 		updateSignatures: 0,
-		watchSignatures: 0,
 		getSignature: 0,
 	};
 
@@ -51,10 +50,6 @@ export class InMemoryKey implements KeyRepo {
 
 			return { name: item.name, value };
 		});
-	}
-
-	async watchSignatures(): Promise<void> {
-		++this.calls.watchSignatures;
 	}
 
 	async getSignature(name: KeysEnum): Promise<Key> {

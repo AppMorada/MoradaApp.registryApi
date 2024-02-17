@@ -10,6 +10,11 @@ export enum KeysEnum {
 }
 
 export abstract class KeyRepo {
-	abstract watchSignatures(): Promise<void>;
 	abstract getSignature(name: KeysEnum): Promise<Key>;
+}
+
+export abstract class KeyCache {
+	abstract set(key: Key): Promise<void>;
+	abstract get(name: KeysEnum): Promise<Key | undefined>;
+	abstract delete(name: KeysEnum): Promise<void>;
 }

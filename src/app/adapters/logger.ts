@@ -1,4 +1,5 @@
 export enum LayersEnum {
+	nodeInternal = 'Node-Internal',
 	config = 'Config',
 	healthCheck = 'Health-Check-layer',
 	start = 'Start-layer',

@@ -20,6 +20,8 @@ export class FirestoreCustomErrorFilter implements ExceptionFilter {
 			stack: exception.stack,
 		});
 
+		process.kill(process.pid, 'SIGTERM');
+
 		return response.status(500).json({
 			statusCode: 500,
 			message: 'Erro interno do servidor',
