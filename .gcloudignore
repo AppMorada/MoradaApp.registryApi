@@ -3,6 +3,7 @@
 .git
 .gitignore
 
+docs/
 node_modules/
 dist/
 tools/
@@ -11,6 +12,8 @@ tools/
 .env.test
 .env.prod
 
+firebase-rules/
+example/
 coverage/
 dist/
 node_modules/

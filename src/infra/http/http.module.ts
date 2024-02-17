@@ -11,6 +11,7 @@ import { HealthModule } from './controllers/health/index.module';
 import { FirestoreModule } from '@infra/storages/db/firestore/firestore.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AuthModule } from '@app/auth/auth.module';
+import { NestjsCacheModule } from '@infra/storages/cache/nestjs/nestjs.module';
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from '@app/auth/auth.module';
 			isGlobal: true,
 		}),
 		RedisModule,
+		NestjsCacheModule,
 		FirestoreModule,
 		PrismaModule,
 		AdaptersModule,

@@ -4,21 +4,40 @@ import { userFactory } from '@tests/factories/user';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { GenOldTFASevice } from '../genTFACode.old.service';
 import { InMemoryOTP } from '@tests/inMemoryDatabase/otp';
+import { GetEnvService } from '@infra/configs/getEnv.service';
+import { LoggerSpy } from '@tests/adapters/logger.spy';
+import { InMemorySecret } from '@tests/inMemoryDatabase/secret';
 
 describe('Gen TFA Service (OLD)', () => {
 	let genTFA: GenOldTFASevice;
+	let getEnv: GetEnvService;
 
 	let inMemoryContainer: InMemoryContainer;
 	let otpRepo: InMemoryOTP;
+	let secretRepo: InMemorySecret;
+
+	let loggerAdapter: LoggerSpy;
 	let emailAdapter: EmailSpy;
 	let cryptAdapter: CryptSpy;
 
 	beforeEach(() => {
 		inMemoryContainer = new InMemoryContainer();
+
 		otpRepo = new InMemoryOTP(inMemoryContainer);
+		secretRepo = new InMemorySecret(inMemoryContainer);
+
 		emailAdapter = new EmailSpy();
 		cryptAdapter = new CryptSpy();
-		genTFA = new GenOldTFASevice(emailAdapter, otpRepo, cryptAdapter);
+
+		loggerAdapter = new LoggerSpy();
+
+		getEnv = new GetEnvService(loggerAdapter, secretRepo);
+		genTFA = new GenOldTFASevice(
+			emailAdapter,
+			otpRepo,
+			cryptAdapter,
+			getEnv,
+		);
 	});
 
 	it('should be able to gen a TFA', async () => {

@@ -5,6 +5,7 @@ import { EmailAdapter } from '@app/adapters/email';
 import { OTPRepo } from '@app/repositories/otp';
 import { OTP } from '@app/entities/OTP';
 import { IService } from './_IService';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 interface IProps {
 	email: Email;
@@ -18,6 +19,7 @@ export class GenOldTFASevice implements IService {
 		private readonly email: EmailAdapter,
 		private readonly otp: OTPRepo,
 		private readonly crypt: CryptAdapter,
+		private readonly getEnv: GetEnvService,
 	) {}
 
 	private async generateRandomNumbers() {
@@ -47,10 +49,20 @@ export class GenOldTFASevice implements IService {
 			otp,
 		});
 
+		const { env: NAME_SENDER } = await this.getEnv.exec({
+			env: EnvEnum.NAME_SENDER,
+		});
+		const { env: EMAIL_SENDER } = await this.getEnv.exec({
+			env: EnvEnum.EMAIL_SENDER,
+		});
+		const { env: PROJECT_NAME } = await this.getEnv.exec({
+			env: EnvEnum.PROJECT_NAME,
+		});
+
 		await this.email.send({
-			from: `${process.env.NAME_SENDER} <${process.env.EMAIL_SENDER}>`,
+			from: `${NAME_SENDER} <${EMAIL_SENDER}>`,
 			to: input.email.value,
-			subject: `${process.env.PROJECT_NAME} - Solicitação de login`,
+			subject: `${PROJECT_NAME} - Solicitação de login`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
 				<p>${rawCode}</p>`,

@@ -1,4 +1,5 @@
 export enum LayersEnum {
+	config = 'Config',
 	healthCheck = 'Health-Check-layer',
 	start = 'Start-layer',
 	interceptors = 'Interceptor-Layer',

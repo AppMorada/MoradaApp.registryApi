@@ -1,7 +1,9 @@
 import { createHmac } from 'node:crypto';
 import { CryptAdapter, ICryptCompare, ICryptHmac } from '../crypt';
 import * as bcrypt from 'bcrypt';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class BcryptAdapter extends CryptAdapter {
 	private genHmacData = (input: ICryptHmac): Promise<string> =>
 		new Promise((resolve, reject) => {

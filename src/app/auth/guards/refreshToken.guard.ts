@@ -7,6 +7,7 @@ import { UserRepo } from '@app/repositories/user';
 import { Email } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/validateToken.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 /** Usado para validar os tokens do tipo "RefreshToken" */
 @Injectable()
@@ -15,12 +16,16 @@ export class RefreshTokenGuard implements CanActivate {
 		private readonly cookieAdapter: CookieAdapter,
 		private readonly validateToken: ValidateTokenService,
 		private readonly userRepo: UserRepo,
+		private readonly getEnv: GetEnvService,
 	) {}
 
 	private async checkCookie(cookie: string) {
+		const { env: COOKIE_KEY } = await this.getEnv.exec({
+			env: EnvEnum.COOKIE_KEY,
+		});
 		const token = await this.cookieAdapter.validateSignedCookie({
 			cookie: decodeURIComponent(cookie),
-			key: String(process.env.COOKIE_KEY),
+			key: COOKIE_KEY as string,
 		});
 
 		if (!token)

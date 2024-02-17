@@ -15,6 +15,7 @@ import { InviteUserDTO } from '@infra/http/DTO/inviteUser.DTO';
 import { Request, Response } from 'express';
 import { USER_PREFIX } from '../consts';
 import { validateObligatoryFieldsForCommonUser } from '@infra/http/DTO/conditionalsValidations/commonUserCreation';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 @Controller(USER_PREFIX)
 export class CreateUserController {
@@ -24,6 +25,7 @@ export class CreateUserController {
 		private readonly createToken: CreateTokenService,
 		private readonly genInvite: GenInviteService,
 		private readonly logger: LoggerAdapter,
+		private readonly getEnv: GetEnvService,
 	) {}
 
 	private async processTokens(res: Response, user: User) {
@@ -34,12 +36,15 @@ export class CreateUserController {
 
 		const expires = new Date(Date.now() + refreshTokenExp);
 
+		const { env: NODE_ENV } = await this.getEnv.exec({
+			env: EnvEnum.NODE_ENV,
+		});
 		res.cookie('refresh-token', refreshToken, {
 			expires,
 			maxAge: refreshTokenExp * 1000,
 			path: '/',
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production' && true,
+			secure: NODE_ENV === 'production' && true,
 			sameSite: 'strict',
 			signed: true,
 		});

@@ -3,6 +3,7 @@ import { Condominium } from '@app/entities/condominium';
 import { CondominiumRelUser } from '@app/entities/condominiumRelUser';
 import { Invite } from '@app/entities/invite';
 import { Key } from '@app/entities/key';
+import { Secret } from '@app/entities/secret';
 import { User } from '@app/entities/user';
 
 export interface IInMemoryUserContainer {
@@ -17,6 +18,7 @@ interface IInMemoryContainerProps {
 	condominiumArr: Condominium[];
 	condominiumRelUserArr: CondominiumRelUser[];
 	inviteArr: Invite[];
+	secretArr: Secret[];
 	otpArr: { key: string; value: OTP }[];
 	keyArr: { name: string; value: Key }[];
 }
@@ -28,6 +30,7 @@ export class InMemoryContainer {
 		condominiumRelUserArr: [],
 		inviteArr: [],
 		otpArr: [],
+		secretArr: [],
 		keyArr: [],
 	};
 
@@ -39,6 +42,7 @@ export class InMemoryContainer {
 			condominiumArr: [],
 			otpArr: [],
 			keyArr: [],
+			secretArr: [],
 		};
 	}
 }
