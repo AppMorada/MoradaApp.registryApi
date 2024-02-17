@@ -52,6 +52,7 @@ export class GetEnvService implements IService {
 					description: errMsg,
 					stack: err.stack,
 				});
+				process.kill(process.pid, 'SIGTERM');
 
 				throw err;
 			}
@@ -77,6 +78,8 @@ export class GetEnvService implements IService {
 				description: `${input.toString} não esta presente no Secret Manager`,
 				stack: err.stack,
 			});
+
+			process.kill(process.pid, 'SIGTERM');
 
 			throw err;
 		}
