@@ -1,4 +1,5 @@
 export enum FirestoreCustomErrorTag {
+	createEntity = '__create_entity_err__',
 	malformedEntity = '__malformed_entity_err__',
 	entityDoesntExist = '__entity_does_not_exists__',
 }

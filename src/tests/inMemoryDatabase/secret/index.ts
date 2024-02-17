@@ -10,8 +10,8 @@ export class InMemorySecret implements SecretRepo {
 		get: 0,
 	};
 
-	constructor(private readonly container: InMemoryContainer) {
-		this.secrets = this.container.props.secretArr;
+	constructor(container: InMemoryContainer) {
+		this.secrets = container.props.secretArr;
 	}
 
 	async add(input: Secret): Promise<void> {

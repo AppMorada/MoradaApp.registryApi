@@ -1,8 +1,7 @@
-import { KeyRepo, KeysEnum } from '@app/repositories/key';
+import { KeyRepo, KeyCache, KeysEnum } from '@app/repositories/key';
 import { FirestoreService } from '../firestore.service';
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { firestoreKeyDTO } from '../dto/keys.DTO';
-import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { Key } from '@app/entities/key';
 import { FirestoreKeyMapper, IToFlatReturn } from '../mapper/key';
 import { FirestoreCustomError, FirestoreCustomErrorTag } from '../error';
@@ -13,7 +12,7 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 	constructor(
 		private readonly firestore: FirestoreService,
 		private readonly loggerAdapter: LoggerAdapter,
-		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+		private readonly keyRepoAsCache: KeyCache,
 	) {}
 
 	private signatures = [
@@ -26,27 +25,27 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 	];
 
 	async watchSignatures(): Promise<void> {
-		const signaturesCollection = (
-			await this.firestore.getInstance()
-		).collection('secrets');
+		const database = await this.firestore.getInstance();
+		const signaturesCollection = database.collection('secrets');
+
 		this.signatures.forEach((name) => {
 			signaturesCollection.doc(name).onSnapshot(async (item) => {
 				this.loggerAdapter.info({
 					name: 'Dynamic signatures',
 					layer: LayersEnum.database,
-					description: `Reading ${name} signature and syncing internal cache system`,
+					description: `Lendo a assinatura "${name}" e sincronizando com o sistema de cache interno`,
 				});
 
 				if (!item.exists) {
 					const err = new FirestoreCustomError({
 						tag: FirestoreCustomErrorTag.entityDoesntExist,
 						cause: `A chave com o nome "${name}" não foi encontrada`,
-						message: 'Entidade não existe',
+						message: `"${name}" não foi encontrado`,
 					});
-					this.loggerAdapter.error({
+					this.loggerAdapter.fatal({
 						name: err.name,
 						layer: LayersEnum.database,
-						description: err.message,
+						description: `${err.message} - ${err.cause}`,
 					});
 
 					throw err;
@@ -62,33 +61,31 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 					...incompleteKey,
 				} as IToFlatReturn;
 
-				const jsonKey = JSON.stringify(key);
-				await this.cacheManager.set(name, jsonKey, 0);
+				await this.keyRepoAsCache.set(
+					FirestoreKeyMapper.fromFlatToClass(key),
+				);
 			});
 		});
 	}
 
 	async getSignature(name: KeysEnum): Promise<Key> {
-		const rawKey = await this.cacheManager.get<string>(name.toString());
-		if (!rawKey) {
+		const key = await this.keyRepoAsCache.get(name);
+		if (!key) {
 			const err = new FirestoreCustomError({
 				tag: FirestoreCustomErrorTag.entityDoesntExist,
 				cause: `A chave com o nome "${name}" não foi encontrada`,
-				message: 'Entidade não existe',
+				message: `"${name}" não foi encontrado`,
 			});
 
-			this.loggerAdapter.error({
+			this.loggerAdapter.fatal({
 				name: err.name,
 				layer: LayersEnum.database,
-				description: err.message,
+				description: `${err.message} - ${err.cause}`,
 			});
 
 			throw err;
 		}
 
-		const key = FirestoreKeyMapper.fromFlatToClass(
-			JSON.parse(rawKey) as IToFlatReturn,
-		);
 		return key;
 	}
 
