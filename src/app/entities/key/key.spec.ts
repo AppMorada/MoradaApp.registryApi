@@ -2,13 +2,13 @@ import { keyFactory } from '@tests/factories/key';
 
 describe('Key Entitie Test', () => {
 	it('should be able to create a key entitie', () => {
-		const key = keyFactory();
-		const anotherKey = key;
+		const sut = keyFactory();
+		const key = sut;
 
-		expect(key.equalTo({ key: anotherKey })).toBe(true);
+		expect(sut.equalTo(key)).toBe(true);
 
 		const actualTime = Date.now();
-		const anotherKey2 = keyFactory({
+		const key2 = keyFactory({
 			name: 'another key',
 			ttl: 60 * 60 * 1000,
 			renewTime: actualTime + 60 * 60 * 1000,
@@ -17,6 +17,6 @@ describe('Key Entitie Test', () => {
 				content: key.actual.content,
 			},
 		});
-		expect(key.equalTo({ key: anotherKey2 })).toBe(false);
+		expect(key.equalTo(key2)).toBe(false);
 	});
 });

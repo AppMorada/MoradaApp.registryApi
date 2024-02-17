@@ -22,7 +22,7 @@ describe('InMemoryKeyRepo getSignature method test', () => {
 		sut.keys.push({ name: key.name, value: key });
 
 		const searchedKey = await sut.getSignature(name);
-		expect(searchedKey.equalTo({ key })).toEqual(true);
+		expect(searchedKey.equalTo(key)).toEqual(true);
 		expect(sut.calls.getSignature).toEqual(1);
 	});
 

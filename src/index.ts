@@ -1,4 +1,4 @@
-import { LoggerAdapter } from '@app/adapters/logger';
+import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
@@ -56,6 +56,18 @@ export class RegistryAPIBootstrap {
 
 		const document = SwaggerModule.createDocument(this.app, config);
 		SwaggerModule.setup('api', this.app, document);
+
+		process.on('SIGTERM', async () => {
+			this.logger.info({
+				name: 'SIGTERM',
+				description:
+					'SIGTERM recebido, finalizando a aplicação de maneira segura',
+				layer: LayersEnum.nodeInternal,
+			});
+
+			await this.app.close();
+			process.exit(1);
+		});
 	}
 
 	private setGlobalInteceptors() {

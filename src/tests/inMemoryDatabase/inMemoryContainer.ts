@@ -21,6 +21,7 @@ interface IInMemoryContainerProps {
 	secretArr: Secret[];
 	otpArr: { key: string; value: OTP }[];
 	keyArr: { name: string; value: Key }[];
+	keyCacheArr: Key[];
 }
 
 export class InMemoryContainer {
@@ -32,6 +33,7 @@ export class InMemoryContainer {
 		otpArr: [],
 		secretArr: [],
 		keyArr: [],
+		keyCacheArr: [],
 	};
 
 	erase() {
@@ -42,6 +44,7 @@ export class InMemoryContainer {
 			condominiumArr: [],
 			otpArr: [],
 			keyArr: [],
+			keyCacheArr: [],
 			secretArr: [],
 		};
 	}
