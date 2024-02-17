@@ -22,6 +22,7 @@ import { USER_PREFIX } from '../consts';
 import { StartLoginDTO } from '@infra/http/DTO/login.DTO';
 import { FinishLoginWithOTPDTO } from '@infra/http/DTO/finishLoginWithOTP.DTO';
 import { FinishLoginWithTFADTO } from '@infra/http/DTO/finishLoginWithTFA.DTO';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 @Controller(USER_PREFIX)
 export class LoginUserController {
@@ -30,6 +31,7 @@ export class LoginUserController {
 		private readonly createToken: CreateTokenService,
 		private readonly oldTFA: GenOldTFASevice,
 		private readonly genTFA: GenTFAService,
+		private readonly getEnv: GetEnvService,
 	) {}
 
 	private async processTokens(res: Response, user: User) {
@@ -40,12 +42,15 @@ export class LoginUserController {
 
 		const expires = new Date(Date.now() + refreshTokenExp * 1000);
 
+		const { env: NODE_ENV } = await this.getEnv.exec({
+			env: EnvEnum.NODE_ENV,
+		});
 		res.cookie('refresh-token', refreshToken, {
 			expires,
 			maxAge: refreshTokenExp * 1000,
 			path: '/',
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production' && true,
+			secure: NODE_ENV === 'production' && true,
 			sameSite: 'strict',
 			signed: true,
 		});

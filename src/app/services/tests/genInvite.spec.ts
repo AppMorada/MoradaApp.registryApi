@@ -14,6 +14,11 @@ import { InMemoryKey } from '@tests/inMemoryDatabase/key';
 import { GetKeyService } from '../getKey.service';
 import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
+import { SecretRepo } from '@app/repositories/secret';
+import { InMemorySecret } from '@tests/inMemoryDatabase/secret';
+import { LoggerAdapter } from '@app/adapters/logger';
+import { LoggerSpy } from '@tests/adapters/logger.spy';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 describe('Gen invite test', () => {
 	let genInvite: GenInviteService;
@@ -22,6 +27,7 @@ describe('Gen invite test', () => {
 	let inviteRepo: InMemoryInvite;
 	let crypt: CryptSpy;
 	let eventEmitter: EventEmitter2;
+	let getEnv: GetEnvService;
 
 	beforeEach(async () => {
 		/* eslint-disable @typescript-eslint/no-unused-vars */
@@ -45,6 +51,14 @@ describe('Gen invite test', () => {
 			],
 			providers: [
 				{
+					provide: LoggerAdapter,
+					useValue: new LoggerSpy(),
+				},
+				{
+					provide: SecretRepo,
+					useValue: new InMemorySecret(container),
+				},
+				{
 					provide: InviteRepo,
 					useValue: new InMemoryInvite(container),
 				},
@@ -56,6 +70,7 @@ describe('Gen invite test', () => {
 					provide: CryptAdapter,
 					useClass: CryptSpy,
 				},
+				GetEnvService,
 				GetKeyService,
 				GenInviteService,
 			],
@@ -66,6 +81,8 @@ describe('Gen invite test', () => {
 		crypt = app.get(CryptAdapter);
 
 		genInvite = app.get(GenInviteService);
+
+		getEnv = app.get(GetEnvService);
 
 		eventEmitter.once(EVENT_ID.EMAIL.SEND, () => true);
 
@@ -98,13 +115,19 @@ describe('Gen invite test', () => {
 		expect(inviteRepo.calls.create).toEqual(1);
 		expect(crypt.calls.hashWithHmac).toEqual(1);
 
-		const frontendUrl = String(process.env.FRONT_END_INVITE_URL);
+		const { env: FRONT_END_INVITE_URL } = await getEnv.exec({
+			env: EnvEnum.FRONT_END_INVITE_URL,
+		});
+		const { env: PROJECT_NAME } = await getEnv.exec({
+			env: EnvEnum.PROJECT_NAME,
+		});
+
 		const payload: EventsTypes.Email.ISendProps = {
 			to: user.email.value,
-			subject: `${process.env.PROJECT_NAME} - Convite para o condomínio`,
+			subject: `${PROJECT_NAME} - Convite para o condomínio`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este link com ninguém</p>
-				<a href="${frontendUrl}${hashedValue}">${frontendUrl}${hashedValue}</a>`,
+				<a href="${FRONT_END_INVITE_URL}${hashedValue}">${FRONT_END_INVITE_URL}${hashedValue}</a>`,
 		};
 		expect(eventEmitter.emit).toHaveBeenCalledWith(
 			EVENT_ID.EMAIL.SEND,

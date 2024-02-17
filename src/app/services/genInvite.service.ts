@@ -11,6 +11,7 @@ import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { mapInviteKeyBasedOnLevel } from '@utils/mapInviteKeyBasedOnLevel';
 import { GetKeyService } from './getKey.service';
 import { KeysEnum } from '@app/repositories/key';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 interface IProps {
 	email: Email;
@@ -27,6 +28,7 @@ export class GenInviteService implements IService {
 		private readonly inviteRepo: InviteRepo,
 		private readonly eventEmitter: EventEmitter2,
 		private readonly getKey: GetKeyService,
+		private readonly getEnv: GetEnvService,
 	) {}
 
 	private async generateInvite({
@@ -46,14 +48,22 @@ export class GenInviteService implements IService {
 		return await this.cryptAdapter.hashWithHmac({ key, data: inputData });
 	}
 
-	private sendEmail(input: Pick<IProps, 'email'> & { inviteAsHash: string }) {
-		const frontendUrl = String(process.env.FRONT_END_INVITE_URL);
+	private async sendEmail(
+		input: Pick<IProps, 'email'> & { inviteAsHash: string },
+	) {
+		const { env: FRONT_END_INVITE_URL } = await this.getEnv.exec({
+			env: EnvEnum.FRONT_END_INVITE_URL,
+		});
+		const { env: PROJECT_NAME } = await this.getEnv.exec({
+			env: EnvEnum.PROJECT_NAME,
+		});
+
 		const payload: EventsTypes.Email.ISendProps = {
 			to: input.email.value,
-			subject: `${process.env.PROJECT_NAME} - Convite para o condomínio`,
+			subject: `${PROJECT_NAME} - Convite para o condomínio`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este link com ninguém</p>
-				<a href="${frontendUrl}${input.inviteAsHash}">${frontendUrl}${input.inviteAsHash}</a>`,
+				<a href="${FRONT_END_INVITE_URL}${input.inviteAsHash}">${FRONT_END_INVITE_URL}${input.inviteAsHash}</a>`,
 		};
 		this.eventEmitter.emit(EVENT_ID.EMAIL.SEND, payload);
 	}

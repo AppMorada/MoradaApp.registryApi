@@ -16,8 +16,6 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
 	) {}
 
-	public signaturesCollection = this.firestore.instance.collection('secrets');
-
 	private signatures = [
 		KeysEnum.ACCESS_TOKEN_KEY.toString(),
 		KeysEnum.REFRESH_TOKEN_KEY.toString(),
@@ -28,8 +26,11 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 	];
 
 	async watchSignatures(): Promise<void> {
+		const signaturesCollection = (
+			await this.firestore.getInstance()
+		).collection('secrets');
 		this.signatures.forEach((name) => {
-			this.signaturesCollection.doc(name).onSnapshot(async (item) => {
+			signaturesCollection.doc(name).onSnapshot(async (item) => {
 				this.loggerAdapter.info({
 					name: 'Dynamic signatures',
 					layer: LayersEnum.database,

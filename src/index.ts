@@ -21,10 +21,12 @@ import { RedisErrorFilter } from '@infra/http/filters/errors/redis-login.filter'
 import { HealthCheckErrorFilter } from '@infra/http/filters/errors/healthCheckError.filter';
 import { AxiosCheckErrorFilter } from '@infra/http/filters/errors/serviceUnavailableException.filter';
 import { FirestoreCustomErrorFilter } from '@infra/http/filters/errors/firestoreCustomError.filter';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 export class RegistryAPIBootstrap {
 	private app: NestExpressApplication;
 	private logger: LoggerAdapter;
+	private envManager: GetEnvService;
 
 	private async build() {
 		this.app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -32,12 +34,18 @@ export class RegistryAPIBootstrap {
 		});
 
 		this.app.enableShutdownHooks();
-		this.app.use(cookieParser(process.env.COOKIE_KEY));
 		this.app.enableCors({
 			origin: '*', // mudar no futuro
 			methods: ['DELETE', 'POST', 'PATCH', 'PUT', 'GET'],
 		});
+
 		this.logger = this.app.get(LoggerAdapter);
+		this.envManager = this.app.get(GetEnvService);
+
+		const { env: COOKIE_KEY } = await this.envManager.exec({
+			env: EnvEnum.COOKIE_KEY,
+		});
+		this.app.use(cookieParser(COOKIE_KEY));
 
 		const config = new DocumentBuilder()
 			.setTitle('MoradaApp: Registry API')
@@ -83,8 +91,8 @@ export class RegistryAPIBootstrap {
 		this.setGlobalPipes();
 		this.setGlobalFilters();
 
-		const PORT = process.env.PORT ?? 3000;
-		await this.app.listen(PORT);
+		const { env: PORT } = await this.envManager.exec({ env: EnvEnum.PORT });
+		await this.app.listen(PORT ?? 3000);
 	}
 }
 

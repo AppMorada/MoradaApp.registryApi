@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import Redis from 'ioredis';
 import { RedisErrorsTags, RedisLogicError } from './error';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 @Injectable()
 export class RedisService
@@ -13,9 +14,10 @@ implements OnModuleInit, OnApplicationShutdown, OnModuleDestroy
 {
 	private _instance: Redis;
 
+	constructor(private readonly getEnv: GetEnvService) {}
+
 	private async waitForConnection() {
 		if (this._instance.status === 'ready') return;
-
 		if (
 			this._instance.status === 'close' ||
 			this._instance.status === 'end'
@@ -41,19 +43,19 @@ implements OnModuleInit, OnApplicationShutdown, OnModuleDestroy
 	}
 
 	private async init() {
-		if (!this._instance)
-			this._instance = new Redis(process.env.REDIS_URL as string);
+		const { env: REDIS_URL } = await this.getEnv.exec({
+			env: EnvEnum.REDIS_URL,
+		});
+		if (!this._instance) this._instance = new Redis(REDIS_URL as string);
 
 		await this.waitForConnection();
 	}
 
 	private async close() {
-		if (
-			this._instance &&
-			(this._instance.status === 'connect' ||
-				this._instance.status === 'connecting')
-		)
-			await this._instance.quit();
+		const isInConnectingState =
+			this._instance.status === 'connect' ||
+			this._instance.status === 'connecting';
+		if (this._instance && isInConnectingState) await this._instance.quit();
 	}
 
 	async onModuleInit() {
