@@ -1,6 +1,7 @@
 export enum DatabaseCustomErrorsTags {
+	unauthorized = 'Unauthorized',
 	tooManyEntities = 'Too many entities',
-	maximumCondominiumRelUser = 'Maximum condominiumRelUser',
+	alreadyRegisteredCondominiumRelUser = 'CondominiumRelUser already registered',
 	wrongInputLevel = 'Wrong input level detected',
 	contentAlreadyExists = 'This content already exists',
 	contentDoesntExists = 'This content doesn\'t exists',

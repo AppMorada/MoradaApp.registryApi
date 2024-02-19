@@ -16,12 +16,12 @@ import { ThrottlerErrorFilter } from '@infra/http/filters/errors/throttler.filte
 import { NotFoundFilter } from '@infra/http/filters/errors/notFound.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { DatabaseCustomErrorFilter } from '@infra/http/filters/errors/databaseCustomError.filter';
-import { PrismaErrorFilter } from '@infra/http/filters/errors/prisma.filter';
 import { RedisErrorFilter } from '@infra/http/filters/errors/redis-login.filter';
 import { HealthCheckErrorFilter } from '@infra/http/filters/errors/healthCheckError.filter';
 import { AxiosCheckErrorFilter } from '@infra/http/filters/errors/serviceUnavailableException.filter';
 import { FirestoreCustomErrorFilter } from '@infra/http/filters/errors/firestoreCustomError.filter';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { TypeORMErrorFilter } from '@infra/http/filters/errors/typeorm.filter';
 
 export class RegistryAPIBootstrap {
 	private app: NestExpressApplication;
@@ -57,7 +57,7 @@ export class RegistryAPIBootstrap {
 		const document = SwaggerModule.createDocument(this.app, config);
 		SwaggerModule.setup('api', this.app, document);
 
-		process.on('SIGTERM', async () => {
+		process.on('SIGTERM', () => {
 			this.logger.info({
 				name: 'SIGTERM',
 				description:
@@ -65,7 +65,6 @@ export class RegistryAPIBootstrap {
 				layer: LayersEnum.nodeInternal,
 			});
 
-			await this.app.close();
 			process.exit(1);
 		});
 	}
@@ -75,7 +74,11 @@ export class RegistryAPIBootstrap {
 	}
 
 	private setGlobalPipes() {
-		this.app.useGlobalPipes(new ValidationPipe());
+		this.app.useGlobalPipes(
+			new ValidationPipe({
+				transform: true,
+			}),
+		);
 	}
 
 	private setGlobalFilters() {
@@ -83,7 +86,7 @@ export class RegistryAPIBootstrap {
 		this.app.useGlobalFilters(new HealthCheckErrorFilter());
 		this.app.useGlobalFilters(new AxiosCheckErrorFilter(this.logger));
 		this.app.useGlobalFilters(new RedisErrorFilter(this.logger));
-		this.app.useGlobalFilters(new PrismaErrorFilter(this.logger));
+		this.app.useGlobalFilters(new TypeORMErrorFilter(this.logger));
 		this.app.useGlobalFilters(new FirestoreCustomErrorFilter(this.logger));
 		this.app.useGlobalFilters(new DatabaseCustomErrorFilter(this.logger));
 		this.app.useGlobalFilters(new ServiceErrorFilter(this.logger));
@@ -99,8 +102,8 @@ export class RegistryAPIBootstrap {
 	async start() {
 		await this.build();
 
-		this.setGlobalInteceptors();
 		this.setGlobalPipes();
+		this.setGlobalInteceptors();
 		this.setGlobalFilters();
 
 		const { env: PORT } = await this.envManager.exec({ env: EnvEnum.PORT });

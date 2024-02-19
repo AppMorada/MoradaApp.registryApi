@@ -46,7 +46,7 @@ export class CondominiumPrismaRepo implements CondominiumRepo {
 
 		if (!unparsedCondominium && input?.safeSearch)
 			throw new DatabaseCustomError({
-				message: 'Este usuário não existe',
+				message: 'Este condomínio não existe',
 				tag: DatabaseCustomErrorsTags.contentDoesntExists,
 			});
 

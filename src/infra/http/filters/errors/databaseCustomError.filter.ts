@@ -20,7 +20,7 @@ export class DatabaseCustomErrorFilter implements ExceptionFilter {
 
 	private readonly possibleErrors: IFirestoreErrors[] = [
 		{
-			name: 'Conteúdo não existe',
+			name: 'Conteúdo não existe - SafeSearch ativo',
 			tag: DatabaseCustomErrorsTags.safeSearchEnabled,
 			message: 'O conteúdo solicitado não foi encontrado',
 			httpCode: 404,
@@ -38,25 +38,25 @@ export class DatabaseCustomErrorFilter implements ExceptionFilter {
 			httpCode: 401,
 		},
 		{
-			name: 'Conteúdo não existe',
+			name: 'Referência perdida',
 			tag: DatabaseCustomErrorsTags.refLost,
 			message: 'O conteúdo solicitado não foi encontrado',
 			httpCode: 404,
 		},
 		{
-			name: 'Acesso não autorizado',
+			name: 'Muitas entidades registradas',
 			tag: DatabaseCustomErrorsTags.tooManyEntities,
 			message: 'Acesso não autorizado',
 			httpCode: 401,
 		},
 		{
 			name: 'Acesso não autorizado',
-			tag: DatabaseCustomErrorsTags.maximumCondominiumRelUser,
-			message: 'Este usuário já está vinculado a outro condomínio',
+			tag: DatabaseCustomErrorsTags.alreadyRegisteredCondominiumRelUser,
+			message: 'Acesso não autorizado',
 			httpCode: 401,
 		},
 		{
-			name: 'Acesso não autorizado',
+			name: 'Inputs errados',
 			tag: DatabaseCustomErrorsTags.wrongInputLevel,
 			message: 'Acesso não autorizado',
 			httpCode: 401,

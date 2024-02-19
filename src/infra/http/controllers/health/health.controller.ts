@@ -1,16 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { HEALTH_PREFIX } from './consts';
 import {
 	HealthCheck,
 	HealthCheckService,
 	HttpHealthIndicator,
 	MemoryHealthIndicator,
-	PrismaHealthIndicator,
+	TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { PrismaService } from '@infra/storages/db/prisma/prisma.service';
 import { RedisHealthIndicator } from '@infra/storages/cache/redis/healthIndicator';
 import { RedisService } from '@infra/storages/cache/redis/redis.service';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { DataSource } from 'typeorm';
+import { typeORMConsts } from '@infra/storages/db/typeorm/consts';
 
 @Controller(HEALTH_PREFIX)
 export class HealthController {
@@ -18,8 +19,9 @@ export class HealthController {
 		private readonly health: HealthCheckService,
 		private readonly mem: MemoryHealthIndicator,
 		private readonly http: HttpHealthIndicator,
-		private readonly prismaIndicator: PrismaHealthIndicator,
-		private readonly prismaClient: PrismaService,
+		private readonly typeOrmIndication: TypeOrmHealthIndicator,
+		@Inject(typeORMConsts.databaseProviders)
+		private readonly dataSource: DataSource,
 		private readonly redisIndicator: RedisHealthIndicator,
 		private readonly redisClient: RedisService,
 		private readonly getEnv: GetEnvService,
@@ -44,10 +46,9 @@ export class HealthController {
 			() => this.mem.checkHeap('memory_heap', max_mem_heap),
 			() => this.mem.checkRSS('memory_rss', max_mem_rss),
 			() =>
-				this.prismaIndicator.pingCheck(
-					'prisma_client',
-					this.prismaClient,
-				),
+				this.typeOrmIndication.pingCheck('typeorm_client', {
+					connection: this.dataSource,
+				}),
 			() =>
 				this.redisIndicator.isHealthy('redis_client', this.redisClient),
 		]);
