@@ -16,7 +16,9 @@ import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 export class UserPrismaRepo implements UserRepo {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create(): Promise<void> {}
+	async create(): Promise<void> {
+		throw new Error('Method not implemented');
+	}
 
 	async find(input: UserRepoInterfaces.safeSearch): Promise<User>;
 	async find(input: UserRepoInterfaces.search): Promise<User | undefined>;
