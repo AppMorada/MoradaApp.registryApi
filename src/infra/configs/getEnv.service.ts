@@ -8,6 +8,7 @@ import { SecretRepo } from '@app/repositories/secret';
 import { Secret } from '@app/entities/secret';
 
 export enum EnvEnum {
+	SIGNATURE_TYPE = 'SIGNATURE_TYPE',
 	PORT = 'PORT',
 	NODE_ENV = 'NODE_ENV',
 	PROJECT_NAME = 'PROJECT_NAME',
@@ -24,7 +25,6 @@ export enum EnvEnum {
 	PASS_SENDER = 'PASS_SENDER',
 	GCP_PROJECT = 'GCP_PROJECT',
 	FIRESTORE_EMULATOR_HOST = 'FIRESTORE_EMULATOR_HOST',
-	LOGS = 'LOGS',
 	MAX_MEMORY_HEAP = 'MAX_MEMORY_HEAP',
 	MAX_MEMORY_RSS = 'MAX_MEMORY_RSS',
 	CREATE_KEY_FUNC_URL = 'CREATE_KEY_FUNC_URL',

@@ -7,6 +7,11 @@ export interface IEnvMetadata {
 type TEnv = Record<string, IEnvMetadata>;
 
 export const environmentVariablesMetadata: TEnv = {
+	SIGNATURE_TYPE: {
+		name: 'SIGNATURE_TYPE',
+		scope: 'LOCAL',
+		isOptional: true,
+	},
 	PORT: {
 		name: 'PORT',
 		scope: 'LOCAL',
@@ -84,11 +89,6 @@ export const environmentVariablesMetadata: TEnv = {
 	},
 	FIRESTORE_EMULATOR_HOST: {
 		name: 'FIRESTORE_EMULATOR_HOST',
-		scope: 'LOCAL',
-		isOptional: true,
-	},
-	LOGS: {
-		name: 'LOGS',
 		scope: 'LOCAL',
 		isOptional: true,
 	},
