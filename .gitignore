@@ -25,3 +25,6 @@ project-metadata.dev.json
 .vscode/launch.json
 
 gcp-envs.yaml
+
+ormconfig.json
+
