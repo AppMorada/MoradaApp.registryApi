@@ -12,6 +12,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { AuthModule } from '@app/auth/auth.module';
 import { NestjsCacheModule } from '@infra/storages/cache/nestjs/nestjs.module';
 import { CustomTypeOrmModule } from '@infra/storages/db/typeorm/typeorm.module';
+import { IsolatedRepoModule } from '@infra/storages/db/isolateds/isolated.module';
 
 @Module({
 	imports: [
@@ -20,7 +21,9 @@ import { CustomTypeOrmModule } from '@infra/storages/db/typeorm/typeorm.module';
 		}),
 		RedisModule,
 		NestjsCacheModule,
-		FirestoreModule,
+		process.env.SIGNATURE_TYPE === 'dynamic'
+			? FirestoreModule
+			: IsolatedRepoModule,
 		CustomTypeOrmModule,
 		AdaptersModule,
 		GatewayModule,
