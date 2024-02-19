@@ -24,46 +24,61 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 		KeysEnum.TFA_TOKEN_KEY.toString(),
 	];
 
+	private buildErr(name: string) {
+		const err = new FirestoreCustomError({
+			tag: FirestoreCustomErrorTag.entityDoesntExist,
+			cause: `A chave com o nome "${name}" não foi encontrada`,
+			message: `"${name}" não foi encontrado`,
+		});
+		this.loggerAdapter.fatal({
+			name: err.name,
+			layer: LayersEnum.database,
+			description: `${err.message} - ${err.cause}`,
+		});
+
+		return err;
+	}
+
 	async watchSignatures(): Promise<void> {
 		const database = await this.firestore.getInstance();
 		const signaturesCollection = database.collection('secrets');
 
-		this.signatures.forEach((name) => {
-			signaturesCollection.doc(name).onSnapshot(async (item) => {
-				this.loggerAdapter.info({
-					name: 'Dynamic signatures',
-					layer: LayersEnum.database,
-					description: `Lendo a assinatura "${name}" e sincronizando com o sistema de cache interno`,
-				});
+		this.signatures.forEach(async (name) => {
+			return new Promise((resolve, reject) => {
+				let isFirstTime = true;
+				const eventId = setTimeout(() => {
+					reject(this.buildErr(name));
+				}, 4500);
 
-				if (!item.exists) {
-					const err = new FirestoreCustomError({
-						tag: FirestoreCustomErrorTag.entityDoesntExist,
-						cause: `A chave com o nome "${name}" não foi encontrada`,
-						message: `"${name}" não foi encontrado`,
-					});
-					this.loggerAdapter.fatal({
-						name: err.name,
+				signaturesCollection.doc(name).onSnapshot(async (item) => {
+					this.loggerAdapter.info({
+						name: 'Dynamic signatures',
 						layer: LayersEnum.database,
-						description: `${err.message} - ${err.cause}`,
+						description: `Lendo a assinatura "${name}" e sincronizando com o sistema de cache interno`,
 					});
 
-					throw err;
-				}
+					if (!item.exists) throw this.buildErr(name);
 
-				const rawData = item.data();
-				const incompleteKey = firestoreKeyDTO(
-					rawData,
-					this.loggerAdapter,
-				);
-				const key = {
-					name: item.id,
-					...incompleteKey,
-				} as IToFlatReturn;
+					const rawData = item.data();
+					const incompleteKey = firestoreKeyDTO(
+						rawData,
+						this.loggerAdapter,
+					);
+					const key = {
+						name: item.id,
+						...incompleteKey,
+					} as IToFlatReturn;
 
-				await this.keyRepoAsCache.set(
-					FirestoreKeyMapper.fromFlatToClass(key),
-				);
+					await this.keyRepoAsCache.set(
+						FirestoreKeyMapper.fromFlatToClass(key),
+					);
+
+					if (isFirstTime) {
+						clearTimeout(eventId);
+						resolve();
+						isFirstTime = false;
+					}
+				});
 			});
 		});
 	}
@@ -90,6 +105,6 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 	}
 
 	async onModuleInit() {
-		this.watchSignatures();
+		await this.watchSignatures();
 	}
 }
