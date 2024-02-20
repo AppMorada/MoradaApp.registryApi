@@ -25,7 +25,7 @@ jobs:
         id: git-clone
         name: Cloning repository
 
-      - uses: dorny/paths-filtes@v3
+      - uses: dorny/paths-filter@v3
         id: path-filter
         with:
           base: ${{ github.ref }}
