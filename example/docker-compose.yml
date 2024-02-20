@@ -8,14 +8,14 @@ services:
     restart: always
     hostname: db
     ports:
-      - "5432:5432"
+      - "7846:5432"
 
   redis_db:
     image: redis:7.0.5-bullseye
     restart: always
     hostname: redis
     ports:
-      - "6379:6379"
+      - "9846:6379"
     command: redis-server --loglevel warning --requirepass password
     volumes:
       - cache:/data
@@ -28,7 +28,7 @@ services:
     hostname: app
     restart: always
     ports:
-      - 3030:3030
+      - "7941:8080"
 
 volumes:
   cache:
