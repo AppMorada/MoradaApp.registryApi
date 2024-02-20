@@ -39,8 +39,8 @@ export const databaseProviders = [
 					TypeOrmCondominiumRelUserEntity,
 					TypeOrmInviteEntity,
 				],
-				synchronize: NODE_ENV === 'production' ? false : true,
-				migrationsRun: NODE_ENV === 'production' ? false : true,
+				synchronize: false,
+				migrationsRun: false,
 				migrationsTableName: 'migration_typeorm',
 				migrations: [FirstMigration1708364261801],
 			}).initialize();
