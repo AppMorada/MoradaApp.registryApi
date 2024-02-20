@@ -68,7 +68,7 @@ jobs:
         id: git-clone
         name: Cloning repository
 
-      - users: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v2
         id: install-pnpm
         name: Installing PNPM
         with:
