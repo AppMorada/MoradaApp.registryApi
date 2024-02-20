@@ -42,8 +42,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        node: [ 20 ]
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+        node: [ 16, 18, 20 ]
     steps:
       - uses: actions/checkout@v4
         id: git-clone
