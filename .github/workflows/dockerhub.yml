@@ -25,16 +25,6 @@ jobs:
         id: git-clone
         name: Cloning repository
 
-      - uses: dorny/paths-filter@v3
-        id: path-filter
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            src:
-              - "src/**"
-            sql:
-              - "example/sql/**"
-
       - name: Docker hub login
         id: docker-hub-login
         uses: docker/login-action@v1
@@ -45,8 +35,6 @@ jobs:
       - uses: docker/build-push-action@v2
         name: Build and push app image
         id: build-and-push-app
-        if: |
-          steps.path-filter.outputs.src == 'true'
         with:
           context: .
           file: Dockerfile.prod
@@ -56,8 +44,6 @@ jobs:
       - uses: docker/build-push-action@v2
         name: Build and push SQL image
         id: build-and-push-sql
-        if: |
-          steps.path-filter.outputs.sql == 'true'
         with:
           context: ./example
           file: pg.Dockerfile
