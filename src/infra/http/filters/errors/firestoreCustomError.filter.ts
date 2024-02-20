@@ -1,6 +1,7 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { FirestoreCustomError } from '@infra/storages/db/firestore/error';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { fatalErrorHandler } from '@utils/fatalErrorHandler';
 import { Response, Request } from 'express';
 
 /** Usado para filtrar erros do FirestoreCustomError */
@@ -20,7 +21,7 @@ export class FirestoreCustomErrorFilter implements ExceptionFilter {
 			stack: exception.stack,
 		});
 
-		process.kill(process.pid, 'SIGTERM');
+		fatalErrorHandler();
 
 		return response.status(500).json({
 			statusCode: 500,
