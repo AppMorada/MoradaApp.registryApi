@@ -13,6 +13,7 @@ log.db-lock
 .env
 .env.prod
 .env.test
+.secrets
 *.txt
 
 .pnpm-store

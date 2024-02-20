@@ -1,17 +1,5 @@
 name: CD - Deploy Docker images
 
-env:
-  PROJECT_NAME: ${{secrets.PROJECT_NAME}}
-  DATABASE_URL: ${{secrets.DATABASE_URL}}
-  REDIS_URL: ${{secrets.REDIS_URL}}
-  COOKIE_KEY: ${{secrets.COOKIE_KEY}}
-  HOST_SENDER: ${{secrets.HOST_SENDER}}
-  HOST_PORT_SENDER: ${{secrets.HOST_PORT_SENDER}}
-  NAME_SENDER: ${{secrets.NAME_SENDER}}
-  EMAIL_SENDER: ${{secrets.EMAIL_SENDER}}
-  PASS_SENDER: ${{secrets.PASS_SENDER}}
-  SIGNATURE_TYPE: ${{secrets.SIGNATURE_TYPE}}
-
 on:
   push:
     branches:
@@ -45,7 +33,7 @@ jobs:
         name: Build and push SQL image
         id: build-and-push-sql
         with:
-          context: ./example
-          file: pg.Dockerfile
+          context: "{{defaultContext}}:example"
+          file: ./pg.Dockerfile
           push: true
           tags: ${{secrets.DOCKER_SQL_IMAGE_TAG}}

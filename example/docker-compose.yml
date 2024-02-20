@@ -4,7 +4,7 @@ services:
   db:
     build:
       dockerfile: ./pg.Dockerfile
-      context: ./sql
+      context: .
     restart: always
     hostname: db
     ports:
