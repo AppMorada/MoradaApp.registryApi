@@ -1,4 +1,4 @@
-import { LoggerAdapter } from '@app/adapters/logger';
+import { LoggerAdapter, TErrProps } from '@app/adapters/logger';
 
 export class LoggerSpy implements LoggerAdapter {
 	calls = {
@@ -25,7 +25,9 @@ export class LoggerSpy implements LoggerAdapter {
 	async error() {
 		++this.calls.error;
 	}
-	async fatal() {
+
+	async fatal(input: TErrProps): Promise<void> {
 		++this.calls.fatal;
+		console.error('FATAL ERROR DETECTED: ', input);
 	}
 }

@@ -22,7 +22,7 @@
 		"lint": "eslint \"{src,tests}/**/*.ts\"",
 		"lint:fix": "eslint --fix",
 		"format": "prettier --write",
-		"test": "dotenv -e .env.test jest",
+		"test": "dotenv -e .env.test -- jest",
 		"test:cov": "dotenv -e .env.test -- jest --coverage --config ./jest.config.ts",
 		"test:e2e": "dotenv -e .env.prod jest --config ./jest.e2e.config.ts",
 		"test:e2e:cov": "dotenv -e .env.prod jest --config ./jest.e2e.config.ts --coverage",

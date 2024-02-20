@@ -6,6 +6,7 @@ import { IEnvMetadata, environmentVariablesMetadata } from './envDefinitions';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { SecretRepo } from '@app/repositories/secret';
 import { Secret } from '@app/entities/secret';
+import { fatalErrorHandler } from '@utils/fatalErrorHandler';
 
 export enum EnvEnum {
 	SIGNATURE_TYPE = 'SIGNATURE_TYPE',
@@ -52,7 +53,7 @@ export class GetEnvService implements IService {
 					description: errMsg,
 					stack: err.stack,
 				});
-				process.kill(process.pid, 'SIGTERM');
+				fatalErrorHandler();
 
 				throw err;
 			}
@@ -79,7 +80,7 @@ export class GetEnvService implements IService {
 				stack: err.stack,
 			});
 
-			process.kill(process.pid, 'SIGTERM');
+			fatalErrorHandler();
 
 			throw err;
 		}
