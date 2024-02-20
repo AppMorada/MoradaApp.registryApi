@@ -1,0 +1,65 @@
+name: CD - Deploy Docker images
+
+env:
+  PROJECT_NAME: ${{secrets.PROJECT_NAME}}
+  DATABASE_URL: ${{secrets.DATABASE_URL}}
+  REDIS_URL: ${{secrets.REDIS_URL}}
+  COOKIE_KEY: ${{secrets.COOKIE_KEY}}
+  HOST_SENDER: ${{secrets.HOST_SENDER}}
+  HOST_PORT_SENDER: ${{secrets.HOST_PORT_SENDER}}
+  NAME_SENDER: ${{secrets.NAME_SENDER}}
+  EMAIL_SENDER: ${{secrets.EMAIL_SENDER}}
+  PASS_SENDER: ${{secrets.PASS_SENDER}}
+  SIGNATURE_TYPE: ${{secrets.SIGNATURE_TYPE}}
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        id: git-clone
+        name: Cloning repository
+
+      - uses: dorny/paths-filtes@v3
+        id: path-filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            src:
+              - "src/**"
+            sql:
+              - "example/sql/**"
+
+      - name: Docker hub login
+        id: docker-hub-login
+        uses: docker/login-action@v1
+        with:
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_HUB_PASSWORD}}
+
+      - uses: docker/build-push-action@v2
+        name: Build and push app image
+        id: build-and-push-app
+        if: |
+          steps.path-filter.outputs.src == 'true'
+        with:
+          context: .
+          file: Dockerfile.prod
+          push: true
+          tags: ${{secrets.DOCKER_APP_IMAGE_TAG}}
+
+      - uses: docker/build-push-action@v2
+        name: Build and push SQL image
+        id: build-and-push-sql
+        if: |
+          steps.path-filter.outputs.sql == 'true'
+        with:
+          context: ./example
+          file: pg.Dockerfile
+          push: true
+          tags: ${{secrets.DOCKER_SQL_IMAGE_TAG}}
