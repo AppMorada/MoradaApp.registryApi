@@ -35,7 +35,6 @@ CREATE TABLE public.migration_typeorm (
     name character varying NOT NULL
 );
 
-
 CREATE SEQUENCE public.migration_typeorm_id_seq
     AS integer
     START WITH 1

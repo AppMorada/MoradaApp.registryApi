@@ -112,5 +112,4 @@ export class RegistryAPIBootstrap {
 }
 
 const app = new RegistryAPIBootstrap();
-
 app.start();
