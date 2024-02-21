@@ -1,0 +1,46 @@
+Project RegistryApi {
+	database_type: 'RegistryApiDB'
+	Node: '''
+		# RegistryApi Database
+		**ERD elaborado para o banco de dados da RegistryApi**
+	'''
+}
+
+Table users {
+	id uuid [pk, default: `uuid_generate_v4`]
+	name varchar(120) [unique]
+	email varchar(320) [unique]
+	password varchar(64)
+	cpf char(11) [unique]
+	phone_number varchar(30)
+	created_at timestamp [default: `now()`]
+	updated_at timestamp [default: `now()`]
+}
+
+Table condominiums {
+	id uuid [pk, default: `uuid_generate_v4`]
+	name varchar(120)
+	cep varchar(8)
+	num int [note: 'Número do condomínio']
+	cnpj char(14) [unique]
+	created_at timestamp [default: `now()`]
+	updated_at timestamp [default: `now()`]
+}
+
+Table condominiumreluser {
+	id uuid [pk, default: `uuid_generate_v4`]
+	block varchar(6) [null]
+	apartment_number int [null]
+	level smallint [default: 0]
+	condominium_id uuid [ref: > condominiums.id]
+	user_id uuid [ref: > users.id]
+	updatedAt timestamp [default: `now()`]
+}
+
+Table invites {
+	id uuid [pk, default: `uuid_generate_v4`]
+	email varchar(320)
+	ttl int
+	expires_at timestamp 
+	condominium_id uuid [ref: > condominiums.id]
+}
