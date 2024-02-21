@@ -1,4 +1,4 @@
-name: DBDOCS - CI
+name: CI - dbdocs
 
 on:
   push:
@@ -14,18 +14,6 @@ jobs:
       - uses: actions/checkout@v4
         id: git-clone
         name: Cloning repository
-
-      - uses: pnpm/action-setup@v3
-        id: install-pnpm
-        name: Installing PNPM
-        with:
-          version: 8
-
-      - uses: actions/setup-node@v4
-        name: Install Node.js
-        id: set-nodejs
-        with:
-          cache: "pnpm"
 
       - name: Installing dbdocs
         id: install-dbdocs
