@@ -100,9 +100,32 @@ jobs:
         id: git-clone
         name: Cloning repository
 
+      - uses: dorny/paths-filter@v3
+        id: path
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            workflow:
+              - ".github/workflows/dockerhub-alpha.yml"
+            src:
+              - "src/**"
+            packagejson:
+              - "package.json"
+            lockfile:
+              - "pnpm-lock.yaml"
+            sql:
+              - "example/init.sql"
+            pgimage:
+              - "example/pg.Dockerfile"
+
       - name: Docker hub login
         id: docker-hub-login
         uses: docker/login-action@v3
+        if: |
+          steps.path.outputs.workflow == 'true' ||
+          steps.path.outputs.src == 'true' ||
+          steps.path.outputs.packagejson == 'true' ||
+          steps.path.outputs.lockfile == 'true'
         with:
           username: ${{secrets.DOCKER_HUB_USERNAME}}
           password: ${{secrets.DOCKER_HUB_PASSWORD}}
@@ -110,6 +133,11 @@ jobs:
       - uses: docker/build-push-action@v5
         name: Build and push app image
         id: build-and-push-app
+        if: |
+          steps.path.outputs.workflow == 'true' ||
+          steps.path.outputs.src == 'true' ||
+          steps.path.outputs.packagejson == 'true' ||
+          steps.path.outputs.lockfile == 'true'
         with:
           context: .
           file: Dockerfile.prod
@@ -119,6 +147,10 @@ jobs:
       - uses: docker/build-push-action@v5
         name: Build and push SQL image
         id: build-and-push-sql
+        if: |
+          steps.path.outputs.workflow == 'true' ||
+          steps.path.outputs.sql == 'true' ||
+          steps.path.outputs.pgimage == 'true'
         with:
           context: "{{defaultContext}}:example"
           file: ./pg.Dockerfile
