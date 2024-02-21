@@ -1,4 +1,4 @@
-name: CI - Tests & Lint
+name: CI - Tests & Lint & Deploy
 
 env:
   SIGNATURE_TYPE: ${{secrets.SIGNATURE_TYPE}}
@@ -26,16 +26,7 @@ env:
 
 on:
   push:
-    branches:
-      - "develop"
-      - "feature/**"
-      - "perf/**"
-      - "refactor/**"
-      - "bugfix/**"
-      - "release/**"
-      - "hotfix/**"
-      - "support/**"
-      - "dependabot/**"
+    branches: ["main"]
 
 jobs:
   test:
@@ -100,3 +91,36 @@ jobs:
       - name: Run Eslint
         id: eslint
         run: pnpm run lint
+
+  deploy:
+    needs: [eslint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        id: git-clone
+        name: Cloning repository
+
+      - name: Docker hub login
+        id: docker-hub-login
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_HUB_PASSWORD}}
+
+      - uses: docker/build-push-action@v5
+        name: Build and push app image
+        id: build-and-push-app
+        with:
+          context: .
+          file: Dockerfile.prod
+          push: true
+          tags: ${{secrets.DOCKER_APP_IMAGE_TAG}}-alpha
+
+      - uses: docker/build-push-action@v5
+        name: Build and push SQL image
+        id: build-and-push-sql
+        with:
+          context: "{{defaultContext}}:example"
+          file: ./pg.Dockerfile
+          push: true
+          tags: ${{secrets.DOCKER_SQL_IMAGE_TAG}}-alpha
