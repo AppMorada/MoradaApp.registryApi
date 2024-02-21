@@ -26,7 +26,17 @@ env:
 
 on:
   push:
-    branches: ["!main"]
+    branches:
+      - "feature/**"
+      - "perf/**"
+      - "refactor/**"
+      - "bugfix/**"
+      - "ci/**"
+      - "chore/**"
+      - "release/**"
+      - "hotfix/**"
+      - "support/**"
+      - "dependabot/**"
 
 jobs:
   test:
