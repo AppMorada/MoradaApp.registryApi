@@ -1,11 +1,8 @@
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
-import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import { ConfigError } from './error';
-import { IEnvMetadata, environmentVariablesMetadata } from './envDefinitions';
+import { environmentVariablesMetadata } from './envDefinitions';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
-import { SecretRepo } from '@app/repositories/secret';
-import { Secret } from '@app/entities/secret';
 import { fatalErrorHandler } from '@utils/fatalErrorHandler';
 
 export enum EnvEnum {
@@ -35,10 +32,7 @@ export enum EnvEnum {
 
 @Injectable()
 export class GetEnvService implements IService {
-	constructor(
-		private readonly logger: LoggerAdapter,
-		private readonly secretRepo: SecretRepo,
-	) {
+	constructor(private readonly logger: LoggerAdapter) {
 		for (const key in environmentVariablesMetadata) {
 			const metadata = environmentVariablesMetadata[key];
 			const localEnv = process.env?.[metadata.name];
@@ -60,64 +54,8 @@ export class GetEnvService implements IService {
 		}
 	}
 
-	private async handleWithSecretManager(input: EnvEnum, url: string) {
-		const remoteEnv = await this.secretRepo.get(input.toString());
-		if (remoteEnv) return { env: remoteEnv.value };
-
-		const client = new SecretManagerServiceClient();
-
-		const secrets = await client.accessSecretVersion({ name: url });
-		const data = secrets[0]?.payload?.data;
-
-		if (!data) {
-			const err = new ConfigError(
-				`${input.toString} não esta presente no Secret Manager`,
-			);
-			this.logger.fatal({
-				name: 'Environment variables',
-				layer: LayersEnum.config,
-				description: `${input.toString} não esta presente no Secret Manager`,
-				stack: err.stack,
-			});
-
-			fatalErrorHandler();
-
-			throw err;
-		}
-
-		const dataAsString = Buffer.from(data).toString();
-
-		const secret = new Secret({
-			key: input.toString(),
-			value: dataAsString,
-		});
-		await this.secretRepo.add(secret);
-
-		return { env: dataAsString };
-	}
-
-	private getMetadata(env: EnvEnum) {
-		let metadata: IEnvMetadata | undefined;
-		for (const key in environmentVariablesMetadata) {
-			if (environmentVariablesMetadata[key].name === env.toString()) {
-				metadata = environmentVariablesMetadata[key];
-				break;
-			}
-		}
-
-		return metadata;
-	}
-
 	async exec(input: { env: EnvEnum }): Promise<{ env?: string }> {
-		const metadata = this.getMetadata(input.env);
 		const localEnv = process.env[input.env.toString()] as string;
-
-		if (
-			process.env.NODE_ENV === 'production' &&
-			metadata!.scope === 'SECRET_MANAGER'
-		)
-			return await this.handleWithSecretManager(input.env, localEnv);
-
 		return { env: localEnv };
 	}
 }

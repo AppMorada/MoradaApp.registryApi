@@ -6,7 +6,6 @@ import { GenOldTFASevice } from '../genTFACode.old.service';
 import { InMemoryOTP } from '@tests/inMemoryDatabase/otp';
 import { GetEnvService } from '@infra/configs/getEnv.service';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
-import { InMemorySecret } from '@tests/inMemoryDatabase/secret';
 
 describe('Gen TFA Service (OLD)', () => {
 	let genTFA: GenOldTFASevice;
@@ -14,7 +13,6 @@ describe('Gen TFA Service (OLD)', () => {
 
 	let inMemoryContainer: InMemoryContainer;
 	let otpRepo: InMemoryOTP;
-	let secretRepo: InMemorySecret;
 
 	let loggerAdapter: LoggerSpy;
 	let emailAdapter: EmailSpy;
@@ -24,14 +22,13 @@ describe('Gen TFA Service (OLD)', () => {
 		inMemoryContainer = new InMemoryContainer();
 
 		otpRepo = new InMemoryOTP(inMemoryContainer);
-		secretRepo = new InMemorySecret(inMemoryContainer);
 
 		emailAdapter = new EmailSpy();
 		cryptAdapter = new CryptSpy();
 
 		loggerAdapter = new LoggerSpy();
 
-		getEnv = new GetEnvService(loggerAdapter, secretRepo);
+		getEnv = new GetEnvService(loggerAdapter);
 		genTFA = new GenOldTFASevice(
 			emailAdapter,
 			otpRepo,

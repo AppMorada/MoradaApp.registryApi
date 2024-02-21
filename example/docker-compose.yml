@@ -2,9 +2,7 @@ version: "3"
 
 services:
   db:
-    build:
-      dockerfile: ./pg.Dockerfile
-      context: .
+    image: moradaapp/pgdb-test
     restart: always
     hostname: db
     ports:
@@ -22,9 +20,7 @@ services:
 
   app:
     env_file: ../.env
-    build:
-      context: ..
-      dockerfile: Dockerfile.prod
+    image: moradaapp/registry-api-test
     hostname: app
     restart: always
     ports:

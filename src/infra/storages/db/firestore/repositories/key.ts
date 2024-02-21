@@ -48,7 +48,7 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 				let isFirstTime = true;
 				const eventId = setTimeout(() => {
 					reject(this.buildErr(name));
-				}, 4500);
+				}, 5000);
 
 				signaturesCollection.doc(name).onSnapshot(async (item) => {
 					this.loggerAdapter.info({
@@ -75,9 +75,10 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 
 					if (isFirstTime) {
 						clearTimeout(eventId);
-						resolve();
 						isFirstTime = false;
 					}
+
+					return resolve();
 				});
 			});
 		});

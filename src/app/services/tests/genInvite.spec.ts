@@ -14,8 +14,6 @@ import { InMemoryKey } from '@tests/inMemoryDatabase/key';
 import { GetKeyService } from '../getKey.service';
 import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
-import { SecretRepo } from '@app/repositories/secret';
-import { InMemorySecret } from '@tests/inMemoryDatabase/secret';
 import { LoggerAdapter } from '@app/adapters/logger';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
@@ -53,10 +51,6 @@ describe('Gen invite test', () => {
 				{
 					provide: LoggerAdapter,
 					useValue: new LoggerSpy(),
-				},
-				{
-					provide: SecretRepo,
-					useValue: new InMemorySecret(container),
 				},
 				{
 					provide: InviteRepo,

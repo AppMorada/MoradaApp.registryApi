@@ -19,7 +19,6 @@ import { randomBytes } from 'crypto';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
 import { GetEnvService } from '@infra/configs/getEnv.service';
-import { InMemorySecret } from '@tests/inMemoryDatabase/secret';
 
 describe('Refresh token guard test', () => {
 	let jwtService: JwtService;
@@ -36,7 +35,6 @@ describe('Refresh token guard test', () => {
 	let inMemoryContainer: InMemoryContainer;
 	let userRepo: InMemoryUser;
 	let keyRepo: InMemoryKey;
-	let secretRepo: InMemorySecret;
 
 	beforeEach(async () => {
 		cookieAdapter = new CookieParserAdapter();
@@ -45,7 +43,6 @@ describe('Refresh token guard test', () => {
 		inMemoryContainer = new InMemoryContainer();
 		userRepo = new InMemoryUser(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
-		secretRepo = new InMemorySecret(inMemoryContainer);
 
 		jwtService = new JwtService();
 		getKeyService = new GetKeyService(keyRepo);
@@ -54,7 +51,7 @@ describe('Refresh token guard test', () => {
 			getKeyService,
 		);
 		createTokenService = new CreateTokenService(jwtService, getKeyService);
-		getEnvService = new GetEnvService(loggerAdapter, secretRepo);
+		getEnvService = new GetEnvService(loggerAdapter);
 
 		refreshTokenGuard = new RefreshTokenGuard(
 			cookieAdapter,
