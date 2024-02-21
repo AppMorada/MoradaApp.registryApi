@@ -1,0 +1,39 @@
+name: DBDOCS - CI
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/dbdocs.yml"
+      - "docs/dbdocs/**"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        id: git-clone
+        name: Cloning repository
+
+      - uses: pnpm/action-setup@v3
+        id: install-pnpm
+        name: Installing PNPM
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v4
+        name: Install Node.js
+        id: set-nodejs
+        with:
+          cache: "pnpm"
+
+      - name: Installing dbdocs
+        id: install-dbdocs
+        run: npm install -g dbdocs
+
+      - name: Update dbdocs project
+        env:
+          DBDOCS_TOKEN: ${{secrets.DBDOCS_TOKEN}}
+        run: dbdocs build ./docs/dbdocs/database.dbml
+
+    
