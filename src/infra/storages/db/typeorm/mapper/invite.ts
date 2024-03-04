@@ -6,10 +6,10 @@ export class TypeOrmInviteMapper {
 	static toTypeOrm(input: Invite): TypeOrmInviteEntity {
 		const invite = new TypeOrmInviteEntity();
 		invite.id = input.id.value;
-		invite.email = input.email.value;
-		invite.ttl = input.ttl;
-		invite.type = input.type.value;
-		invite.expiresAt = input.expiresAt;
+		invite.recipient = input.recipient.value;
+		invite.CPF = input.CPF.value;
+		invite.createdAt = input.createdAt;
+		invite.hierarchy = input.hierarchy.value;
 		invite.condominium = input.condominiumId.value;
 
 		return invite;
@@ -19,10 +19,10 @@ export class TypeOrmInviteMapper {
 		return new Invite(
 			{
 				condominiumId: input.condominium as string,
-				ttl: input.ttl,
-				type: input.type,
-				email: input.email,
-				expiresAt: input.expiresAt,
+				recipient: input.recipient,
+				hierarchy: input.hierarchy,
+				CPF: input.CPF,
+				createdAt: input.createdAt,
 			},
 			input.id,
 		);
@@ -31,10 +31,10 @@ export class TypeOrmInviteMapper {
 	static toObject(input: TypeOrmInviteEntity): TInviteInObject {
 		return {
 			id: input.id,
-			email: input.email,
-			expiresAt: input.expiresAt,
-			type: input.type,
-			ttl: input.ttl,
+			recipient: input.recipient,
+			CPF: input.CPF,
+			hierarchy: input.hierarchy,
+			createdAt: input.createdAt,
 			condominiumId: input.condominium as string,
 		};
 	}

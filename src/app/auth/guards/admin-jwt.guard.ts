@@ -11,7 +11,10 @@ import { GuardErrors } from '@app/errors/guard';
 import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
-import { ValidateTokenService } from '@app/services/validateToken.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
+import { EnterpriseMember } from '@app/entities/enterpriseMember';
+import { EnterpriseMemberRepo } from '@app/repositories/enterpriseMember';
+import { CondominiumRepo } from '@app/repositories/condominium';
 
 /** Usado para validar se um usuário tem permissões de um funcionário */
 @Injectable()
@@ -19,6 +22,8 @@ export class AdminJwt implements CanActivate {
 	constructor(
 		private readonly validateToken: ValidateTokenService,
 		private readonly userRepo: UserRepo,
+		private readonly memberRepo: EnterpriseMemberRepo,
+		private readonly condominiumRepo: CondominiumRepo,
 	) {}
 
 	private async checkToken(token: string) {
@@ -33,7 +38,7 @@ export class AdminJwt implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
 
-		const condominiumId = req.params?.condominiumId;
+		const condominiumId = req?.params?.condominiumId;
 		if (!condominiumId)
 			throw new BadRequestException({
 				statusCode: HttpStatus.BAD_REQUEST,
@@ -49,12 +54,17 @@ export class AdminJwt implements CanActivate {
 			key: new UUID(tokenData.sub),
 			safeSearch: true,
 		});
-		const condominiumRelUser = await this.userRepo.getCondominiumRelation({
-			userId: user.id,
-			condominiumId: new UUID(condominiumId),
+		const condominium = await this.condominiumRepo.find({
+			key: new UUID(condominiumId),
+			safeSearch: true,
 		});
+		const member = await this.memberRepo.getByUserId({ id: user.id });
 
-		if (!condominiumRelUser || condominiumRelUser.level.value < 1)
+		if (
+			!member?.condominiumId.equalTo(condominium.id) &&
+			!(member instanceof EnterpriseMember) &&
+			!condominium.ownerId.equalTo(user.id)
+		)
 			throw new GuardErrors({
 				message: 'Usuário não tem autorização para realizar tal ação',
 			});
@@ -62,7 +72,8 @@ export class AdminJwt implements CanActivate {
 		req.inMemoryData = {
 			...req.inMemoryData,
 			user,
-			condominiumRelUser,
+			member,
+			condominium,
 		};
 
 		return true;

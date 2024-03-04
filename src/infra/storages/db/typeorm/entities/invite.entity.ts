@@ -1,5 +1,6 @@
 import {
 	Column,
+	CreateDateColumn,
 	Entity,
 	JoinColumn,
 	ManyToOne,
@@ -9,23 +10,12 @@ import {
 } from 'typeorm';
 import { TypeOrmCondominiumEntity } from './condominium.entity';
 
-@Unique(['email', 'condominium'])
+@Unique(['recipient', 'condominium'])
+@Unique(['CPF', 'condominium'])
 @Entity({ name: 'invites' })
 export class TypeOrmInviteEntity {
 	@PrimaryGeneratedColumn('uuid')
 		id: string;
-
-	@Column({ length: 320, type: 'varchar' })
-		email: string;
-
-	@Column({ type: 'int' })
-		ttl: number;
-
-	@Column({ name: 'expires_at' })
-		expiresAt: Date;
-
-	@Column({ type: 'smallint', default: 0 })
-		type: number;
 
 	@ManyToOne(
 		() => TypeOrmCondominiumEntity,
@@ -40,4 +30,16 @@ export class TypeOrmInviteEntity {
 		referencedColumnName: 'id',
 	})
 		condominium: Relation<TypeOrmCondominiumEntity> | string;
+
+	@Column({ length: 320, type: 'varchar' })
+		recipient: string;
+
+	@Column({ type: 'bigint', name: 'cpf' })
+		CPF: string;
+
+	@Column({ type: 'smallint', default: 0 })
+		hierarchy: number;
+
+	@CreateDateColumn({ name: 'created_at' })
+		createdAt: Date;
 }

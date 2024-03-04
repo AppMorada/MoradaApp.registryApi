@@ -17,6 +17,24 @@ export class CEP implements ValueObject<CEP, string> {
 			});
 	}
 
+	static toInt(input: CEP) {
+		return parseInt(input.value);
+	}
+
+	static toString(input: number): string {
+		const raw = String(input);
+		if (raw.length < condominiumDTORules.CEP.minLength) {
+			const newPaddingValue =
+				condominiumDTORules.CEP.minLength - raw.length;
+			return raw.padStart(
+				raw.length + newPaddingValue,
+				'0'.repeat(newPaddingValue),
+			);
+		}
+
+		return raw;
+	}
+
 	public equalTo(input: CEP) {
 		return input.value === this._value;
 	}

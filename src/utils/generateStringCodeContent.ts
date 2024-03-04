@@ -1,18 +1,19 @@
-import { Level, Email, UUID } from '@app/entities/VO';
+import { Invite } from '@app/entities/invite';
+import { User } from '@app/entities/user';
 
 export interface IGenerateInviteKeyProps {
-	id: UUID;
-	email: Email;
-	requiredLevel?: Level;
-	condominiumId?: UUID;
+	invite: Invite;
 }
 
 /**
  * Feito para gerar uma string com base nos dados do usuário e sua relação com o condomínio
  **/
 export function generateStringCodeContent(input: IGenerateInviteKeyProps) {
-	const key = `[ID(${input.id.value})].[EMAIL(${input.email.value})].[LEVEL(${
-		input.requiredLevel?.value ?? 'UNKNOWN'
-	})].[CONDOMINIUMID(${input.condominiumId?.value ?? 'UNKNOWN'})]`;
+	const key = `[ID(${input.invite.id.value})].[RECIPIENT(${input.invite.recipient.value})].[LEVEL(${input.invite.hierarchy.value})].[CONDOMINIUMID(${input.invite.condominiumId.value})]`;
+	return key;
+}
+
+export function generateStringCodeContentBasedOnUser(input: { user: User }) {
+	const key = `[ID(${input.user.id.value})].[EMAIL(${input.user.email.value})].[CREATEDAT(${input.user.createdAt})]`;
 	return key;
 }

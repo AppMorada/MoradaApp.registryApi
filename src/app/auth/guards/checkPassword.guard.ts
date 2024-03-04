@@ -2,7 +2,7 @@ import { CryptAdapter } from '@app/adapters/crypt';
 import { Email, Password } from '@app/entities/VO';
 import { GuardErrors } from '@app/errors/guard';
 import { UserRepo } from '@app/repositories/user';
-import { StartLoginDTO } from '@infra/http/DTO/login.DTO';
+import { StartLoginDTO } from '@infra/http/DTO/login/login.DTO';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { checkClassValidatorErrors } from '@utils/convertValidatorErr';
 import { plainToClass } from 'class-transformer';

@@ -4,7 +4,6 @@ import { compilerOptions } from './tsconfig.json';
 
 const config: Config = {
   moduleFileExtensions: ['js', 'json', 'ts'],
-  testRegex: '.*\\.spec\\.ts$',
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
@@ -12,6 +11,8 @@ const config: Config = {
   collectCoverageFrom: ['**/*.ts'],
   coverageDirectory: './coverage',
   testEnvironment: 'node',
+  testRegex: '.*\\.(e2e|spec)\\.ts$',
+  testTimeout: 30000,
 
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>/',

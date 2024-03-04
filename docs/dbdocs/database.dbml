@@ -7,40 +7,71 @@ Project RegistryApi {
 }
 
 Table users {
-	id uuid [pk, default: `uuid_generate_v4`]
-	name varchar(120) [unique]
-	email varchar(320) [unique]
-	password varchar(64)
-	cpf char(11) [unique]
-	phone_number varchar(30)
-	created_at timestamp [default: `now()`]
-	updated_at timestamp [default: `now()`]
+	id                uuid            [pk, default: `uuid_generate_v4()`]
+	name              varchar(100)
+	email             varchar(320)    [unique]
+	phone_number      bigint          [null]
+	cpf               bigint
+	password          char(60)
+	tfa               smallint        [default: 0]
+	created_at        timestamp       [default: `now()`]
+	updated_at        timestamp       [default: `now()`]
+}
+
+Table enterprise_member {
+	id                uuid            [pk, default: `uuid_generate_v4()`]
+	user_id           uuid            [ref: - users.id]
+	condominium_id    uuid            [ref: - condominiums.id]
+	hierarchy         smallint
+	created_at        timestamp       [default: `now()`]
+	updated_at        timestamp       [default: `now()`]
 }
 
 Table condominiums {
-	id uuid [pk, default: `uuid_generate_v4`]
-	name varchar(120)
-	cep varchar(8)
-	num int [note: 'Número do condomínio']
-	cnpj char(14) [unique]
-	created_at timestamp [default: `now()`]
-	updated_at timestamp [default: `now()`]
+	id              uuid            [pk, default: `uuid_generate_v4()`]
+	owner_id        uuid            [ref: - users.id]
+	name            varchar(120)    [unique]
+	cep             int
+	num             int             [note: 'Número do condomínio']
+	cnpj            bigint          [unique]
+	seed_key        binary(100)
+	created_at      timestamp       [default: `now()`]
+	updated_at      timestamp       [default: `now()`]
 }
 
-Table condominiumreluser {
-	id uuid [pk, default: `uuid_generate_v4`]
-	block varchar(6) [null]
-	apartment_number int [null]
-	level smallint [default: 0]
-	condominium_id uuid [ref: > condominiums.id]
-	user_id uuid [ref: > users.id]
-	updatedAt timestamp [default: `now()`]
+Table condominium_members {
+	id                     uuid                [pk, default: `uuid_generate_v4()`]
+	condominium_id         uuid                [ref: - condominiums.id]
+	user_id                uuid                [ref: > users.id]
+
+	c_email                varchar(320)
+	c_phone_number         bigint          [null]
+	hierarchy              smallint
+	apartment_number       int                 [null]
+	block                  varchar(6)          [null, note: 'Bloco do condomínio']
+
+	auto_edit              smallint            [default: 0, note: 'Este usuário pode alterar dados desta tabela? 0/Não; 1;Sim']
+
+	created_at             timestamp           [default: `now()`]
+	updated_at             timestamp           [default: `now()`]
+
+	Indexes {
+		(condominium_id, c_email) [name: 'idx_c_email_condominium_id']
+		c_email [unique]
+		condominium_id [unique]
+	}
 }
 
 Table invites {
-	id uuid [pk, default: `uuid_generate_v4`]
-	email varchar(320)
-	ttl int
-	expires_at timestamp 
-	condominium_id uuid [ref: > condominiums.id]
+	id                        uuid            [pk, default: `uuid_generate_v4()`]
+	condominium_id            uuid            [ref: - condominiums.id]
+	recipient                 varchar(320)
+	code                      char(60) 
+	created_at                timestamp       [default: `now()`]
+
+	Indexes {
+		(condominium_id, recipient) [name: 'idx_recipient_condominium_id']
+		recipient [unique]
+		condominium_id [unique]
+	}
 }

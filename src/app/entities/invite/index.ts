@@ -1,33 +1,33 @@
-import { Email, Level, UUID } from '../VO';
-import { Entity } from '../entities';
+import { CPF, Email, Level, UUID } from '../VO';
+import { Entity, ValueObject } from '../entities';
 
-export interface IProps {
-	email: Email;
-	ttl: number;
-	expiresAt: Date;
+export interface IInviteProps {
+	recipient: Email;
 	condominiumId: UUID;
-	type: Level;
+	CPF: CPF;
+	hierarchy: Level;
+	createdAt: Date;
 }
 
 export interface IInputPropsInvite {
-	email: string;
-	ttl: number;
-	expiresAt?: Date;
+	recipient: string;
 	condominiumId: string;
-	type: number;
+	CPF: string;
+	hierarchy: number;
+	createdAt?: Date;
 }
 
 export class Invite implements Entity {
-	private readonly props: IProps;
+	private readonly props: IInviteProps;
 	private readonly _id: UUID;
 
 	constructor(input: IInputPropsInvite, id?: string) {
 		this.props = {
-			email: new Email(input.email),
-			ttl: input.ttl,
-			type: new Level(input.type),
+			recipient: new Email(input.recipient),
 			condominiumId: new UUID(input.condominiumId),
-			expiresAt: input.expiresAt ?? new Date(Date.now() + input.ttl),
+			CPF: new CPF(input.CPF),
+			hierarchy: new Level(input.hierarchy),
+			createdAt: input.createdAt ?? new Date(),
 		};
 		this._id = id ? new UUID(id) : UUID.genV4();
 	}
@@ -35,11 +35,11 @@ export class Invite implements Entity {
 	dereference(): Invite {
 		return new Invite(
 			{
-				email: this.email.value,
-				ttl: this.ttl,
-				type: this.type.value,
 				condominiumId: this.condominiumId.value,
-				expiresAt: this.expiresAt,
+				CPF: this.CPF.value,
+				hierarchy: this.hierarchy.value,
+				recipient: this.recipient.value,
+				createdAt: this.createdAt,
 			},
 			this.id.value,
 		);
@@ -47,31 +47,32 @@ export class Invite implements Entity {
 
 	equalTo(input: Invite): boolean {
 		return (
-			input.id.equalTo(this.id) &&
-			input.type.equalTo(this.type) &&
-			input.email.equalTo(this.email) &&
-			input.ttl === this.ttl &&
-			input.expiresAt === this.expiresAt &&
-			input.condominiumId.equalTo(this.condominiumId)
+			input instanceof Invite &&
+			input.createdAt === this.createdAt &&
+			ValueObject.compare(input.id, this.id) &&
+			ValueObject.compare(input.condominiumId, this.condominiumId) &&
+			ValueObject.compare(input.recipient, this.recipient) &&
+			ValueObject.compare(input.hierarchy, this.hierarchy) &&
+			ValueObject.compare(input.CPF, this.CPF)
 		);
 	}
 
-	get email(): Email {
-		return this.props.email;
+	get recipient(): Email {
+		return this.props.recipient;
 	}
-	get ttl(): number {
-		return this.props.ttl;
+	get hierarchy(): Level {
+		return this.props.hierarchy;
 	}
-	get expiresAt(): Date {
-		return this.props.expiresAt;
-	}
-	get type(): Level {
-		return this.props.type;
+	get CPF(): CPF {
+		return this.props.CPF;
 	}
 	get condominiumId(): UUID {
 		return this.props.condominiumId;
 	}
 	get id(): UUID {
 		return this._id;
+	}
+	get createdAt(): Date {
+		return this.props.createdAt;
 	}
 }

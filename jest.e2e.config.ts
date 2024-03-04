@@ -1,21 +1,6 @@
-import { Config } from 'jest';
-import { pathsToModuleNameMapper } from 'ts-jest';
-import { compilerOptions } from './tsconfig.json';
+import config from './jest.config'
 
-const config: Config = {
-  moduleFileExtensions: ['js', 'json', 'ts'],
-  testRegex: '.*\\.e2e-spec\\.ts$',
-  transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
-  },
-  clearMocks: true,
-  collectCoverageFrom: ['**/*.(t|j)s'],
-  coverageDirectory: 'coverage',
-  testEnvironment: 'node',
-
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '<rootDir>/',
-  }),
-};
+config.testRegex = '.*\\.e2e\\.ts$'
+config.setupFilesAfterEnv = ['./.jest/setup/flushall-typeorm.ts']
 
 export default config;

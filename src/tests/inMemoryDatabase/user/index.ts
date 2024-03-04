@@ -3,73 +3,47 @@ import { EntitiesEnum } from '@app/entities/entities';
 import { User } from '@app/entities/user';
 import { UserRepo, UserRepoInterfaces } from '@app/repositories/user';
 import { InMemoryError } from '@tests/errors/inMemoryError';
-import {
-	IInMemoryUserContainer,
-	InMemoryContainer,
-} from '../inMemoryContainer';
-import { CondominiumRelUser } from '@app/entities/condominiumRelUser';
-import {
-	CondominiumRelUserMapper,
-	TCondominiumRelUserToObject,
-} from '@app/mapper/condominiumRelUser';
+import { InMemoryContainer } from '../inMemoryContainer';
+
+import { CondominiumMember } from '@app/entities/condominiumMember';
+import { Invite } from '@app/entities/invite';
+import { Condominium } from '@app/entities/condominium';
+import { EnterpriseMember } from '@app/entities/enterpriseMember';
 
 export class InMemoryUser implements UserRepo {
 	public calls = {
 		create: 0,
 		find: 0,
 		delete: 0,
-		getCondominiumRelation: 0,
-		getAllCondominiumRelation: 0,
+		update: 0,
 	};
-	public users: IInMemoryUserContainer[];
+	public users: User[];
+	public invites: Invite[];
+	public condominiums: Condominium[];
+	public condominiumMembers: CondominiumMember[];
+	public enterpriseMembers: EnterpriseMember[];
 
 	constructor(container: InMemoryContainer) {
 		this.users = container.props.userArr;
-	}
-
-	public async create(input: UserRepoInterfaces.create): Promise<void> {
-		++this.calls.create;
-
-		const existentData = this.users.find(
-			(item) =>
-				input.user.id.equalTo(item.user.content.id) ||
-				input.user.email.equalTo(item.user.content.email) ||
-				input.user.CPF.equalTo(item.user.content.CPF),
-		);
-
-		if (existentData)
-			throw new InMemoryError({
-				entity: EntitiesEnum.user,
-				message: 'User already exist',
-			});
-
-		this.users.push({
-			user: {
-				content: input.user,
-				condominiumRelUser: {
-					[input.condominiumRelUser.condominiumId.value]:
-						input.condominiumRelUser,
-				},
-			},
-		});
+		this.invites = container.props.inviteArr;
+		this.condominiums = container.props.condominiumArr;
+		this.condominiumMembers = container.props.condominiumMemberArr;
+		this.enterpriseMembers = container.props.enterpriseMemberArr;
 	}
 
 	async find(input: UserRepoInterfaces.safeSearch): Promise<User>;
 	async find(input: UserRepoInterfaces.search): Promise<User | undefined>;
 
-	public async find(
+	async find(
 		input: UserRepoInterfaces.search | UserRepoInterfaces.safeSearch,
 	): Promise<User | undefined> {
 		++this.calls.find;
 
 		const existentData = this.users.find((item) => {
 			return (
-				(input.key instanceof Email &&
-					item.user.content.email.equalTo(input.key)) ||
-				(input.key instanceof CPF &&
-					item.user.content.CPF.equalTo(input.key)) ||
-				(input.key instanceof UUID &&
-					item.user.content.id.equalTo(input.key))
+				(input.key instanceof Email && item.email.equalTo(input.key)) ||
+				(input.key instanceof CPF && item.CPF.equalTo(input.key)) ||
+				(input.key instanceof UUID && item.id.equalTo(input.key))
 			);
 		});
 
@@ -79,64 +53,48 @@ export class InMemoryUser implements UserRepo {
 				message: 'User not found',
 			});
 
-		return existentData?.user.content;
+		return existentData;
 	}
 
-	async getCondominiumRelation(
-		input: UserRepoInterfaces.getCondominiumRelation,
-	): Promise<CondominiumRelUser | undefined> {
-		++this.calls.getCondominiumRelation;
-
-		const existentData = this.users.find(
-			(item) =>
-				item.user.content.id === input.userId &&
-				item.user.condominiumRelUser[input.condominiumId.value],
-		);
-
-		if (!existentData) return undefined;
-
-		return existentData.user.condominiumRelUser[input.condominiumId.value];
-	}
-	async getAllCondominiumRelation(
-		input: UserRepoInterfaces.getAllCondominiumRelation,
-	): Promise<TCondominiumRelUserToObject[]> {
-		++this.calls.getAllCondominiumRelation;
-
-		const existentUser = this.users.find((item) =>
-			item.user.content.id.equalTo(input.userId),
-		);
-
-		if (!existentUser) return [];
-		const condominiumRelUser: TCondominiumRelUserToObject[] = [];
-
-		for (const key in existentUser.user.condominiumRelUser)
-			condominiumRelUser.push(
-				CondominiumRelUserMapper.toObject(
-					existentUser.user.condominiumRelUser[key],
-				),
-			);
-
-		return condominiumRelUser;
-	}
-
-	public async delete(input: UserRepoInterfaces.remove): Promise<void> {
+	async delete(input: UserRepoInterfaces.remove): Promise<void> {
 		++this.calls.delete;
 
-		const existentDataIndex = this.users.findIndex((item) => {
-			return (
-				(input.key instanceof UUID &&
-					item.user.content.id.equalTo(input.key)) ||
-				(input.key instanceof Email &&
-					item.user.content.email.equalTo(input.key))
-			);
-		});
+		const existentUserIndex = this.users.findIndex((item) =>
+			item.id.equalTo(input.key),
+		);
 
-		if (existentDataIndex < 0)
+		if (existentUserIndex < 0)
 			throw new InMemoryError({
 				entity: EntitiesEnum.user,
 				message: 'User doesn\'t exist',
 			});
 
-		this.users.splice(existentDataIndex, 1);
+		this.condominiumMembers = this.condominiumMembers.filter(
+			(item) => item.userId?.equalTo(input.key),
+		);
+		this.enterpriseMembers = this.enterpriseMembers.filter((item) =>
+			item.userId.equalTo(input.key),
+		);
+
+		this.users.splice(existentUserIndex, 1);
+	}
+
+	async update(input: UserRepoInterfaces.update): Promise<void> {
+		++this.calls.update;
+
+		const existentUserIndex = this.users.findIndex((item) =>
+			item.id.equalTo(input.id),
+		);
+
+		if (existentUserIndex < 0)
+			throw new InMemoryError({
+				entity: EntitiesEnum.user,
+				message: 'User doesn\'t exist',
+			});
+
+		const user = this.users[existentUserIndex];
+		user.name = input?.name ?? user.name;
+		user.CPF = input?.CPF ?? user.CPF;
+		user.phoneNumber = input?.phoneNumber ?? user.phoneNumber;
 	}
 }

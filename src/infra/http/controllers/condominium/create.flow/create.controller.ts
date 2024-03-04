@@ -1,39 +1,69 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { CreateCondominiumService } from '@app/services/createCondominium.service';
-import { CreateCondominiumDTO } from '@infra/http/DTO/createCondominium.DTO';
-import { CondominiumMapper } from '@app/mapper/condominium';
-import { Email, Level } from '@app/entities/VO';
-import { GenInviteService } from '@app/services/genInvite.service';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { CreateCondominiumService } from '@app/services/condominium/create.service';
+import { CreateCondominiumDTO } from '@infra/http/DTO/condominium/create.DTO';
 import { CONDOMINIUM_PREFIX } from '../consts';
-import { GetKeyService } from '@app/services/getKey.service';
-import { KeysEnum } from '@app/repositories/key';
+import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { CreateTokenService } from '@app/services/login/createToken.service';
+import { User } from '@app/entities/user';
+import { Response } from 'express';
+import { TCondominiumInObject } from '@app/mapper/condominium';
 
 @Controller(CONDOMINIUM_PREFIX)
 export class CreateCondominiumController {
 	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly createCondominium: CreateCondominiumService,
-		private readonly genInvite: GenInviteService,
-		private readonly getKey: GetKeyService,
+		private readonly createToken: CreateTokenService,
+		private readonly getEnv: GetEnvService,
 	) {}
 
+	private async processTokens(
+		res: Response,
+		user: User,
+		condominium: TCondominiumInObject,
+	) {
+		const { accessToken, refreshToken, refreshTokenExp } =
+			await this.createToken.exec({
+				user,
+			});
+
+		const expires = new Date(Date.now() + refreshTokenExp);
+
+		const { env: NODE_ENV } = await this.getEnv.exec({
+			env: EnvEnum.NODE_ENV,
+		});
+		res.cookie('refresh-token', refreshToken, {
+			expires,
+			maxAge: refreshTokenExp * 1000,
+			path: '/',
+			httpOnly: true,
+			secure: NODE_ENV === 'production' && true,
+			sameSite: 'strict',
+			signed: true,
+		});
+
+		return { accessToken, condominium };
+	}
+
 	@Post()
-	async create(@Body() body: CreateCondominiumDTO) {
-		const { email: rawEmail, ...condominiumData } = body;
-
-		const condominium = CondominiumMapper.toClass({ ...condominiumData });
-		await this.createCondominium.exec({ condominium });
-
-		const email = new Email(rawEmail);
-
-		const { key } = await this.getKey.exec({
-			name: KeysEnum.INVITE_SUPER_ADMIN_TOKEN_KEY,
+	async create(
+		@Res({ passthrough: true }) res: Response,
+		@Body() body: CreateCondominiumDTO,
+	) {
+		const { user, condominium } = await this.createCondominium.exec({
+			user: {
+				name: body.userName,
+				email: body.email,
+				CPF: body.CPF,
+				password: body.password,
+			},
+			condominium: {
+				name: body.condominiumName,
+				CEP: body.CEP,
+				CNPJ: body.CNPJ,
+				num: body.num,
+			},
 		});
-		await this.genInvite.exec({
-			email,
-			requiredLevel: new Level(2), // AVISO: SUPER ADMIN SENDO CONVIDADO
-			key: key.actual.content,
-			condominiumId: condominium.id,
-		});
+		return await this.processTokens(res, user, condominium);
 	}
 }

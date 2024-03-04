@@ -6,6 +6,10 @@ export interface IEnvMetadata {
 type TEnv = Record<string, IEnvMetadata>;
 
 export const environmentVariablesMetadata: TEnv = {
+	LOG_TYPE: {
+		name: 'LOG_TYPE',
+		isOptional: true,
+	},
 	SIGNATURE_TYPE: {
 		name: 'SIGNATURE_TYPE',
 		isOptional: true,

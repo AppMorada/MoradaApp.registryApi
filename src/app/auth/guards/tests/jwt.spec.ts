@@ -3,15 +3,14 @@ import { JwtGuard } from '../jwt.guard';
 import { InMemoryUser } from '@tests/inMemoryDatabase/user';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
-import { CreateTokenService } from '@app/services/createToken.service';
+import { CreateTokenService } from '@app/services/login/createToken.service';
 import { userFactory } from '@tests/factories/user';
-import { condominiumRelUserFactory } from '@tests/factories/condominiumRelUser';
 import { InMemoryError } from '@tests/errors/inMemoryError';
 import { EntitiesEnum } from '@app/entities/entities';
 import { GuardErrors } from '@app/errors/guard';
 import { InMemoryKey } from '@tests/inMemoryDatabase/key';
-import { GetKeyService } from '@app/services/getKey.service';
-import { ValidateTokenService } from '@app/services/validateToken.service';
+import { GetKeyService } from '@app/services/key/getKey.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
@@ -68,8 +67,7 @@ describe('Jwt guard test', () => {
 
 	it('should be able to validate jwt guard', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory();
-		await userRepo.create({ user, condominiumRelUser });
+		userRepo.users.push(user);
 
 		const tokens = await createTokenService.exec({ user });
 
@@ -81,7 +79,6 @@ describe('Jwt guard test', () => {
 
 		await expect(jwtGuard.canActivate(context)).resolves.toBeTruthy();
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
 	});
 

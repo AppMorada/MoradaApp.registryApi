@@ -4,7 +4,6 @@ import { CryptAdapter, ICryptCompare } from '@app/adapters/crypt';
 import { BcryptAdapter } from '@app/adapters/bcrypt/bcryptAdapter';
 import { CheckPasswordGuard } from '../checkPassword.guard';
 import { userFactory } from '@tests/factories/user';
-import { condominiumRelUserFactory } from '@tests/factories/condominiumRelUser';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { GuardErrors } from '@app/errors/guard';
 
@@ -36,8 +35,7 @@ describe('Password guard test', () => {
 		);
 
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory();
-		userRepo.create({ user, condominiumRelUser });
+		userRepo.users.push(user);
 
 		const context = createMockExecutionContext({
 			body: {
@@ -50,14 +48,12 @@ describe('Password guard test', () => {
 			checkPasswordGuard.canActivate(context),
 		).resolves.toBeTruthy();
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - incorrect password and email', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory();
-		userRepo.create({ user, condominiumRelUser });
+		userRepo.users.push(user);
 
 		const context = createMockExecutionContext({
 			body: {
@@ -72,7 +68,6 @@ describe('Password guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
 	});
 

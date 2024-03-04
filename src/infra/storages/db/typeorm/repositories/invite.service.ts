@@ -6,10 +6,12 @@ import { Invite } from '@app/entities/invite';
 import { TypeOrmInviteMapper } from '../mapper/invite';
 import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 import { TypeOrmUserMapper } from '../mapper/user';
-import { TypeOrmCondominiumRelUserMapper } from '../mapper/condominiumRelUser';
 import { typeORMConsts } from '../consts';
-import { TypeOrmCondominiumRelUserEntity } from '../entities/condominiumRelUser.entity';
 import { TypeOrmUserEntity } from '../entities/user.entity';
+import { CondominiumMember } from '@app/entities/condominiumMember';
+import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.entity';
+import { TypeOrmCondominiumMemberMapper } from '../mapper/condominiumMember';
+import { Email } from '@app/entities/VO';
 
 @Injectable()
 export class TypeOrmInviteRepo implements InviteRepo {
@@ -21,28 +23,27 @@ export class TypeOrmInviteRepo implements InviteRepo {
 	) {}
 
 	async create(input: InviteRepoInterfaces.create): Promise<void> {
-		const data = TypeOrmInviteMapper.toTypeOrm(input.invite);
-
 		await this.dataSource.transaction(async (t) => {
-			const condominiumRelUser = await t
-				.createQueryBuilder()
-				.from(TypeOrmUserEntity, 'a')
-				.innerJoin(
-					TypeOrmCondominiumRelUserEntity,
-					'b',
-					'b.user_id = a.id AND b.condominium_id = :condominium_id',
-					{ condominium_id: input.invite.condominiumId.value },
-				)
-				.where('a.email = :email', { email: input.invite.email.value })
-				.getCount();
+			const data = TypeOrmInviteMapper.toTypeOrm(input.invite);
 
-			if (condominiumRelUser)
+			const user = await t
+				.getRepository(TypeOrmCondominiumMemberEntity)
+				.createQueryBuilder('condominium_members')
+				.innerJoin('users', 'a', 'a.id = condominium_members.user_id')
+				.where('condominium_members.condominium_id = :id', {
+					id: input.invite.condominiumId.value,
+				})
+				.andWhere('a.cpf = :cpf', { cpf: input.invite.CPF.value })
+				.setLock('pessimistic_read')
+				.getOne();
+
+			if (user)
 				throw new DatabaseCustomError({
-					message: 'Usuário já está neste condomínio',
-					tag: DatabaseCustomErrorsTags.alreadyRegisteredCondominiumRelUser,
+					message: 'Content already exist',
+					tag: DatabaseCustomErrorsTags.contentAlreadyExists,
 				});
 
-			await t.insert<TypeOrmInviteEntity>('invites', data);
+			await t.insert(TypeOrmInviteEntity, data);
 		});
 	}
 
@@ -52,8 +53,14 @@ export class TypeOrmInviteRepo implements InviteRepo {
 	async find(
 		input: InviteRepoInterfaces.find | InviteRepoInterfaces.safelyFind,
 	): Promise<Invite | undefined> {
+		const buildQuery = () => {
+			if (input.key instanceof Email)
+				return { recipient: input.key.value };
+			return { CPF: input.key.value };
+		};
+
 		const rawInvite = await this.inviteRepo.findOne({
-			where: { email: input.key.value },
+			where: buildQuery(),
 			loadRelationIds: true,
 		});
 
@@ -73,12 +80,9 @@ export class TypeOrmInviteRepo implements InviteRepo {
 		input: InviteRepoInterfaces.transferToUserResources,
 	): Promise<void> {
 		const user = TypeOrmUserMapper.toTypeOrm(input.user);
-		const condominiumRelUser = TypeOrmCondominiumRelUserMapper.toTypeOrm(
-			input.condominiumRelUser,
-		);
-
 		const invite = await this.inviteRepo.findOne({
-			where: { email: user.email },
+			where: { CPF: user.CPF },
+			loadRelationIds: true,
 		});
 
 		if (!invite)
@@ -87,13 +91,36 @@ export class TypeOrmInviteRepo implements InviteRepo {
 				tag: DatabaseCustomErrorsTags.contentDoesntExists,
 			});
 
+		const rawCondominiumMember = new CondominiumMember({
+			condominiumId: String(invite.condominium),
+			hierarchy: invite.hierarchy,
+			c_email: user.email,
+			autoEdit: false,
+			userId: user.id,
+		});
+		const condominiumMember =
+			TypeOrmCondominiumMemberMapper.toTypeOrm(rawCondominiumMember);
+
 		await this.dataSource.transaction(async (t) => {
 			await t.remove(invite);
 			await t.insert<TypeOrmUserEntity>('users', user);
-			await t.insert<TypeOrmCondominiumRelUserEntity>(
-				'condominiumreluser',
-				condominiumRelUser,
-			);
+			const existentCondominiumMember = await t
+				.getRepository(TypeOrmCondominiumMemberEntity)
+				.createQueryBuilder('condominium_member')
+				.where('condominium_member.condominium_id = :condominium_id', {
+					condominium_id: input.condominiumId.value,
+				})
+				.andWhere('condominium_member.c_email = :c_email', {
+					c_email: invite.recipient,
+				})
+				.loadAllRelationIds()
+				.getCount();
+
+			if (!existentCondominiumMember)
+				await t.insert<TypeOrmCondominiumMemberEntity>(
+					'condominium_members',
+					condominiumMember,
+				);
 		});
 	}
 

@@ -1,20 +1,24 @@
 import { CEP, Name, Num, CNPJ, UUID } from '../VO';
-import { Entity } from '../entities';
+import { Entity, ValueObject } from '../entities';
 
 interface IPropsCondominium {
+	ownerId: UUID;
 	name: Name;
 	CEP: CEP;
 	num: Num;
 	CNPJ: CNPJ;
+	seedKey: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
 export type TInputPropsCondominium = {
+	ownerId: string;
 	name: string;
 	CEP: string;
 	num: number;
 	CNPJ: string;
+	seedKey: string;
 	createdAt?: Date;
 	updatedAt?: Date;
 };
@@ -54,10 +58,12 @@ export class Condominium implements Entity {
 
 	constructor(content: TInputPropsCondominium, id?: string) {
 		this.props = {
+			ownerId: new UUID(content.ownerId),
 			name: new Name(content.name),
 			CEP: new CEP(content.CEP),
 			num: new Num(content.num),
 			CNPJ: new CNPJ(content.CNPJ),
+			seedKey: content.seedKey,
 			createdAt: content.createdAt ?? new Date(),
 			updatedAt: content.updatedAt ?? new Date(),
 		};
@@ -67,10 +73,12 @@ export class Condominium implements Entity {
 	public dereference(): Condominium {
 		return new Condominium(
 			{
+				ownerId: this.ownerId.value,
 				name: this.name.value,
 				CEP: this.CEP.value,
 				num: this.num.value,
 				CNPJ: this.CNPJ.value,
+				seedKey: this.seedKey,
 				createdAt: this.createdAt,
 				updatedAt: this.updatedAt,
 			},
@@ -81,11 +89,13 @@ export class Condominium implements Entity {
 	public equalTo(input: Condominium): boolean {
 		return (
 			input instanceof Condominium &&
-			this.id.equalTo(input.id) &&
-			this.props.name.equalTo(input.name) &&
-			this.props.CEP.equalTo(input.CEP) &&
-			this.props.num.equalTo(input.num) &&
-			this.props.CNPJ.equalTo(input.CNPJ) &&
+			ValueObject.compare(this.id, input.id) &&
+			ValueObject.compare(this.ownerId, input.ownerId) &&
+			ValueObject.compare(this.name, input.name) &&
+			ValueObject.compare(this.CEP, input.CEP) &&
+			ValueObject.compare(this.num, input.num) &&
+			ValueObject.compare(this.CNPJ, input.CNPJ) &&
+			this.seedKey === input.seedKey &&
 			this.props.createdAt === input.createdAt &&
 			this.props.updatedAt === input.updatedAt
 		);
@@ -94,6 +104,16 @@ export class Condominium implements Entity {
 	// ID
 	get id(): UUID {
 		return this._id;
+	}
+
+	// OwnerID
+	get ownerId(): UUID {
+		return this.props.ownerId;
+	}
+
+	// SeedKey
+	get seedKey(): string {
+		return this.props.seedKey;
 	}
 
 	// NAME
@@ -109,7 +129,7 @@ export class Condominium implements Entity {
 		return this.props.CEP;
 	}
 	set CEP(input: CEP) {
-		this.CEP = input;
+		this.props.CEP = input;
 	}
 
 	// NUM

@@ -5,7 +5,7 @@ import { GuardErrors } from '@app/errors/guard';
 import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
-import { ValidateTokenService } from '@app/services/validateToken.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
 
 /** Usado para validar um JWT vindo do authorization header */
 @Injectable()

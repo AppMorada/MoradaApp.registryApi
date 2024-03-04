@@ -10,6 +10,13 @@ describe('CEP Value Object test', () => {
 		expect(sut1.equalTo(sut2)).toBeTruthy();
 	});
 
+	it('should be able to convert to int and string', () => {
+		const sut = new CEP('00089-010');
+		const int = CEP.toInt(sut);
+		const str = CEP.toString(int);
+		expect(str === sut.value);
+	});
+
 	it('should be able to throw one error: length error', () => {
 		expect(() => new CEP('123456789')).toThrow(EntitieError);
 	});

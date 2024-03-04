@@ -11,7 +11,8 @@ import { UUID } from '@app/entities/VO';
 import { GuardErrors } from '@app/errors/guard';
 import { Request } from 'express';
 import { KeysEnum } from '@app/repositories/key';
-import { ValidateTokenService } from '@app/services/validateToken.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
+import { CondominiumRepo } from '@app/repositories/condominium';
 
 /** Usado para validar se um usuário tem permissões de um administrador */
 @Injectable()
@@ -19,6 +20,7 @@ export class SuperAdminJwt implements CanActivate {
 	constructor(
 		private readonly validateToken: ValidateTokenService,
 		private readonly userRepo: UserRepo,
+		private readonly condominiumRepo: CondominiumRepo,
 	) {}
 
 	private async checkToken(token: string) {
@@ -33,28 +35,28 @@ export class SuperAdminJwt implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const req = context.switchToHttp().getRequest<Request>();
 
-		const condominiumId = req.params?.condominiumId;
+		const condominiumId = req?.params?.condominiumId;
 		if (!condominiumId)
 			throw new BadRequestException({
 				statusCode: HttpStatus.BAD_REQUEST,
 				error: 'Bad Request',
-				message: 'Condomínio não especificado',
+				message: ['Condomínio não especificado'],
 			});
 
 		const token = String(req?.headers?.authorization).split(' ')[1];
 		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
-
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
+
 		const user = await this.userRepo.find({
 			key: new UUID(tokenData.sub),
 			safeSearch: true,
 		});
-		const condominiumRelUser = await this.userRepo.getCondominiumRelation({
-			userId: user.id,
-			condominiumId: new UUID(condominiumId),
+		const condominium = await this.condominiumRepo.find({
+			key: new UUID(condominiumId),
+			safeSearch: true,
 		});
 
-		if (!condominiumRelUser || condominiumRelUser.level.value < 2)
+		if (!condominium.ownerId.equalTo(user.id))
 			throw new GuardErrors({
 				message: 'Usuário não tem autorização para realizar tal ação',
 			});
@@ -62,7 +64,7 @@ export class SuperAdminJwt implements CanActivate {
 		req.inMemoryData = {
 			...req.inMemoryData,
 			user,
-			condominiumRelUser,
+			condominium,
 		};
 
 		return true;

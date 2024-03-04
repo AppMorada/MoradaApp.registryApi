@@ -1,7 +1,7 @@
-import { CreateTokenService } from '@app/services/createToken.service';
-import { GetKeyService } from '@app/services/getKey.service';
-import { ValidateTFAService } from '@app/services/validateTFA.service';
-import { ValidateTokenService } from '@app/services/validateToken.service';
+import { CreateTokenService } from '@app/services/login/createToken.service';
+import { GetKeyService } from '@app/services/key/getKey.service';
+import { ValidateTFAService } from '@app/services/login/validateTFA.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { Global, Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 

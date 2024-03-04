@@ -6,7 +6,7 @@ import { IRefreshTokenBody, TokenType } from '../tokenTypes';
 import { UserRepo } from '@app/repositories/user';
 import { Email } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
-import { ValidateTokenService } from '@app/services/validateToken.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 /** Usado para validar os tokens do tipo "RefreshToken" */
@@ -27,7 +27,6 @@ export class RefreshTokenGuard implements CanActivate {
 			cookie: decodeURIComponent(cookie),
 			key: COOKIE_KEY as string,
 		});
-
 		if (!token)
 			throw new GuardErrors({
 				message: 'Cookie inválido',

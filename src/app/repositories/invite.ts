@@ -1,5 +1,4 @@
-import { UUID, Email } from '@app/entities/VO';
-import { CondominiumRelUser } from '@app/entities/condominiumRelUser';
+import { UUID, Email, CPF } from '@app/entities/VO';
 import { Invite } from '@app/entities/invite';
 import { User } from '@app/entities/user';
 
@@ -8,11 +7,11 @@ export namespace InviteRepoInterfaces {
 		invite: Invite;
 	}
 	export interface find {
-		key: Email;
+		key: Email | CPF;
 		safeSearch: undefined;
 	}
 	export interface safelyFind {
-		key: Email;
+		key: Email | CPF;
 		safeSearch?: true;
 	}
 	export interface remove {
@@ -20,7 +19,7 @@ export namespace InviteRepoInterfaces {
 	}
 	export interface transferToUserResources {
 		user: User;
-		condominiumRelUser: CondominiumRelUser;
+		condominiumId: UUID;
 	}
 }
 

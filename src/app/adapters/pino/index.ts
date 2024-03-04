@@ -3,22 +3,13 @@ import { ILoggerDefaultProps, LoggerAdapter, TErrProps } from '../logger';
 import pino from 'pino';
 import pretty from 'pino-pretty';
 
-const logger = pino({
-	transport: {
-		target: 'pino-pretty',
-	},
-});
-
-const loggerTest = pino(pretty({ sync: true }));
-export { logger, loggerTest };
-
 @Injectable()
 export class PinoLoggerAdapter implements LoggerAdapter {
 	private readonly logger: ReturnType<typeof pino>;
 
 	constructor() {
 		this.logger =
-			process.env.NODE_ENV !== 'test'
+			process.env.LOG_TYPE !== 'sync'
 				? pino({ transport: { target: 'pino-pretty' } })
 				: pino(pretty({ sync: true }));
 	}

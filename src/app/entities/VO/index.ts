@@ -6,7 +6,7 @@ export { Password } from './user/password';
 export { PhoneNumber } from './user/phoneNumber';
 export { ApartmentNumber } from './user/apartmentNumber';
 
-export { Code } from './OTP/code';
+export { Code } from './generals/code';
 
 export { UUID } from './generals/UUID';
 export { Name } from './generals/name';

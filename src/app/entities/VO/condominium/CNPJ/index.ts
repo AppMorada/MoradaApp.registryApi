@@ -17,6 +17,24 @@ export class CNPJ implements ValueObject<CNPJ, string> {
 			});
 	}
 
+	static toInt(input: CNPJ) {
+		return parseInt(input.value);
+	}
+
+	static toString(input: number): string {
+		const raw = String(input);
+		if (raw.length < condominiumDTORules.CNPJ.minLength) {
+			const newPaddingValue =
+				condominiumDTORules.CNPJ.minLength - raw.length;
+			return raw.padStart(
+				raw.length + newPaddingValue,
+				'0'.repeat(newPaddingValue),
+			);
+		}
+
+		return raw;
+	}
+
 	public equalTo(input: CNPJ) {
 		return input.value === this._value;
 	}

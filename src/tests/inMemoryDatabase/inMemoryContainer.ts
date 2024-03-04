@@ -1,25 +1,18 @@
-import { OTP } from '@app/entities/OTP';
 import { Condominium } from '@app/entities/condominium';
-import { CondominiumRelUser } from '@app/entities/condominiumRelUser';
+import { CondominiumMember } from '@app/entities/condominiumMember';
+import { EnterpriseMember } from '@app/entities/enterpriseMember';
 import { Invite } from '@app/entities/invite';
 import { Key } from '@app/entities/key';
 import { Secret } from '@app/entities/secret';
 import { User } from '@app/entities/user';
 
-export interface IInMemoryUserContainer {
-	user: {
-		content: User;
-		condominiumRelUser: Record<string, CondominiumRelUser>;
-	};
-}
-
 interface IInMemoryContainerProps {
-	userArr: IInMemoryUserContainer[];
+	userArr: User[];
+	condominiumMemberArr: CondominiumMember[];
+	enterpriseMemberArr: EnterpriseMember[];
 	condominiumArr: Condominium[];
-	condominiumRelUserArr: CondominiumRelUser[];
 	inviteArr: Invite[];
 	secretArr: Secret[];
-	otpArr: { key: string; value: OTP }[];
 	keyArr: { name: string; value: Key }[];
 	keyCacheArr: Key[];
 }
@@ -27,10 +20,10 @@ interface IInMemoryContainerProps {
 export class InMemoryContainer {
 	props: IInMemoryContainerProps = {
 		userArr: [],
+		condominiumMemberArr: [],
+		enterpriseMemberArr: [],
 		condominiumArr: [],
-		condominiumRelUserArr: [],
 		inviteArr: [],
-		otpArr: [],
 		secretArr: [],
 		keyArr: [],
 		keyCacheArr: [],
@@ -39,10 +32,10 @@ export class InMemoryContainer {
 	erase() {
 		this.props = {
 			userArr: [],
-			condominiumRelUserArr: [],
 			inviteArr: [],
+			condominiumMemberArr: [],
+			enterpriseMemberArr: [],
 			condominiumArr: [],
-			otpArr: [],
 			keyArr: [],
 			keyCacheArr: [],
 			secretArr: [],

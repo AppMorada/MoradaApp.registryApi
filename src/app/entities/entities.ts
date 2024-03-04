@@ -5,8 +5,10 @@ export enum EntitiesEnum {
 	secret = 'secret',
 	key = 'key',
 	condominium = 'Condominium',
+	member = 'Member',
+	condominiumMember = 'Condominium Member',
+	enterpriseMember = 'Enterprise Member',
 	user = 'User',
-	otp = 'OTP',
 	invite = 'Invite',
 	vo = 'Value Object',
 }

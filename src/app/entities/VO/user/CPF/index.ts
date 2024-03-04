@@ -58,6 +58,23 @@ export class CPF implements ValueObject<CPF, string> {
 			});
 	}
 
+	static toInt(input: CPF) {
+		return parseInt(input.value);
+	}
+
+	static toString(input: number): string {
+		const raw = String(input);
+		if (raw.length < userDTORules.CPF.minLength) {
+			const newPaddingValue = userDTORules.CPF.minLength - raw.length;
+			return raw.padStart(
+				raw.length + newPaddingValue,
+				'0'.repeat(newPaddingValue),
+			);
+		}
+
+		return raw;
+	}
+
 	public equalTo(input: CPF) {
 		return input.value === this._value;
 	}
