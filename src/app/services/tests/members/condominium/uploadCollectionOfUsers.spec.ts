@@ -56,7 +56,7 @@ describe('Upload collection of users', () => {
 			c_email: item.member.c_email.value,
 			apartmentNumber: item.member.apartmentNumber!.value,
 			block: item.member.block!.value,
-			CPF: item.user.CPF.value,
+			CPF: item.member.CPF.value,
 		}));
 
 		await sut.exec({
@@ -65,7 +65,7 @@ describe('Upload collection of users', () => {
 				c_email: item.member.c_email.value,
 				apartmentNumber: item.member.apartmentNumber!.value,
 				block: item.member.block!.value,
-				CPF: item.user.CPF.value,
+				CPF: item.member.CPF.value,
 			})),
 		});
 		expect(memberRepo.calls.create === 2).toEqual(true);

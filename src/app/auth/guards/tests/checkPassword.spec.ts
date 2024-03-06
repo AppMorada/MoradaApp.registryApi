@@ -81,7 +81,7 @@ describe('Password guard test', () => {
 
 		await expect(checkPasswordGuard.canActivate(context)).rejects.toThrow(
 			new GuardErrors({
-				message: 'Usuário não existe',
+				message: 'User not found',
 			}),
 		);
 	});

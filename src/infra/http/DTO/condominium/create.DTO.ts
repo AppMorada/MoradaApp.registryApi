@@ -49,17 +49,6 @@ export class CreateCondominiumDTO {
 		password: string;
 
 	@IsString({
-		message: 'O CPF precisa conter caracteres válidos',
-	})
-	@MinLength(userDTORules.CPF.minLength, {
-		message: `O CPF precisa conter no mínimo ${userDTORules.CPF.minLength} caracteres`,
-	})
-	@MaxLength(userDTORules.CPF.maxLength, {
-		message: `O CPF precisa conter no máximo ${userDTORules.CPF.maxLength} caracteres`,
-	})
-		CPF: string;
-
-	@IsString({
 		message: 'O nome do condomínio precisa conter caracteres válidos',
 	})
 	@MaxLength(condominiumDTORules.name.maxLength, {

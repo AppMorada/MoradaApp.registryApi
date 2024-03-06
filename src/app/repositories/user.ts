@@ -1,14 +1,14 @@
-import { CPF, UUID, Email, Name, PhoneNumber } from '@app/entities/VO';
+import { UUID, Email, Name, PhoneNumber } from '@app/entities/VO';
 import { User } from '@app/entities/user';
 
 export namespace UserRepoInterfaces {
 	export interface search {
 		safeSearch?: undefined;
-		key: Email | CPF | UUID;
+		key: Email | UUID;
 	}
 	export interface safeSearch {
 		safeSearch?: true;
-		key: Email | CPF | UUID;
+		key: Email | UUID;
 	}
 	export interface remove {
 		key: UUID;
@@ -16,7 +16,6 @@ export namespace UserRepoInterfaces {
 	export interface update {
 		id: UUID;
 		name?: Name;
-		CPF?: CPF;
 		phoneNumber?: PhoneNumber;
 	}
 }

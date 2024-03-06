@@ -1,19 +1,19 @@
-import { CPF, Email, Level, UUID } from '../VO';
+import { Email, UUID } from '../VO';
 import { Entity, ValueObject } from '../entities';
 
 export interface IInviteProps {
 	recipient: Email;
 	condominiumId: UUID;
-	CPF: CPF;
-	hierarchy: Level;
+	memberId: UUID;
+	code: string;
 	createdAt: Date;
 }
 
 export interface IInputPropsInvite {
 	recipient: string;
 	condominiumId: string;
-	CPF: string;
-	hierarchy: number;
+	memberId: string;
+	code: string;
 	createdAt?: Date;
 }
 
@@ -25,8 +25,8 @@ export class Invite implements Entity {
 		this.props = {
 			recipient: new Email(input.recipient),
 			condominiumId: new UUID(input.condominiumId),
-			CPF: new CPF(input.CPF),
-			hierarchy: new Level(input.hierarchy),
+			memberId: new UUID(input.memberId),
+			code: input.code,
 			createdAt: input.createdAt ?? new Date(),
 		};
 		this._id = id ? new UUID(id) : UUID.genV4();
@@ -36,8 +36,8 @@ export class Invite implements Entity {
 		return new Invite(
 			{
 				condominiumId: this.condominiumId.value,
-				CPF: this.CPF.value,
-				hierarchy: this.hierarchy.value,
+				memberId: this.memberId.value,
+				code: this.code,
 				recipient: this.recipient.value,
 				createdAt: this.createdAt,
 			},
@@ -49,25 +49,25 @@ export class Invite implements Entity {
 		return (
 			input instanceof Invite &&
 			input.createdAt === this.createdAt &&
+			input.code === this.code &&
 			ValueObject.compare(input.id, this.id) &&
 			ValueObject.compare(input.condominiumId, this.condominiumId) &&
-			ValueObject.compare(input.recipient, this.recipient) &&
-			ValueObject.compare(input.hierarchy, this.hierarchy) &&
-			ValueObject.compare(input.CPF, this.CPF)
+			ValueObject.compare(input.memberId, this.memberId) &&
+			ValueObject.compare(input.recipient, this.recipient)
 		);
 	}
 
 	get recipient(): Email {
 		return this.props.recipient;
 	}
-	get hierarchy(): Level {
-		return this.props.hierarchy;
-	}
-	get CPF(): CPF {
-		return this.props.CPF;
+	get code(): string {
+		return this.props.code;
 	}
 	get condominiumId(): UUID {
 		return this.props.condominiumId;
+	}
+	get memberId(): UUID {
+		return this.props.memberId;
 	}
 	get id(): UUID {
 		return this._id;

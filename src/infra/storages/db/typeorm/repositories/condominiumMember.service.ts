@@ -102,6 +102,7 @@ export class TypeOrmCondominiumMemberRepo implements CondominiumMemberRepo {
 				userId: data?.userId ?? null,
 				c_email: data.c_email,
 				block: data.block ?? null,
+				CPF: data.CPF,
 				apartmentNumber: data.apartmentNumber ?? null,
 				createdAt: data.createdAt,
 				updatedAt: data.updatedAt,

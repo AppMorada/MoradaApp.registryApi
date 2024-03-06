@@ -1,4 +1,4 @@
-import { CPF, UUID, Email } from '@app/entities/VO';
+import { UUID, Email } from '@app/entities/VO';
 import { EntitiesEnum } from '@app/entities/entities';
 import { User } from '@app/entities/user';
 import { UserRepo, UserRepoInterfaces } from '@app/repositories/user';
@@ -42,7 +42,6 @@ export class InMemoryUser implements UserRepo {
 		const existentData = this.users.find((item) => {
 			return (
 				(input.key instanceof Email && item.email.equalTo(input.key)) ||
-				(input.key instanceof CPF && item.CPF.equalTo(input.key)) ||
 				(input.key instanceof UUID && item.id.equalTo(input.key))
 			);
 		});
@@ -94,7 +93,6 @@ export class InMemoryUser implements UserRepo {
 
 		const user = this.users[existentUserIndex];
 		user.name = input?.name ?? user.name;
-		user.CPF = input?.CPF ?? user.CPF;
 		user.phoneNumber = input?.phoneNumber ?? user.phoneNumber;
 	}
 }

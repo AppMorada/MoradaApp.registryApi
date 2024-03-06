@@ -13,7 +13,7 @@ export class CreateEnterpriseMemberController {
 	) {}
 
 	@UseGuards(AdminJwt)
-	@Post(':condominiumId/enterprise-user')
+	@Post(':condominiumId/as-owner/enterprise-user')
 	async create(
 		@Body() body: CreateEnterpriseMemberDTO,
 		@Param('condominiumId') id: string,
@@ -23,11 +23,10 @@ export class CreateEnterpriseMemberController {
 				name: body.name,
 				password: body.password,
 				email: body.email,
-				CPF: body.CPF,
 				tfa: false,
 				phoneNumber: body.phoneNumber,
 			}),
-			hierarchy: 1,
+			CPF: body.CPF,
 			condominiumId: id,
 		});
 	}

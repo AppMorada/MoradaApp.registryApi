@@ -8,9 +8,12 @@ export class CNPJ implements ValueObject<CNPJ, string> {
 	 * @param _value - CNPJ em questão
 	 **/
 	constructor(private readonly _value: string) {
-		this._value = _value.replaceAll(/[./-]/g, '');
+		this._value = this._value.replaceAll(/[./-]/g, '');
 
-		if (this._value.length !== condominiumDTORules.CNPJ.minLength)
+		if (
+			this._value.length !== condominiumDTORules.CNPJ.minLength ||
+			isNaN(Number(this._value))
+		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
 				message: 'Valor incorreto de CNPJ',

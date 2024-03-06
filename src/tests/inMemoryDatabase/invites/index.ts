@@ -5,7 +5,7 @@ import { InMemoryError } from '@tests/errors/inMemoryError';
 import { InMemoryContainer } from '../inMemoryContainer';
 import { User } from '@app/entities/user';
 import { CondominiumMember } from '@app/entities/condominiumMember';
-import { CPF, Email } from '@app/entities/VO';
+import { Email } from '@app/entities/VO';
 
 export class InMemoryInvite implements InviteRepo {
 	public calls = {
@@ -30,7 +30,10 @@ export class InMemoryInvite implements InviteRepo {
 		const searchedInvite = this.invites.find((item) =>
 			item.id.equalTo(input.invite.id),
 		);
-		if (searchedInvite)
+		const searchedMember = this.condominiumMembers.find((item) =>
+			item.id.equalTo(input.invite.memberId),
+		);
+		if (searchedInvite || searchedMember)
 			throw new InMemoryError({
 				entity: EntitiesEnum.invite,
 				message: 'Invite already exist',
@@ -49,28 +52,26 @@ export class InMemoryInvite implements InviteRepo {
 		this.invites.push(input.invite);
 	}
 
-	async find(input: InviteRepoInterfaces.safelyFind): Promise<Invite>;
-	async find(input: InviteRepoInterfaces.find): Promise<Invite | undefined>;
+	async find(input: InviteRepoInterfaces.safelyFind): Promise<Invite[]>;
+	async find(input: InviteRepoInterfaces.find): Promise<Invite[]>;
 
 	async find(
 		input: InviteRepoInterfaces.safelyFind | InviteRepoInterfaces.find,
-	): Promise<Invite | undefined> {
+	): Promise<Invite[]> {
 		++this.calls.find;
 
-		const searchedInvite = this.invites.find(
+		const searchedInvites = this.invites.filter(
 			(item) =>
-				(input.key instanceof Email &&
-					item.recipient.equalTo(input.key)) ||
-				(input.key instanceof CPF && item.CPF.equalTo(input.key)),
+				input.key instanceof Email && item.recipient.equalTo(input.key),
 		);
 
-		if (!searchedInvite && input.safeSearch)
+		if (searchedInvites.length <= 0 && input.safeSearch)
 			throw new InMemoryError({
 				entity: EntitiesEnum.invite,
 				message: 'Invite not found',
 			});
 
-		return searchedInvite;
+		return searchedInvites;
 	}
 
 	async transferToUserResources(
@@ -89,17 +90,17 @@ export class InMemoryInvite implements InviteRepo {
 
 		let searchedCondominiumMemberIndex = this.condominiumMembers.findIndex(
 			(item) =>
-				item.condominiumId.equalTo(input.condominiumId) ||
+				item.condominiumId.equalTo(input.invite.condominiumId) ||
 				item.userId?.equalTo(input.user.id),
 		);
 		if (searchedCondominiumMemberIndex < 0)
 			searchedCondominiumMemberIndex =
 				this.condominiumMembers.push(
 					new CondominiumMember({
-						condominiumId: input.condominiumId.value,
+						condominiumId: input.invite.condominiumId.value,
 						userId: input.user.id.value,
 						autoEdit: false,
-						hierarchy: 0,
+						CPF: input.CPF.value,
 						c_email: input.user.email.value,
 					}),
 				) - 1;

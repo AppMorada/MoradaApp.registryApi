@@ -23,6 +23,32 @@ export class SuperAdminJwt implements CanActivate {
 		private readonly condominiumRepo: CondominiumRepo,
 	) {}
 
+	private async getEntities(sub: string, condominiumId: string) {
+		const user = await this.userRepo
+			.find({
+				key: new UUID(sub),
+				safeSearch: true,
+			})
+			.catch((err) => {
+				throw new GuardErrors({
+					message: err.message,
+				});
+			});
+
+		const condominium = await this.condominiumRepo
+			.find({
+				key: new UUID(condominiumId),
+				safeSearch: true,
+			})
+			.catch((err) => {
+				throw new GuardErrors({
+					message: err.message,
+				});
+			});
+
+		return { user, condominium };
+	}
+
 	private async checkToken(token: string) {
 		const { decodedToken } = await this.validateToken.exec({
 			name: KeysEnum.ACCESS_TOKEN_KEY,
@@ -47,15 +73,10 @@ export class SuperAdminJwt implements CanActivate {
 		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
 
-		const user = await this.userRepo.find({
-			key: new UUID(tokenData.sub),
-			safeSearch: true,
-		});
-		const condominium = await this.condominiumRepo.find({
-			key: new UUID(condominiumId),
-			safeSearch: true,
-		});
-
+		const { user, condominium } = await this.getEntities(
+			tokenData.sub,
+			condominiumId,
+		);
 		if (!condominium.ownerId.equalTo(user.id))
 			throw new GuardErrors({
 				message: 'Usuário não tem autorização para realizar tal ação',

@@ -19,7 +19,7 @@ describe('InMemoryData test: Invite find method', () => {
 
 		const sut2 = await sut.find({ key: invite.recipient });
 
-		expect(Boolean(sut2)).toBeTruthy();
+		expect(Boolean(sut2[0])).toBeTruthy();
 		expect(sut.calls.find).toEqual(1);
 	});
 

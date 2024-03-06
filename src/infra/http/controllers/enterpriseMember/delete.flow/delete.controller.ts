@@ -10,9 +10,9 @@ export class RemoveEntepriseMemberController {
 	) {}
 
 	@UseGuards(SuperAdminJwt)
-	@Delete(':condominiumId/enterprise-user/:memberId')
+	@Delete(':condominiumId/as-owner/enterprise-user/:userId')
 	@HttpCode(204)
-	async getOne(@Param('memberId') id: string) {
+	async getOne(@Param('userId') id: string) {
 		return await this.removeEnterpriseMember.exec({ id });
 	}
 }

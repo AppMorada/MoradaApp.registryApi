@@ -8,9 +8,12 @@ export class CEP implements ValueObject<CEP, string> {
 	 * @param _value - CEP em questão
 	 **/
 	constructor(private readonly _value: string) {
-		this._value = _value.replace(/[-]/g, '');
+		this._value = this._value.replace(/[-]/g, '');
 
-		if (this._value.length !== condominiumDTORules.CEP.minLength)
+		if (
+			this._value.length !== condominiumDTORules.CEP.minLength ||
+			isNaN(Number(this._value))
+		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
 				message: 'Valor incorreto de CEP',

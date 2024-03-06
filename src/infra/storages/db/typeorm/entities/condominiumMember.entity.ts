@@ -4,6 +4,7 @@ import {
 	Entity,
 	JoinColumn,
 	ManyToOne,
+	OneToOne,
 	PrimaryGeneratedColumn,
 	Relation,
 	Unique,
@@ -11,9 +12,11 @@ import {
 } from 'typeorm';
 import { TypeOrmCondominiumEntity } from './condominium.entity';
 import { TypeOrmUserEntity } from './user.entity';
+import { TypeOrmInviteEntity } from './invite.entity';
 
 @Unique(['user', 'condominium'])
 @Unique(['c_email', 'condominium'])
+@Unique(['CPF', 'condominium'])
 @Entity({ name: 'condominium_members' })
 export class TypeOrmCondominiumMemberEntity {
 	@PrimaryGeneratedColumn('uuid')
@@ -43,11 +46,14 @@ export class TypeOrmCondominiumMemberEntity {
 	})
 		user: Relation<TypeOrmUserEntity> | string | null;
 
+	@OneToOne(() => TypeOrmInviteEntity, (invite) => invite.member)
+		invite: Relation<TypeOrmInviteEntity>;
+
+	@Column({ type: 'bigint', name: 'cpf' })
+		CPF: string;
+
 	@Column({ length: 320, type: 'varchar' })
 		c_email: string;
-
-	@Column({ type: 'smallint', default: 0 })
-		hierarchy: number;
 
 	@Column({ type: 'int', name: 'apartment_number', nullable: true })
 		apartmentNumber: number | null;

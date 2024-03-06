@@ -9,7 +9,7 @@ export interface IGenerateInviteKeyProps {
  * Feito para gerar uma string com base nos dados do usuário e sua relação com o condomínio
  **/
 export function generateStringCodeContent(input: IGenerateInviteKeyProps) {
-	const key = `[ID(${input.invite.id.value})].[RECIPIENT(${input.invite.recipient.value})].[LEVEL(${input.invite.hierarchy.value})].[CONDOMINIUMID(${input.invite.condominiumId.value})]`;
+	const key = `[ID(${input.invite.id.value})].[RECIPIENT(${input.invite.recipient.value})].[LEVEL(${input.invite.code})].[CONDOMINIUMID(${input.invite.condominiumId.value})]`;
 	return key;
 }
 

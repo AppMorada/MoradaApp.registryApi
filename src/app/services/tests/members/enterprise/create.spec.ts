@@ -27,8 +27,8 @@ describe('Get enteprise member by user id', () => {
 
 		await sut.exec({
 			condominiumId: member.condominiumId.value,
-			hierarchy: member.hierarchy.value,
 			user,
+			CPF: member.CPF.value,
 		});
 		expect(memberRepo.calls.create === 1).toEqual(true);
 		expect(memberRepo.users[0].equalTo(user)).toBe(true);

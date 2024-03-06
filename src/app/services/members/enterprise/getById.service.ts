@@ -1,5 +1,4 @@
 import { UUID } from '@app/entities/VO';
-import { EnterpriseMember } from '@app/entities/enterpriseMember';
 import {
 	EnterpriseMemberMapper,
 	TEnterpriseMemberInObject,
@@ -35,54 +34,49 @@ export class GetEnterpriseMemberByIdService implements IService {
 		private readonly userRepo: UserRepo,
 	) {}
 
-	private pruneSensitiveData(content: IGetByUserIdServiceUserData) {
-		/* eslint-disable @typescript-eslint/no-unused-vars */
-		const { CPF: _, ...rest } = content;
-		return { ...rest };
-	}
-
-	private async getUserData(
-		userId: UUID,
-		pruneSensitiveData?: boolean,
-	): Promise<IGetByUserIdServiceUserData | null> {
+	private async getUserData(userId: UUID) {
 		const user = await this.userRepo.find({ key: userId });
 		if (!user) return null;
 
-		/* eslint-disable @typescript-eslint/no-unused-vars */
-		const {
-			id: ___,
-			password: _,
-			tfa: __,
-			...rest
-		} = UserMapper.toObject(user);
-		return pruneSensitiveData ? this.pruneSensitiveData(rest) : { ...rest };
+		const data = UserMapper.toObject(user) as any;
+		delete data.password;
+		delete data.tfa;
+
+		return data;
 	}
 
-	private async parseContent(
-		data: EnterpriseMember,
-		pruneSensitiveData?: boolean,
-	) {
-		const parsedData = EnterpriseMemberMapper.toObject(data);
-		const userData = data.userId
-			? await this.getUserData(data.userId, pruneSensitiveData)
+	private async getMemberData(memberId: UUID, pruneSensitiveData?: boolean) {
+		const member = await this.memberRepo.getById({ id: memberId });
+		if (!member) return null;
+
+		const memberAsObject = EnterpriseMemberMapper.toObject(member);
+		if (!pruneSensitiveData) return memberAsObject;
+
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		const { CPF: _, ...unsensitiveInfos } = memberAsObject;
+		return unsensitiveInfos;
+	}
+
+	private async getContent(memberId: UUID, pruneSensitiveData?: boolean) {
+		const member = await this.getMemberData(memberId, pruneSensitiveData);
+		const user = member?.userId
+			? await this.getUserData(new UUID(member?.userId))
 			: null;
 
+		if (!member && !user) return null;
+
 		return {
-			...parsedData,
-			userData,
+			...member,
+			userData: user,
 		};
 	}
 
 	async exec(input: IProps) {
-		const data = await this.memberRepo.getById({ id: new UUID(input.id) });
-		if (data)
-			return {
-				content: await this.parseContent(
-					data,
-					input?.pruneSensitiveData,
-				),
-			};
-
-		return { content: null };
+		const memberId = new UUID(input.id);
+		const content = await this.getContent(
+			memberId,
+			input?.pruneSensitiveData,
+		);
+		return { content };
 	}
 }

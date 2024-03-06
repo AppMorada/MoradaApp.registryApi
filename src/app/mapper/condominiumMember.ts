@@ -4,8 +4,8 @@ export interface IConvertToObject {
 	id?: string;
 	condominiumId: string;
 	userId?: string | null;
+	CPF: string;
 	c_email: string;
-	hierarchy: number;
 	apartmentNumber?: number | null;
 	block?: string | null;
 	autoEdit: boolean;
@@ -18,7 +18,7 @@ export interface ICondominiumMemberInObject {
 	condominiumId: string;
 	userId?: string | null;
 	c_email: string;
-	hierarchy: number;
+	CPF: string;
 	apartmentNumber?: number | null;
 	block?: string | null;
 	autoEdit: boolean;
@@ -35,7 +35,7 @@ export class CondominiumMemberMapper {
 		return {
 			id: input.id.value,
 			condominiumId: input.condominiumId.value,
-			hierarchy: input.hierarchy.value,
+			CPF: input.CPF.value,
 			block: input.block ? input.block.value : input.block,
 			apartmentNumber: input.apartmentNumber
 				? input.apartmentNumber.value

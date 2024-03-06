@@ -19,7 +19,6 @@ interface IProps {
 	user: {
 		name: string;
 		email: string;
-		CPF: string;
 		password: string;
 	};
 }
@@ -38,7 +37,6 @@ export class CreateCondominiumService implements IService {
 			name: input.user.name,
 			email: input.user.email,
 			password: input.user.password,
-			CPF: input.user.CPF,
 			tfa: false,
 		});
 		user.password = new Password(
@@ -60,6 +58,10 @@ export class CreateCondominiumService implements IService {
 		await this.cepGate.check(condominium.CEP.value);
 		await this.condominiumRepo.create({ condominium, user });
 
-		return { user, condominium: CondominiumMapper.toObject(condominium) };
+		const parsedCondominium = CondominiumMapper.toObject(
+			condominium,
+		) as any;
+		delete parsedCondominium.seedKey;
+		return { user, condominium: parsedCondominium };
 	}
 }

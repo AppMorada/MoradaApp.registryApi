@@ -9,7 +9,7 @@ import { EnterpriseMember } from '@app/entities/enterpriseMember';
 interface IProps {
 	user: User;
 	condominiumId: string;
-	hierarchy: number;
+	CPF: string;
 }
 
 /** Serviço responsável por criar um novo usuário de empresa */
@@ -20,16 +20,16 @@ export class CreateEnterpriseUserService implements IService {
 		private readonly enterpriseMemberRepo: EnterpriseMemberRepo,
 	) {}
 
-	async exec({ user, condominiumId, hierarchy }: IProps) {
+	async exec({ user, condominiumId, CPF }: IProps) {
 		const hashPass = await this.crypt.hash(user.password.value);
 
 		const userCopy = user.dereference();
 		userCopy.password = new Password(hashPass);
 
 		const member = new EnterpriseMember({
-			hierarchy,
 			condominiumId,
 			userId: user.id.value,
+			CPF,
 		});
 
 		await this.enterpriseMemberRepo.create({ member, user: userCopy });

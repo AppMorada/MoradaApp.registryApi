@@ -29,7 +29,8 @@ describe('InMemoryData test: Invite transferToUserResources method', () => {
 		await sut.create({ invite });
 		await sut.transferToUserResources({
 			user,
-			condominiumId: member.condominiumId,
+			invite,
+			CPF: member.CPF,
 		});
 
 		expect(Boolean(sut.invites[0])).toBeFalsy();

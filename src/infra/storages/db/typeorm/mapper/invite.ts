@@ -7,10 +7,10 @@ export class TypeOrmInviteMapper {
 		const invite = new TypeOrmInviteEntity();
 		invite.id = input.id.value;
 		invite.recipient = input.recipient.value;
-		invite.CPF = input.CPF.value;
+		invite.code = input.code;
 		invite.createdAt = input.createdAt;
-		invite.hierarchy = input.hierarchy.value;
 		invite.condominium = input.condominiumId.value;
+		invite.member = input.memberId.value;
 
 		return invite;
 	}
@@ -19,9 +19,9 @@ export class TypeOrmInviteMapper {
 		return new Invite(
 			{
 				condominiumId: input.condominium as string,
+				memberId: input.member as string,
 				recipient: input.recipient,
-				hierarchy: input.hierarchy,
-				CPF: input.CPF,
+				code: input.code,
 				createdAt: input.createdAt,
 			},
 			input.id,
@@ -32,10 +32,10 @@ export class TypeOrmInviteMapper {
 		return {
 			id: input.id,
 			recipient: input.recipient,
-			CPF: input.CPF,
-			hierarchy: input.hierarchy,
+			code: input.code,
 			createdAt: input.createdAt,
 			condominiumId: input.condominium as string,
+			memberId: input.member as string,
 		};
 	}
 }

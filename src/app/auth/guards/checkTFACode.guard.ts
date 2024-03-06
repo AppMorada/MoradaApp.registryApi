@@ -50,9 +50,9 @@ export class CheckTFACodeGuard implements CanActivate {
 				key: new Email(decodedData.sub),
 				safeSearch: true,
 			})
-			.catch(() => {
+			.catch((err) => {
 				throw new GuardErrors({
-					message: 'Usuário não existe',
+					message: err.message,
 				});
 			});
 

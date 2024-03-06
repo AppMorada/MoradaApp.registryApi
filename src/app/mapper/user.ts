@@ -5,7 +5,6 @@ export interface IUserInObject {
 	name: string;
 	email: string;
 	password: string;
-	CPF: string;
 	phoneNumber?: string | null;
 	tfa: boolean;
 	createdAt?: Date;
@@ -17,7 +16,6 @@ export type TUserClassToObject = {
 	name: string;
 	email: string;
 	password: string;
-	CPF: string;
 	phoneNumber?: string | null;
 	tfa: boolean;
 	createdAt: Date;
@@ -50,7 +48,6 @@ export class UserMapper {
 			name: input.name.value,
 			email: input.email.value,
 			password: input.password.value,
-			CPF: input.CPF.value,
 			phoneNumber: input.phoneNumber
 				? input.phoneNumber.value
 				: input.phoneNumber,

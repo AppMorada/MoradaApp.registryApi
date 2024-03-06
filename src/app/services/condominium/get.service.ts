@@ -18,8 +18,13 @@ export class GetCondominiumService implements IService {
 	async exec(input: IProps) {
 		const raw = await this.condominiumRepo.find({ key: input.id });
 
-		let condominium: TCondominiumInObject | undefined;
-		if (raw) condominium = CondominiumMapper.toObject(raw);
+		let condominium: Omit<TCondominiumInObject, 'seedKey'> | undefined;
+		if (raw) {
+			const objt = CondominiumMapper.toObject(raw) as any;
+			delete objt.seedKey;
+
+			condominium = objt;
+		}
 
 		return { data: condominium ?? null };
 	}

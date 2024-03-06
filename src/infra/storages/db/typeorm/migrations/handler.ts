@@ -5,7 +5,7 @@ import { TypeOrmUserEntity } from '../entities/user.entity';
 import { TypeORMService } from '../typeORM.service';
 import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.entity';
 import { TypeOrmEnterpriseMemberEntity } from '../entities/enterpriseMember.entity';
-import { Migrations1709575636368 } from './1709575636368-migrations';
+import { Migrations1709706321663 } from './1709706321663-migrations';
 
 const config: PostgresConnectionOptions = {
 	type: 'postgres',
@@ -20,7 +20,7 @@ const config: PostgresConnectionOptions = {
 	synchronize: false,
 	migrationsRun: false,
 	migrationsTableName: 'migration_typeorm',
-	migrations: [Migrations1709575636368],
+	migrations: [Migrations1709706321663],
 };
 
 const dataSource = new TypeORMService({ ...config });

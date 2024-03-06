@@ -4,10 +4,10 @@ import { RemoveEntepriseMemberController } from './delete.flow/delete.controller
 import { GetEnterpriseMemberController } from './get.flow/get.controller';
 import { CreateEnterpriseMemberController } from './createEnterpriseMember.flow/create.controller';
 import { RemoveEntepriseMemberService } from '@app/services/members/enterprise/removeMember.service';
-import { GetEnterpriseMemberByIdService } from '@app/services/members/enterprise/getById.service';
 import { GetEnterpriseMemberGroupByCondominiumIdService } from '@app/services/members/enterprise/getByGroupByCondominiumId.service';
 import { CreateEnterpriseUserService } from '@app/services/members/enterprise/create.service';
 import { Module } from '@nestjs/common';
+import { GetEnterpriseMemberByUserIdService } from '@app/services/members/enterprise/getByUserId.service';
 
 @Module({
 	controllers: [
@@ -19,7 +19,7 @@ import { Module } from '@nestjs/common';
 	providers: [
 		UpdateEnterpriseMemberService,
 		RemoveEntepriseMemberService,
-		GetEnterpriseMemberByIdService,
+		GetEnterpriseMemberByUserIdService,
 		GetEnterpriseMemberGroupByCondominiumIdService,
 		CreateEnterpriseUserService,
 	],

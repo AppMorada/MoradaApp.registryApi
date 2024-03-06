@@ -4,8 +4,8 @@ interface IConvertToObject {
 	id?: string;
 	recipient: string;
 	condominiumId: string;
-	CPF: string;
-	hierarchy: number;
+	memberId: string;
+	code: string;
 	createdAt?: Date;
 }
 
@@ -33,8 +33,8 @@ export class InviteMapper {
 		return {
 			id: input.id.value,
 			condominiumId: input.condominiumId.value,
-			CPF: input.CPF.value,
-			hierarchy: input.hierarchy.value,
+			memberId: input.memberId.value,
+			code: input.code,
 			recipient: input.recipient.value,
 			createdAt: input.createdAt,
 		};

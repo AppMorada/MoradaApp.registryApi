@@ -3,8 +3,8 @@ import { EnterpriseMember } from '@app/entities/enterpriseMember';
 export interface IEnterpriseMemberConvertToObject {
 	id?: string;
 	condominiumId: string;
+	CPF: string;
 	userId: string;
-	hierarchy: number;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -24,7 +24,7 @@ export class EnterpriseMemberMapper {
 		return {
 			id: input.id.value,
 			condominiumId: input.condominiumId.value,
-			hierarchy: input.hierarchy.value,
+			CPF: input.CPF.value,
 			userId: input.userId.value,
 			updatedAt: input.updatedAt,
 			createdAt: input.createdAt,

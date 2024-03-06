@@ -38,7 +38,8 @@ export class ReloadInviteService implements IService {
 			key: new Email(input.recipient),
 			safeSearch: true,
 		});
-		this.sendEmail(invite.recipient);
+
+		invite.forEach((item) => this.sendEmail(item.recipient));
 
 		return invite;
 	}

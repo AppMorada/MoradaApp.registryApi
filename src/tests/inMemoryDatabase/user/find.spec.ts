@@ -19,13 +19,10 @@ describe('InMemoryData test: User find method', () => {
 		sut.users.push(user);
 
 		const sut2 = await sut.find({ key: user.email });
-		const sut3 = await sut.find({ key: user.CPF });
-		const sut4 = await sut.find({ key: user.id });
+		const sut3 = await sut.find({ key: user.id });
 
 		expect(sut2 && sut3 && sut2.equalTo(sut3)).toBeTruthy();
-		expect(sut3 && sut4 && sut3.equalTo(sut4)).toBeTruthy();
-
-		expect(sut.calls.find).toEqual(3);
+		expect(sut.calls.find).toEqual(2);
 	});
 
 	it('should be able to throw one error: User doesn\'t exists', async () => {

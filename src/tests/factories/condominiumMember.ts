@@ -9,7 +9,7 @@ type TOverride = Partial<ICondominiumMemberInput>;
 export function condominiumMemberFactory(input: TOverride = {}, id?: string) {
 	return new CondominiumMember(
 		{
-			hierarchy: 0,
+			CPF: '11122233396',
 			condominiumId: UUID.genV4().value,
 			c_email: 'jhondoe@email.com',
 			autoEdit: false,

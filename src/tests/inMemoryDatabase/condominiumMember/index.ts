@@ -133,6 +133,7 @@ export class InMemoryCondominiumMembers implements CondominiumMemberRepo {
 			return {
 				id: data.id,
 				c_email: data.c_email,
+				CPF: data.CPF,
 				apartmentNumber: data.apartmentNumber ?? null,
 				block: data.block ?? null,
 				userId: data.userId ?? null,

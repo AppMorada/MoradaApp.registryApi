@@ -20,7 +20,7 @@ export class CreateCondominiumController {
 	private async processTokens(
 		res: Response,
 		user: User,
-		condominium: TCondominiumInObject,
+		condominium: Omit<TCondominiumInObject, 'seedKey'>,
 	) {
 		const { accessToken, refreshToken, refreshTokenExp } =
 			await this.createToken.exec({
@@ -54,7 +54,6 @@ export class CreateCondominiumController {
 			user: {
 				name: body.userName,
 				email: body.email,
-				CPF: body.CPF,
 				password: body.password,
 			},
 			condominium: {

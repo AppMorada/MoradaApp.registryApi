@@ -14,6 +14,7 @@ import { TypeOrmCondominiumEntity } from './condominium.entity';
 import { TypeOrmUserEntity } from './user.entity';
 
 @Unique(['user', 'condominium'])
+@Unique(['CPF', 'condominium'])
 @Entity({ name: 'enterprise_members' })
 export class TypeOrmEnterpriseMemberEntity {
 	@PrimaryGeneratedColumn('uuid')
@@ -43,8 +44,8 @@ export class TypeOrmEnterpriseMemberEntity {
 	})
 		condominium: Relation<TypeOrmCondominiumEntity> | string;
 
-	@Column({ type: 'smallint', default: 0 })
-		hierarchy: number;
+	@Column({ type: 'bigint', name: 'cpf' })
+		CPF: string;
 
 	@CreateDateColumn({ name: 'created_at' })
 		createdAt: Date;

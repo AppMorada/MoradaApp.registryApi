@@ -1,11 +1,10 @@
-import { Name, Email, Password, CPF, PhoneNumber, UUID } from '../VO';
+import { Name, Email, Password, PhoneNumber, UUID } from '../VO';
 import { Entity, ValueObject } from '../entities';
 
 interface IPropsUser {
 	name: Name;
 	email: Email;
 	password: Password;
-	CPF: CPF;
 	phoneNumber?: PhoneNumber | null;
 	tfa: boolean;
 	createdAt: Date;
@@ -16,7 +15,6 @@ export type TInputPropsUser = {
 	name: string;
 	email: string;
 	password: string;
-	CPF: string;
 	phoneNumber?: string | null;
 	tfa: boolean;
 	createdAt?: Date;
@@ -44,7 +42,7 @@ export const userDTORules = {
 		type: 'string',
 	},
 	phoneNumber: {
-		maxLength: 30,
+		maxLength: 20,
 		minLength: 10,
 		type: 'string',
 	},
@@ -65,7 +63,6 @@ export class User implements Entity {
 			name: new Name(input.name),
 			email: new Email(input.email),
 			password: new Password(input.password),
-			CPF: new CPF(input.CPF),
 			phoneNumber: ValueObject.build(PhoneNumber, input.phoneNumber)
 				.allowNullish()
 				.exec(),
@@ -82,7 +79,6 @@ export class User implements Entity {
 				name: this.name.value,
 				email: this.email.value,
 				password: this.password.value,
-				CPF: this.CPF.value,
 				phoneNumber: this.phoneNumber
 					? this.phoneNumber.value
 					: this.phoneNumber,
@@ -102,7 +98,6 @@ export class User implements Entity {
 			this.tfa === input.tfa &&
 			ValueObject.compare(this._id, input.id) &&
 			ValueObject.compare(this.phoneNumber, input.phoneNumber) &&
-			ValueObject.compare(this.CPF, input.CPF) &&
 			ValueObject.compare(this.password, input.password) &&
 			ValueObject.compare(this.name, input.name) &&
 			ValueObject.compare(this.email, input.email)
@@ -144,14 +139,6 @@ export class User implements Entity {
 	}
 	set password(input: Password) {
 		this.props.password = input;
-	}
-
-	// CPF
-	get CPF(): CPF {
-		return this.props.CPF;
-	}
-	set CPF(input: CPF) {
-		this.props.CPF = input;
 	}
 
 	// PhoneNumber

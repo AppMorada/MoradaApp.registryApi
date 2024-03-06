@@ -28,7 +28,7 @@ export class GetUserController {
 		const { password: _, ...userAsObject } = UserMapper.toObject(user);
 		return {
 			...userAsObject,
-			condominiums: relations.content,
+			condominiumStoredDatas: relations.content,
 		};
 	}
 
@@ -45,7 +45,7 @@ export class GetUserController {
 		const { password: _, ...userAsObject } = UserMapper.toObject(user);
 		return {
 			...userAsObject,
-			works_on: relations.content,
+			condominiumStoredData: relations.content,
 		};
 	}
 }

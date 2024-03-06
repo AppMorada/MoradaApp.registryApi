@@ -1,4 +1,4 @@
-import { CEP } from '@app/entities/VO';
+import { CEP, CNPJ } from '@app/entities/VO';
 import { TypeOrmCondominiumEntity } from '../entities/condominium.entity';
 import { Condominium } from '@app/entities/condominium';
 import { TCondominiumInObject } from '@app/mapper/condominium';
@@ -24,7 +24,7 @@ export class TypeOrmCondominiumMapper {
 			{
 				ownerId: input.user as string,
 				name: input.name,
-				CNPJ: input.CNPJ,
+				CNPJ: CNPJ.toString(parseInt(input.CNPJ)),
 				CEP: CEP.toString(input.CEP),
 				num: input.num,
 				seedKey: input.seed_key,
@@ -40,7 +40,7 @@ export class TypeOrmCondominiumMapper {
 			id: input.id,
 			ownerId: input.user as string,
 			name: input.name,
-			CNPJ: input.CNPJ,
+			CNPJ: CNPJ.toString(parseInt(input.CNPJ)),
 			CEP: CEP.toString(input.CEP),
 			num: input.num,
 			seedKey: input.seed_key,

@@ -28,17 +28,17 @@ export class GetCondominiumMemberController {
 	}
 
 	@UseGuards(CondominiumMemberGuard)
-	@Get('condominium-member/:memberId')
-	async getOne(@Param('memberId') id: string) {
-		return await this.getMemberById.exec({ id, pruneSensitiveData: true });
-	}
-
-	@UseGuards(CondominiumMemberGuard)
-	@Get(':condominiumId/condominium-member/all')
+	@Get(':condominiumId/as-community/condominium-member/all')
 	async getAll(@Param('condominiumId') id: string) {
 		const members = await this.getAllMembers.exec({ id });
 		return {
 			condominiumMembers: members,
 		};
+	}
+
+	@UseGuards(CondominiumMemberGuard)
+	@Get(':condominiumId/as-community/condominium-member/:memberId')
+	async getOne(@Param('memberId') id: string) {
+		return await this.getMemberById.exec({ id, pruneSensitiveData: true });
 	}
 }

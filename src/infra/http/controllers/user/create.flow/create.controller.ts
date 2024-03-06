@@ -1,13 +1,15 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { User } from '@app/entities/user';
 import { UserMapper } from '@app/mapper/user';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 import { CreateUserService } from '@app/services/user/create.service';
 import { CreateUserDTO } from '@infra/http/DTO/user/create.DTO';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { USER_PREFIX } from '../consts';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { Invite } from '@app/entities/invite';
+import { InviteGuard } from '@app/auth/guards/invite.guard';
 
 @Controller(USER_PREFIX)
 export class CreateUserController {
@@ -48,13 +50,19 @@ export class CreateUserController {
 			ttl: 60000,
 		},
 	})
+	@UseGuards(InviteGuard)
 	@Post()
 	async createSimpleUser(
+		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
 		@Body() body: CreateUserDTO,
 	) {
-		const user = UserMapper.toClass({ ...body, tfa: false });
-		await this.createUser.exec({ user });
+		const invite = req.inMemoryData.invite as Invite;
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		const { CPF, code: __, ...rest } = body;
+
+		const user = UserMapper.toClass({ ...rest, tfa: false });
+		await this.createUser.exec({ user, CPF, invite });
 
 		return await this.processTokens(res, user);
 	}

@@ -11,7 +11,7 @@ export class UploadCollectionOfMembersController {
 		private readonly uploadMembers: UploadCollectionOfMembersService,
 	) {}
 
-	@Post(':condominiumId/invite/batch')
+	@Post(':condominiumId/as-owner/condominium-member/invite')
 	@UseGuards(SuperAdminJwt)
 	async createAdmin(
 		@Body() body: CondominiumInvitesDTO,

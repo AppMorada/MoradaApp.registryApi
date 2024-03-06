@@ -21,7 +21,6 @@ implements IService
 			id: item.id,
 			name: item.name,
 			email: item.email,
-			CPF: item.CPF,
 			phoneNumber: item.phoneNumber,
 			createdAt: item.createdAt,
 			updatedAt: item.updatedAt,

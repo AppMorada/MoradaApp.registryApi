@@ -1,4 +1,4 @@
-import { ApartmentNumber, Block, Email, UUID } from '@app/entities/VO';
+import { ApartmentNumber, Block, CPF, Email, UUID } from '@app/entities/VO';
 import { CondominiumMember } from '@app/entities/condominiumMember';
 import { ICondominiumMemberInObject } from '@app/mapper/condominiumMember';
 
@@ -21,6 +21,7 @@ export namespace CondominiumMemberRepoInterfaces {
 		id: UUID;
 		c_email?: Email;
 		apartmentNumber?: ApartmentNumber;
+		CPF?: CPF;
 		block?: Block;
 	}
 
@@ -33,6 +34,7 @@ export namespace CondominiumMemberRepoInterfaces {
 		userId: string | null;
 		c_email: string;
 		block: string | null;
+		CPF: string;
 		apartmentNumber: number | null;
 		createdAt: Date;
 		updatedAt: Date;

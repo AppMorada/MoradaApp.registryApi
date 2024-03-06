@@ -84,28 +84,92 @@ export class TypeOrmEnterpriseMemberRepo implements EnterpriseMemberRepo {
 			if (!modifications[key]) delete modifications[key];
 		}
 
+		if (
+			!modifications.CPF &&
+			(modifications.name || modifications.phoneNumber)
+		)
+			return await this.updateOnlyUser(input.id.value, {
+				phoneNumber: input.phoneNumber?.value,
+				name: input.name?.value,
+			});
+
+		if (
+			modifications.CPF &&
+			(modifications.name || modifications.phoneNumber)
+		)
+			return await this.updateUserAndEnterpriseMemberTable(
+				input.id.value,
+				modifications,
+			);
+
+		if (
+			modifications.CPF &&
+			!modifications.name &&
+			!modifications.phoneNumber
+		)
+			return await this.updateOnlyEnterpriseMemberTable(
+				input.id.value,
+				modifications.CPF,
+			);
+	}
+
+	private async updateOnlyUser(
+		id: string,
+		modifications: Record<string, string | undefined>,
+	) {
 		await this.dataSource
+			.getRepository(TypeOrmUserEntity)
 			.createQueryBuilder()
 			.update('users')
 			.set(modifications)
-			.where('id = :id', { id: input.id.value })
+			.where('id = :id', { id })
 			.execute();
+	}
+
+	private async updateOnlyEnterpriseMemberTable(id: string, CPF: string) {
+		await this.dataSource
+			.getRepository(TypeOrmEnterpriseMemberEntity)
+			.createQueryBuilder()
+			.update('enterprise_members')
+			.set({ CPF })
+			.where('user_id = :id', { id })
+			.execute();
+	}
+
+	private async updateUserAndEnterpriseMemberTable(
+		id: string,
+		modifications: Record<string, string | undefined>,
+	) {
+		await this.dataSource.transaction(async (t) => {
+			await t
+				.getRepository(TypeOrmUserEntity)
+				.createQueryBuilder()
+				.update('users')
+				.set({
+					name: modifications?.name,
+					phoneNumber: modifications?.phoneNumber,
+				})
+				.where('id = :id', { id })
+				.execute();
+
+			await t
+				.getRepository(TypeOrmEnterpriseMemberEntity)
+				.createQueryBuilder()
+				.update('enterprise_members')
+				.set({ CPF: modifications?.CPF })
+				.where('user_id = :id', { id })
+				.execute();
+		});
 	}
 
 	async remove(input: EnterpriseMemberRepoInterfaces.remove): Promise<void> {
 		await this.dataSource.transaction(async (t) => {
-			const member = await t.findOne(TypeOrmEnterpriseMemberEntity, {
-				where: { id: input.id.value },
-				lock: { mode: 'pessimistic_read' },
-			});
-
-			if (member)
-				await t
-					.createQueryBuilder()
-					.delete()
-					.from('users')
-					.where('id = :id', { id: member.user as string })
-					.execute();
+			await t
+				.createQueryBuilder()
+				.delete()
+				.from('users')
+				.where('id = :id', { id: input.id.value })
+				.execute();
 		});
 	}
 }

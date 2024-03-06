@@ -1,10 +1,10 @@
-import { Level, UUID } from '../VO';
+import { CPF, UUID } from '../VO';
 import { Entity, ValueObject } from '../entities';
 
 interface IProps {
 	condominiumId: UUID;
 	userId: UUID;
-	hierarchy: Level;
+	CPF: CPF;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -12,7 +12,7 @@ interface IProps {
 export interface IEnterpriseMemberInput {
 	condominiumId: string;
 	userId: string;
-	hierarchy: number;
+	CPF: string;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -28,9 +28,7 @@ export class EnterpriseMember implements Entity {
 				.or(UUID.genV4())
 				.exec(),
 			userId: ValueObject.build(UUID, input.userId).exec(),
-			hierarchy: ValueObject.build(Level, input.hierarchy)
-				.or(new Level(0))
-				.exec(),
+			CPF: new CPF(input.CPF),
 			createdAt: input.createdAt ?? new Date(),
 			updatedAt: input.updatedAt ?? new Date(),
 		};
@@ -43,7 +41,7 @@ export class EnterpriseMember implements Entity {
 			input.updatedAt === this.updatedAt &&
 			ValueObject.compare(this.condominiumId, input.condominiumId) &&
 			ValueObject.compare(this.userId, input.userId) &&
-			ValueObject.compare(this.hierarchy, input.hierarchy) &&
+			ValueObject.compare(this.CPF, input.CPF) &&
 			ValueObject.compare(this.id, input.id)
 		);
 	}
@@ -53,7 +51,7 @@ export class EnterpriseMember implements Entity {
 			{
 				condominiumId: this.condominiumId.value,
 				userId: this.userId.value,
-				hierarchy: this.hierarchy.value,
+				CPF: this.CPF.value,
 				createdAt: this.createdAt,
 				updatedAt: this.updatedAt,
 			},
@@ -79,11 +77,11 @@ export class EnterpriseMember implements Entity {
 		this.props.userId = input;
 	}
 
-	get hierarchy(): Level {
-		return this.props.hierarchy;
+	get CPF(): CPF {
+		return this.props.CPF;
 	}
-	set hierarchy(input: Level) {
-		this.props.hierarchy = input;
+	set CPF(input: CPF) {
+		this.props.CPF = input;
 	}
 
 	get createdAt(): Date {

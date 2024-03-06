@@ -16,18 +16,6 @@ export class UpdateUserDTO {
 		name?: string;
 
 	@IsString({
-		message: 'O CPF precisa conter caracteres válidos',
-	})
-	@IsOptional()
-	@MinLength(userDTORules.CPF.minLength, {
-		message: `O CPF precisa conter no mínimo ${userDTORules.CPF.minLength} caracteres`,
-	})
-	@MaxLength(userDTORules.CPF.maxLength, {
-		message: `O CPF precisa conter no máximo ${userDTORules.CPF.maxLength} caracteres`,
-	})
-		CPF?: string;
-
-	@IsString({
 		message: 'O número de telefone precisa conter caracteres válidos',
 	})
 	@MaxLength(userDTORules.phoneNumber.maxLength, {

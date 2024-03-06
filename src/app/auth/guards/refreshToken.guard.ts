@@ -60,10 +60,16 @@ export class RefreshTokenGuard implements CanActivate {
 
 		const parsedToken = await this.checkCookie(token);
 		const data = await this.checkToken(parsedToken);
-		const user = await this.userRepo.find({
-			key: new Email(data.email),
-			safeSearch: true,
-		});
+		const user = await this.userRepo
+			.find({
+				key: new Email(data.email),
+				safeSearch: true,
+			})
+			.catch((err) => {
+				throw new GuardErrors({
+					message: err.message,
+				});
+			});
 
 		req.inMemoryData = {
 			...req.inMemoryData,

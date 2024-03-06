@@ -31,9 +31,10 @@ describe('InMemoryData test: Enterprise Member update method', () => {
 		).resolves;
 
 		const searchedUser = sut.users?.[0];
+		const searchedMember = sut.enterpriseMembers?.[0];
 		expect(searchedUser?.phoneNumber?.value).toEqual('2154659887');
 		expect(searchedUser?.name?.value).toEqual('new name');
-		expect(searchedUser?.CPF?.value).toEqual('89384154733');
+		expect(searchedMember?.CPF?.value).toEqual('89384154733');
 		expect(sut.calls.update).toEqual(1);
 	});
 

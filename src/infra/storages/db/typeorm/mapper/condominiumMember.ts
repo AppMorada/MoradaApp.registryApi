@@ -7,7 +7,7 @@ export class TypeOrmCondominiumMemberMapper {
 		const member = new TypeOrmCondominiumMemberEntity();
 		member.id = input.id.value;
 		member.c_email = input.c_email.value;
-		member.hierarchy = input.hierarchy.value;
+		member.CPF = input.CPF.value;
 		member.block = input.block?.value ?? null;
 		member.autoEdit = input.autoEdit ? 1 : 0;
 		member.apartmentNumber = input.apartmentNumber?.value ?? null;
@@ -25,7 +25,7 @@ export class TypeOrmCondominiumMemberMapper {
 				autoEdit: Boolean(input.autoEdit),
 				apartmentNumber: input.apartmentNumber,
 				block: input.block,
-				hierarchy: input.hierarchy,
+				CPF: input.CPF,
 				c_email: input.c_email,
 				createdAt: input.createdAt,
 				userId: input.user ? String(input.user) : undefined,
@@ -44,7 +44,7 @@ export class TypeOrmCondominiumMemberMapper {
 			condominiumId: input.condominium as string,
 			userId: (input.user as string) ?? undefined,
 			c_email: input.c_email,
-			hierarchy: input.hierarchy,
+			CPF: input.CPF,
 			block: input.block,
 			apartmentNumber: input.apartmentNumber,
 			autoEdit: Boolean(input.autoEdit),

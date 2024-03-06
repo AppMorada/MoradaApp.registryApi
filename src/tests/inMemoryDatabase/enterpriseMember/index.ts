@@ -38,7 +38,7 @@ export class InMemoryEnterpriseMembers implements EnterpriseMemberRepo {
 
 		const enterpriseMember = new EnterpriseMember({
 			userId: input.member.userId.value,
-			hierarchy: input.member.hierarchy.value,
+			CPF: input.member.CPF.value,
 			condominiumId: input.member.condominiumId.value,
 		});
 
@@ -143,7 +143,9 @@ export class InMemoryEnterpriseMembers implements EnterpriseMemberRepo {
 			});
 
 		const user = this.users[userIndex];
-		user.CPF = input.CPF ?? user.CPF;
+		const member = this.enterpriseMembers[memberIndex];
+
+		member.CPF = input.CPF ?? member.CPF;
 		user.name = input.name ?? user.name;
 		user.phoneNumber = input.phoneNumber ?? user.phoneNumber;
 	}

@@ -11,7 +11,6 @@ Table users {
 	name              varchar(100)
 	email             varchar(320)    [unique]
 	phone_number      bigint          [null]
-	cpf               bigint
 	password          char(60)
 	tfa               smallint        [default: 0]
 	created_at        timestamp       [default: `now()`]
@@ -22,9 +21,15 @@ Table enterprise_member {
 	id                uuid            [pk, default: `uuid_generate_v4()`]
 	user_id           uuid            [ref: - users.id]
 	condominium_id    uuid            [ref: - condominiums.id]
-	hierarchy         smallint
+	cpf               bigint
 	created_at        timestamp       [default: `now()`]
 	updated_at        timestamp       [default: `now()`]
+
+	Indexes {
+		(condominium_id, cpf) [name: 'idx_cpf_condominium_id']
+		cpf [unique]
+		condominium_id [unique]
+	}
 }
 
 Table condominiums {
@@ -45,8 +50,8 @@ Table condominium_members {
 	user_id                uuid                [ref: > users.id]
 
 	c_email                varchar(320)
-	c_phone_number         bigint          [null]
-	hierarchy              smallint
+	cpf                    bigint
+	c_phone_number         bigint              [null]
 	apartment_number       int                 [null]
 	block                  varchar(6)          [null, note: 'Bloco do condomínio']
 
@@ -60,11 +65,18 @@ Table condominium_members {
 		c_email [unique]
 		condominium_id [unique]
 	}
+
+	Indexes {
+		(condominium_id, cpf) [name: 'idx_cpf_condominium_id']
+		cpf [unique]
+		condominium_id [unique]
+	}
 }
 
 Table invites {
 	id                        uuid            [pk, default: `uuid_generate_v4()`]
 	condominium_id            uuid            [ref: - condominiums.id]
+	member_id                 uuid            [ref: - condominium_members.id]
 	recipient                 varchar(320)
 	code                      char(60) 
 	created_at                timestamp       [default: `now()`]

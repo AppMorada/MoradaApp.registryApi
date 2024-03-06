@@ -32,10 +32,16 @@ export class JwtGuard implements CanActivate {
 
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
 
-		const user = await this.userRepo.find({
-			key: new UUID(tokenData.sub),
-			safeSearch: true,
-		});
+		const user = await this.userRepo
+			.find({
+				key: new UUID(tokenData.sub),
+				safeSearch: true,
+			})
+			.catch((err) => {
+				throw new GuardErrors({
+					message: err.message,
+				});
+			});
 
 		req.inMemoryData = {
 			...req.inMemoryData,

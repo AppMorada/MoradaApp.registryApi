@@ -6,7 +6,7 @@ import { TypeOrmCondominiumEntity } from './entities/condominium.entity';
 import { TypeOrmInviteEntity } from './entities/invite.entity';
 import { TypeOrmCondominiumMemberEntity } from './entities/condominiumMember.entity';
 import { TypeOrmEnterpriseMemberEntity } from './entities/enterpriseMember.entity';
-import { Migrations1709575636368 } from './migrations/1709575636368-migrations';
+import { Migrations1709706321663 } from './migrations/1709706321663-migrations';
 
 export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
 	new TypeORMService({
@@ -35,7 +35,7 @@ export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
 		synchronize: false,
 		migrationsRun: false,
 		migrationsTableName: 'migration_typeorm',
-		migrations: [Migrations1709575636368],
+		migrations: [Migrations1709706321663],
 	}).initialize();
 
 export const databaseProviders = [

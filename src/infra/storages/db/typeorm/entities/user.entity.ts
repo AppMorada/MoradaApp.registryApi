@@ -26,9 +26,6 @@ export class TypeOrmUserEntity {
 	@Column({ type: 'bigint', name: 'phone_number', nullable: true })
 		phoneNumber: string | null;
 
-	@Column({ type: 'bigint', name: 'cpf' })
-		CPF: string;
-
 	@Column({ length: 60, type: 'char' })
 		password: string;
 

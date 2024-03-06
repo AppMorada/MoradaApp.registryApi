@@ -3,12 +3,12 @@ import { UserRepo, UserRepoInterfaces } from '@app/repositories/user';
 import { Inject, Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { TypeOrmUserEntity } from '../entities/user.entity';
-import { Email, UUID } from '@app/entities/VO';
+import { UUID } from '@app/entities/VO';
 import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 import { TypeOrmUserMapper } from '../mapper/user';
 import { typeORMConsts } from '../consts';
 
-type TQuery = { id: string } | { email: string } | { CPF: string };
+type TQuery = { id: string } | { email: string };
 
 @Injectable()
 export class TypeOrmUserRepo implements UserRepo {
@@ -27,10 +27,7 @@ export class TypeOrmUserRepo implements UserRepo {
 	): Promise<User | undefined> {
 		const buildQuery = (): TQuery => {
 			if (input.key instanceof UUID) return { id: input.key.value };
-
-			if (input.key instanceof Email) return { email: input.key.value };
-
-			return { CPF: input.key.value };
+			return { email: input.key.value };
 		};
 
 		const rawUser = await this.userRepo.findOne({
@@ -56,7 +53,6 @@ export class TypeOrmUserRepo implements UserRepo {
 
 	async update(input: UserRepoInterfaces.update): Promise<void> {
 		const modifications = {
-			CPF: input.CPF?.value,
 			name: input.name?.value,
 			phoneNumber: input.phoneNumber?.value,
 		};

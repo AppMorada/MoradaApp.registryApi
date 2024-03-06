@@ -49,4 +49,9 @@ export class CreateUserDTO {
 		message: `O CPF precisa conter no máximo ${userDTORules.CPF.maxLength} caracteres`,
 	})
 		CPF: string;
+
+	@IsString({
+		message: 'O código precisa conter caracteres válidos',
+	})
+		code: string;
 }

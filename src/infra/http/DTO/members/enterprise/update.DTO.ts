@@ -1,7 +1,7 @@
 import { userDTORules } from '@app/entities/user';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class UpdateCondominiumMemberDTO {
+export class UpdateEntepriseMemberDTO {
 	@IsString({
 		message: 'O nome precisa conter caracteres válidos',
 	})

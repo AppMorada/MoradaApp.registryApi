@@ -23,13 +23,12 @@ export class UploadCollectionOfMembersService implements IService {
 
 	async exec(input: IProps): Promise<void> {
 		const content = input.members.map((item) => ({
-			CPF: item.CPF,
 			content: new CondominiumMember({
 				apartmentNumber: item.apartmentNumber,
 				block: item.block,
 				condominiumId: input.condominiumId,
 				c_email: item.c_email,
-				hierarchy: 0,
+				CPF: item.CPF,
 				autoEdit: false,
 			}),
 		}));
@@ -42,7 +41,8 @@ export class UploadCollectionOfMembersService implements IService {
 			await this.genInvite.exec({
 				condominiumId: item.content.condominiumId.value,
 				recipient: item.content.c_email.value,
-				CPF: item.CPF,
+				CPF: item.content.CPF.value,
+				memberId: item.content.id.value,
 			});
 		}
 	}

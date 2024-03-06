@@ -1,11 +1,11 @@
-import { ApartmentNumber, Block, Email, Level, UUID } from '../VO';
+import { ApartmentNumber, Block, CPF, Email, UUID } from '../VO';
 import { Entity, ValueObject } from '../entities';
 
 interface IProps {
 	condominiumId: UUID;
 	userId?: UUID | null;
 	c_email: Email;
-	hierarchy: Level;
+	CPF: CPF;
 	apartmentNumber?: ApartmentNumber | null;
 	block?: Block | null;
 	autoEdit: boolean;
@@ -17,7 +17,7 @@ export interface ICondominiumMemberInput {
 	condominiumId: string;
 	userId?: string | null;
 	c_email: string;
-	hierarchy: number;
+	CPF: string;
 	apartmentNumber?: number | null;
 	block?: string | null;
 	autoEdit: boolean;
@@ -39,9 +39,7 @@ export class CondominiumMember implements Entity {
 			block: ValueObject.build(Block, input.block).allowNullish().exec(),
 			autoEdit: input.autoEdit,
 			c_email: new Email(input.c_email),
-			hierarchy: ValueObject.build(Level, input.hierarchy)
-				.or(new Level(0))
-				.exec(),
+			CPF: new CPF(input.CPF),
 			apartmentNumber: ValueObject.build(
 				ApartmentNumber,
 				input.apartmentNumber,
@@ -63,7 +61,7 @@ export class CondominiumMember implements Entity {
 			ValueObject.compare(this.userId, input.userId) &&
 			ValueObject.compare(this.block, input.block) &&
 			ValueObject.compare(this.c_email, input.c_email) &&
-			ValueObject.compare(this.hierarchy, input.hierarchy) &&
+			ValueObject.compare(this.CPF, input.CPF) &&
 			ValueObject.compare(this.apartmentNumber, input.apartmentNumber) &&
 			ValueObject.compare(this.id, input.id)
 		);
@@ -77,7 +75,7 @@ export class CondominiumMember implements Entity {
 				block: this.block?.value,
 				autoEdit: this.autoEdit,
 				c_email: this.c_email.value,
-				hierarchy: this.hierarchy.value,
+				CPF: this.CPF.value,
 				apartmentNumber: this.apartmentNumber?.value,
 				createdAt: this.createdAt,
 				updatedAt: this.updatedAt,
@@ -125,11 +123,11 @@ export class CondominiumMember implements Entity {
 		this.props.autoEdit = input;
 	}
 
-	get hierarchy(): Level {
-		return this.props.hierarchy;
+	get CPF(): CPF {
+		return this.props.CPF;
 	}
-	set hierarchy(input: Level) {
-		this.props.hierarchy = input;
+	set CPF(input: CPF) {
+		this.props.CPF = input;
 	}
 
 	get c_email(): Email {

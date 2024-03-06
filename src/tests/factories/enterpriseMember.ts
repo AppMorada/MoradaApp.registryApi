@@ -9,7 +9,7 @@ type TOverride = Partial<IEnterpriseMemberInput>;
 export function enterpriseMemberFactory(input: TOverride = {}, id?: string) {
 	return new EnterpriseMember(
 		{
-			hierarchy: 0,
+			CPF: '11122233396',
 			condominiumId: UUID.genV4().value,
 			userId: UUID.genV4().value,
 			...input,

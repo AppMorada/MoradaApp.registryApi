@@ -11,7 +11,7 @@ export class UpdateCondominiumMemberController {
 	) {}
 
 	@UseGuards(AdminJwt)
-	@Patch(':condominiumId/condominium-member/:memberId')
+	@Patch(':condominiumId/as-employee/condominium-member/:memberId')
 	async getOne(
 		@Param('memberId') id: string,
 		@Body() body: UpdateCondominiumMemberDTO,

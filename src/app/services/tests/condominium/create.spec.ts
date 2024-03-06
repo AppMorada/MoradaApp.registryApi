@@ -40,7 +40,6 @@ describe('Create condominium service test', () => {
 			},
 			user: {
 				name: user.name.value,
-				CPF: user.CPF.value,
 				email: user.email.value,
 				password: user.password.value,
 			},

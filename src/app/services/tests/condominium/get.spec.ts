@@ -29,9 +29,10 @@ describe('Get condominium service test', () => {
 
 		expect(Boolean(searchedCondominium)).toEqual(true);
 
-		const parsedCondominium = CondominiumMapper.toClass(
-			searchedCondominium!,
-		);
+		const parsedCondominium = CondominiumMapper.toClass({
+			...searchedCondominium!,
+			seedKey: condominium.seedKey,
+		});
 		expect(parsedCondominium.equalTo(condominium)).toEqual(true);
 		expect(condominiumRepo.calls.find).toEqual(1);
 	});

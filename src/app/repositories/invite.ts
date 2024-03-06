@@ -7,11 +7,11 @@ export namespace InviteRepoInterfaces {
 		invite: Invite;
 	}
 	export interface find {
-		key: Email | CPF;
+		key: Email;
 		safeSearch: undefined;
 	}
 	export interface safelyFind {
-		key: Email | CPF;
+		key: Email;
 		safeSearch?: true;
 	}
 	export interface remove {
@@ -19,7 +19,8 @@ export namespace InviteRepoInterfaces {
 	}
 	export interface transferToUserResources {
 		user: User;
-		condominiumId: UUID;
+		invite: Invite;
+		CPF: CPF;
 	}
 }
 
@@ -32,16 +33,14 @@ export abstract class InviteRepo {
 	 * Método usado para pesquisar por um convite
 	 * @param input - Deve conter uma chave a ser utilizada para a pesquisa, deve ser uma classe email. Além disso, pode-se usar como valor opcional o safeSearch, que força um erro, caso o item não seja encontrado
 	 **/
-	abstract find(
-		input: InviteRepoInterfaces.find,
-	): Promise<Invite | undefined>;
+	abstract find(input: InviteRepoInterfaces.find): Promise<Invite[]>;
 
 	/**
 	 * @virtual
 	 * Método usado para pesquisar por um convite
 	 * @param input - Deve conter uma chave a ser utilizada para a pesquisa, pode ser um id, cnpj, cep ou o nome do condomínio. Além disso, pode-se usar como valor opcional o safeSearch, que força um erro, caso o item não seja encontrado
 	 **/
-	abstract find(input: InviteRepoInterfaces.safelyFind): Promise<Invite>;
+	abstract find(input: InviteRepoInterfaces.safelyFind): Promise<Invite[]>;
 
 	/**
 	 * @virtual
