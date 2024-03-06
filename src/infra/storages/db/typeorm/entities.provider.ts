@@ -1,6 +1,7 @@
 import { typeORMConsts } from './consts';
 import { TypeOrmCondominiumEntity } from './entities/condominium.entity';
-import { TypeOrmCondominiumRelUserEntity } from './entities/condominiumRelUser.entity';
+import { TypeOrmCondominiumMemberEntity } from './entities/condominiumMember.entity';
+import { TypeOrmEnterpriseMemberEntity } from './entities/enterpriseMember.entity';
 import { TypeOrmInviteEntity } from './entities/invite.entity';
 import { TypeOrmUserEntity } from './entities/user.entity';
 import { TypeORMService } from './typeORM.service';
@@ -25,9 +26,15 @@ export const entitiesProviders = [
 		inject: [typeORMConsts.databaseProviders],
 	},
 	{
-		provide: typeORMConsts.entity.condominiumRelUser,
+		provide: typeORMConsts.entity.condominiumMember,
 		useFactory: (dataSource: TypeORMService) =>
-			dataSource.getRepository(TypeOrmCondominiumRelUserEntity),
+			dataSource.getRepository(TypeOrmCondominiumMemberEntity),
+		inject: [typeORMConsts.databaseProviders],
+	},
+	{
+		provide: typeORMConsts.entity.enterpriseMember,
+		useFactory: (dataSource: TypeORMService) =>
+			dataSource.getRepository(TypeOrmEnterpriseMemberEntity),
 		inject: [typeORMConsts.databaseProviders],
 	},
 ];

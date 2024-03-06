@@ -3,11 +3,11 @@ import { CondominiumMapper } from '../condominium';
 
 describe('Condominium Mapper Test', () => {
 	it('should be able to convert condominium into object and class', () => {
-		const condominium = condominiumFactory();
+		const sut = condominiumFactory();
 
-		const condominiumInObject = CondominiumMapper.toObject(condominium);
-		const sut = CondominiumMapper.toClass(condominiumInObject);
+		const objt = CondominiumMapper.toObject(sut);
+		const classCondominium = CondominiumMapper.toClass(objt);
 
-		expect(sut.equalTo(condominium)).toBeTruthy();
+		expect(sut.equalTo(classCondominium)).toBeTruthy();
 	});
 });

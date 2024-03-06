@@ -6,22 +6,25 @@ import { Key } from '@app/entities/key';
 import { FirestoreKeyMapper, IToFlatReturn } from '../mapper/key';
 import { FirestoreCustomError, FirestoreCustomErrorTag } from '../error';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
+import { DocumentData, DocumentSnapshot } from 'firebase-admin/firestore';
+import { FirestoreListeners } from './listeners';
 
 @Injectable()
 export class FirestoreKey implements KeyRepo, OnModuleInit {
 	constructor(
+		private readonly listeners: FirestoreListeners,
 		private readonly firestore: FirestoreService,
 		private readonly loggerAdapter: LoggerAdapter,
 		private readonly keyRepoAsCache: KeyCache,
 	) {}
 
 	private signatures = [
-		KeysEnum.ACCESS_TOKEN_KEY.toString(),
-		KeysEnum.REFRESH_TOKEN_KEY.toString(),
-		KeysEnum.INVITE_TOKEN_KEY.toString(),
-		KeysEnum.INVITE_ADMIN_TOKEN_KEY.toString(),
-		KeysEnum.INVITE_SUPER_ADMIN_TOKEN_KEY.toString(),
-		KeysEnum.TFA_TOKEN_KEY.toString(),
+		KeysEnum.ACCESS_TOKEN_KEY,
+		KeysEnum.REFRESH_TOKEN_KEY,
+		KeysEnum.INVITE_TOKEN_KEY,
+		KeysEnum.INVITE_ADMIN_TOKEN_KEY,
+		KeysEnum.INVITE_SUPER_ADMIN_TOKEN_KEY,
+		KeysEnum.TFA_TOKEN_KEY,
 	];
 
 	private buildErr(name: string) {
@@ -43,44 +46,37 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 		const database = await this.firestore.getInstance();
 		const signaturesCollection = database.collection('secrets');
 
-		this.signatures.forEach(async (name) => {
-			return new Promise((resolve, reject) => {
-				let isFirstTime = true;
-				const eventId = setTimeout(() => {
-					reject(this.buildErr(name));
-				}, 5000);
+		const getAndCache = async (
+			name: string,
+			item: DocumentSnapshot<DocumentData>,
+		) => {
+			if (!item.exists) throw this.buildErr(name);
 
+			const rawData = item.data();
+			const incompleteKey = firestoreKeyDTO(rawData, this.loggerAdapter);
+			const key = {
+				name: item.id,
+				...incompleteKey,
+			} as IToFlatReturn;
+
+			await this.keyRepoAsCache.set(
+				FirestoreKeyMapper.fromFlatToClass(key),
+			);
+		};
+
+		this.signatures.forEach(async (enumName) => {
+			const name = enumName.toString();
+
+			const remoteSignature = await signaturesCollection.doc(name).get();
+			await getAndCache(name, remoteSignature);
+
+			let isFirstTime = true;
+			this.listeners.get().push(
 				signaturesCollection.doc(name).onSnapshot(async (item) => {
-					this.loggerAdapter.info({
-						name: 'Dynamic signatures',
-						layer: LayersEnum.database,
-						description: `Lendo a assinatura "${name}" e sincronizando com o sistema de cache interno`,
-					});
-
-					if (!item.exists) throw this.buildErr(name);
-
-					const rawData = item.data();
-					const incompleteKey = firestoreKeyDTO(
-						rawData,
-						this.loggerAdapter,
-					);
-					const key = {
-						name: item.id,
-						...incompleteKey,
-					} as IToFlatReturn;
-
-					await this.keyRepoAsCache.set(
-						FirestoreKeyMapper.fromFlatToClass(key),
-					);
-
-					if (isFirstTime) {
-						clearTimeout(eventId);
-						isFirstTime = false;
-					}
-
-					return resolve();
-				});
-			});
+					if (isFirstTime) return (isFirstTime = false);
+					await getAndCache(name, item);
+				}),
+			);
 		});
 	}
 

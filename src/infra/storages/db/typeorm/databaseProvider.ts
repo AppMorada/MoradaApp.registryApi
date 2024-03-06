@@ -3,9 +3,40 @@ import { typeORMConsts } from './consts';
 import { TypeORMService } from './typeORM.service';
 import { TypeOrmUserEntity } from './entities/user.entity';
 import { TypeOrmCondominiumEntity } from './entities/condominium.entity';
-import { TypeOrmCondominiumRelUserEntity } from './entities/condominiumRelUser.entity';
 import { TypeOrmInviteEntity } from './entities/invite.entity';
-import { FirstMigration1708364261801 } from './migrations/1708364261801-first-migration';
+import { TypeOrmCondominiumMemberEntity } from './entities/condominiumMember.entity';
+import { TypeOrmEnterpriseMemberEntity } from './entities/enterpriseMember.entity';
+import { Migrations1709706321663 } from './migrations/1709706321663-migrations';
+
+export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
+	new TypeORMService({
+		logger: NODE_ENV !== 'production' ? 'simple-console' : undefined,
+		logging:
+			NODE_ENV !== 'production'
+				? [
+					'log',
+					'warn',
+					'info',
+					'query',
+					'error',
+					'schema',
+					'migration',
+				]
+				: [],
+		type: 'postgres',
+		url: DATABASE_URL,
+		entities: [
+			TypeOrmUserEntity,
+			TypeOrmCondominiumEntity,
+			TypeOrmCondominiumMemberEntity,
+			TypeOrmEnterpriseMemberEntity,
+			TypeOrmInviteEntity,
+		],
+		synchronize: false,
+		migrationsRun: false,
+		migrationsTableName: 'migration_typeorm',
+		migrations: [Migrations1709706321663],
+	}).initialize();
 
 export const databaseProviders = [
 	{
@@ -19,31 +50,7 @@ export const databaseProviders = [
 				env: EnvEnum.NODE_ENV,
 			});
 
-			return new TypeORMService({
-				logger:
-					NODE_ENV !== 'production' ? 'simple-console' : undefined,
-				logging: [
-					'log',
-					'warn',
-					'info',
-					'query',
-					'error',
-					'schema',
-					'migration',
-				],
-				type: 'postgres',
-				url: DATABASE_URL as string,
-				entities: [
-					TypeOrmUserEntity,
-					TypeOrmCondominiumEntity,
-					TypeOrmCondominiumRelUserEntity,
-					TypeOrmInviteEntity,
-				],
-				synchronize: false,
-				migrationsRun: false,
-				migrationsTableName: 'migration_typeorm',
-				migrations: [FirstMigration1708364261801],
-			}).initialize();
+			return getDataSource(NODE_ENV as string, DATABASE_URL as string);
 		},
 	},
 ];

@@ -6,12 +6,13 @@ import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { fatalErrorHandler } from '@utils/fatalErrorHandler';
 
 export enum EnvEnum {
+	INVITE_COMPLEXITY_CODE = 'INVITE_COMPLEXITY_CODE',
+	LOG_TYPE = 'LOG_TYPE',
 	SIGNATURE_TYPE = 'SIGNATURE_TYPE',
 	PORT = 'PORT',
 	NODE_ENV = 'NODE_ENV',
 	PROJECT_NAME = 'PROJECT_NAME',
 	DATABASE_URL = 'DATABASE_URL',
-	REDIS_URL = 'REDIS_URL',
 	FRONT_END_INVITE_URL = 'FRONT_END_INVITE_URL',
 	FRONT_END_AUTH_URL = 'FRONT_END_AUTH_URL',
 	COOKIE_KEY = 'COOKIE_KEY',

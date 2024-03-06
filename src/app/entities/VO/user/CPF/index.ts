@@ -10,6 +10,12 @@ export class CPF implements ValueObject<CPF, string> {
 	constructor(private readonly _value: string) {
 		this._value = _value.replace(/[.-]/g, '');
 
+		if (isNaN(Number(this._value)))
+			throw new EntitieError({
+				entity: EntitiesEnum.vo,
+				message: 'Valor incorreto de CPF',
+			});
+
 		/*
 		 * Função criada para validar CPFs usando o
 		 * algoritmo de módulo 11. Material abaixo caso tenham interesse:
@@ -56,6 +62,23 @@ export class CPF implements ValueObject<CPF, string> {
 				entity: EntitiesEnum.vo,
 				message: 'Valor incorreto de CPF',
 			});
+	}
+
+	static toInt(input: CPF) {
+		return parseInt(input.value);
+	}
+
+	static toString(input: number): string {
+		const raw = String(input);
+		if (raw.length < userDTORules.CPF.minLength) {
+			const newPaddingValue = userDTORules.CPF.minLength - raw.length;
+			return raw.padStart(
+				raw.length + newPaddingValue,
+				'0'.repeat(newPaddingValue),
+			);
+		}
+
+		return raw;
 	}
 
 	public equalTo(input: CPF) {

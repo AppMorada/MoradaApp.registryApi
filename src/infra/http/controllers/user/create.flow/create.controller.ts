@@ -1,21 +1,15 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { LoggerAdapter } from '@app/adapters/logger';
-import { HmacInviteGuard } from '@app/auth/guards/hmac-invite.guard';
-import { ApartmentNumber, Block, Email } from '@app/entities/VO';
-import { ValueObject } from '@app/entities/entities';
-import { Invite } from '@app/entities/invite';
 import { User } from '@app/entities/user';
 import { UserMapper } from '@app/mapper/user';
-import { CreateTokenService } from '@app/services/createToken.service';
-import { CreateUserService } from '@app/services/createUser.service';
-import { GenInviteService } from '@app/services/genInvite.service';
-import { CreateUserDTO } from '@infra/http/DTO/createUser.DTO';
-import { InviteUserDTO } from '@infra/http/DTO/inviteUser.DTO';
+import { CreateTokenService } from '@app/services/login/createToken.service';
+import { CreateUserService } from '@app/services/user/create.service';
+import { CreateUserDTO } from '@infra/http/DTO/user/create.DTO';
 import { Request, Response } from 'express';
 import { USER_PREFIX } from '../consts';
-import { validateObligatoryFieldsForCommonUser } from '@infra/http/DTO/conditionalsValidations/commonUserCreation';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { Invite } from '@app/entities/invite';
+import { InviteGuard } from '@app/auth/guards/invite.guard';
 
 @Controller(USER_PREFIX)
 export class CreateUserController {
@@ -23,8 +17,6 @@ export class CreateUserController {
 	constructor(
 		private readonly createUser: CreateUserService,
 		private readonly createToken: CreateTokenService,
-		private readonly genInvite: GenInviteService,
-		private readonly logger: LoggerAdapter,
 		private readonly getEnv: GetEnvService,
 	) {}
 
@@ -58,46 +50,20 @@ export class CreateUserController {
 			ttl: 60000,
 		},
 	})
-	@UseGuards(HmacInviteGuard)
-	@Post('accept')
+	@UseGuards(InviteGuard)
+	@Post()
 	async createSimpleUser(
 		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
 		@Body() body: CreateUserDTO,
 	) {
 		const invite = req.inMemoryData.invite as Invite;
-		validateObligatoryFieldsForCommonUser({
-			req,
-			invite,
-			body,
-			logger: this.logger,
-		});
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		const { CPF, code: __, ...rest } = body;
 
-		const { apartmentNumber, block, ...coreInfo } = body;
-		const user = UserMapper.toClass({ ...coreInfo });
-		await this.createUser.exec({
-			user,
-			invite,
-			apartmentNumber: ValueObject.build(ApartmentNumber, apartmentNumber)
-				.allowNullish()
-				.exec(),
-			block: ValueObject.build(Block, block).allowNullish().exec(),
-		});
+		const user = UserMapper.toClass({ ...rest, tfa: false });
+		await this.createUser.exec({ user, CPF, invite });
+
 		return await this.processTokens(res, user);
-	}
-
-	@Throttle({
-		default: {
-			limit: 1,
-			ttl: 30000,
-		},
-	})
-	@Post('resend-invite')
-	async resendInvite(
-		@Res({ passthrough: true }) res: Response,
-		@Body() body: InviteUserDTO,
-	) {
-		await this.genInvite.reexec({ email: new Email(body.email) });
-		res.status(204);
 	}
 }

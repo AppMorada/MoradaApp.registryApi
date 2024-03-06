@@ -1,37 +1,26 @@
-import { CPF, UUID, Email } from '@app/entities/VO';
-import { CondominiumRelUser } from '@app/entities/condominiumRelUser';
+import { UUID, Email, Name, PhoneNumber } from '@app/entities/VO';
 import { User } from '@app/entities/user';
-import { TCondominiumRelUserToObject } from '@app/mapper/condominiumRelUser';
 
 export namespace UserRepoInterfaces {
-	export interface create {
-		user: User;
-		condominiumRelUser: CondominiumRelUser;
-	}
 	export interface search {
 		safeSearch?: undefined;
-		key: Email | CPF | UUID;
+		key: Email | UUID;
 	}
 	export interface safeSearch {
 		safeSearch?: true;
-		key: Email | CPF | UUID;
-	}
-	export interface getCondominiumRelation {
-		userId: UUID;
-		condominiumId: UUID;
-	}
-	export interface getAllCondominiumRelation {
-		userId: UUID;
+		key: Email | UUID;
 	}
 	export interface remove {
-		key: UUID | Email;
+		key: UUID;
+	}
+	export interface update {
+		id: UUID;
+		name?: Name;
+		phoneNumber?: PhoneNumber;
 	}
 }
 
 export abstract class UserRepo {
-	/** @virtual */
-	abstract create(input: UserRepoInterfaces.create): Promise<void>;
-
 	/**
 	 * @virtual
 	 * Método usado para pesquisar por um usuário
@@ -47,15 +36,8 @@ export abstract class UserRepo {
 	abstract find(input: UserRepoInterfaces.safeSearch): Promise<User>;
 
 	/** @virtual */
-	abstract getCondominiumRelation(
-		input: UserRepoInterfaces.getCondominiumRelation,
-	): Promise<CondominiumRelUser | undefined>;
-
-	/** @virtual */
-	abstract getAllCondominiumRelation(
-		input: UserRepoInterfaces.getAllCondominiumRelation,
-	): Promise<TCondominiumRelUserToObject[]>;
-
-	/** @virtual */
 	abstract delete(input: UserRepoInterfaces.remove): Promise<void>;
+
+	/** @virtual */
+	abstract update(input: UserRepoInterfaces.update): Promise<void>;
 }

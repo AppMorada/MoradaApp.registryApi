@@ -3,11 +3,11 @@ import { InviteMapper } from '../invite';
 
 describe('Invite Mapper Test', () => {
 	it('should be able to convert invite into object and class', () => {
-		const invite = inviteFactory();
+		const sut = inviteFactory();
 
-		const inviteInObject = InviteMapper.toObject(invite);
-		const sut = InviteMapper.toClass(inviteInObject);
+		const objt = InviteMapper.toObject(sut);
+		const classInvite = InviteMapper.toClass(objt);
 
-		expect(sut.equalTo(invite)).toBeTruthy();
+		expect(sut.equalTo(classInvite)).toBeTruthy();
 	});
 });

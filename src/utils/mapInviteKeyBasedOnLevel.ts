@@ -1,5 +1,5 @@
 import { KeysEnum } from '@app/repositories/key';
-import { GetKeyService } from '@app/services/getKey.service';
+import { GetKeyService } from '@app/services/key/getKey.service';
 
 export async function mapInviteKeyBasedOnLevel(
 	input: number | undefined,

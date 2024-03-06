@@ -1,5 +1,4 @@
-import { UUID, Email } from '@app/entities/VO';
-import { CondominiumRelUser } from '@app/entities/condominiumRelUser';
+import { UUID, Email, CPF } from '@app/entities/VO';
 import { Invite } from '@app/entities/invite';
 import { User } from '@app/entities/user';
 
@@ -20,7 +19,8 @@ export namespace InviteRepoInterfaces {
 	}
 	export interface transferToUserResources {
 		user: User;
-		condominiumRelUser: CondominiumRelUser;
+		invite: Invite;
+		CPF: CPF;
 	}
 }
 
@@ -33,16 +33,14 @@ export abstract class InviteRepo {
 	 * Método usado para pesquisar por um convite
 	 * @param input - Deve conter uma chave a ser utilizada para a pesquisa, deve ser uma classe email. Além disso, pode-se usar como valor opcional o safeSearch, que força um erro, caso o item não seja encontrado
 	 **/
-	abstract find(
-		input: InviteRepoInterfaces.find,
-	): Promise<Invite | undefined>;
+	abstract find(input: InviteRepoInterfaces.find): Promise<Invite[]>;
 
 	/**
 	 * @virtual
 	 * Método usado para pesquisar por um convite
 	 * @param input - Deve conter uma chave a ser utilizada para a pesquisa, pode ser um id, cnpj, cep ou o nome do condomínio. Além disso, pode-se usar como valor opcional o safeSearch, que força um erro, caso o item não seja encontrado
 	 **/
-	abstract find(input: InviteRepoInterfaces.safelyFind): Promise<Invite>;
+	abstract find(input: InviteRepoInterfaces.safelyFind): Promise<Invite[]>;
 
 	/**
 	 * @virtual

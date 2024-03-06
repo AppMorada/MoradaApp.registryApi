@@ -1,9 +1,10 @@
 export const typeORMConsts = {
 	databaseProviders: Symbol.for('TYPEORM_PROVIDER'),
 	entity: {
-		user: Symbol.for('TYPEORM_USER_PROVIDER'),
-		condominium: Symbol.for('TYPEORM_CONDOMINIUM_PROVIDER'),
-		invite: Symbol.for('TYPEORM_INVITE_PROVIDER'),
-		condominiumRelUser: Symbol.for('TYPEORM_CONDOMINIUMRELUSER_PROVIDER'),
+		user: Symbol.for('users'),
+		condominium: Symbol.for('condominiums'),
+		invite: Symbol.for('invites'),
+		condominiumMember: Symbol.for('condominium_members'),
+		enterpriseMember: Symbol.for('enterprise_members'),
 	},
 };

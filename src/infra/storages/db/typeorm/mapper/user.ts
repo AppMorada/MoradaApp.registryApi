@@ -9,8 +9,7 @@ export class TypeOrmUserMapper {
 		user.name = input.name.value;
 		user.email = input.email.value;
 		user.password = input.password.value;
-		user.CPF = input.CPF.value;
-		user.phoneNumber = input.phoneNumber.value;
+		user.phoneNumber = input.phoneNumber ? input.phoneNumber.value : null;
 		user.createdAt = input.createdAt;
 		user.updatedAt = input.updatedAt;
 
@@ -24,7 +23,7 @@ export class TypeOrmUserMapper {
 				email: input.email,
 				password: input.password,
 				phoneNumber: input.phoneNumber,
-				CPF: input.CPF,
+				tfa: Boolean(input.tfa),
 				updatedAt: input.updatedAt,
 				createdAt: input.createdAt,
 			},
@@ -37,8 +36,8 @@ export class TypeOrmUserMapper {
 			id: input.id,
 			email: input.email,
 			name: input.name,
-			CPF: input.CPF,
 			password: input.password,
+			tfa: Boolean(input.tfa),
 			phoneNumber: input.phoneNumber,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,

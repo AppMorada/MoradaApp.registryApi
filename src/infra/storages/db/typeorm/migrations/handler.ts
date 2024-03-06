@@ -1,10 +1,11 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { TypeOrmCondominiumEntity } from '../entities/condominium.entity';
-import { TypeOrmCondominiumRelUserEntity } from '../entities/condominiumRelUser.entity';
 import { TypeOrmInviteEntity } from '../entities/invite.entity';
 import { TypeOrmUserEntity } from '../entities/user.entity';
 import { TypeORMService } from '../typeORM.service';
-import { FirstMigration1708364261801 } from './1708364261801-first-migration';
+import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.entity';
+import { TypeOrmEnterpriseMemberEntity } from '../entities/enterpriseMember.entity';
+import { Migrations1709706321663 } from './1709706321663-migrations';
 
 const config: PostgresConnectionOptions = {
 	type: 'postgres',
@@ -12,13 +13,14 @@ const config: PostgresConnectionOptions = {
 	entities: [
 		TypeOrmUserEntity,
 		TypeOrmCondominiumEntity,
-		TypeOrmCondominiumRelUserEntity,
+		TypeOrmCondominiumMemberEntity,
+		TypeOrmEnterpriseMemberEntity,
 		TypeOrmInviteEntity,
 	],
 	synchronize: false,
 	migrationsRun: false,
 	migrationsTableName: 'migration_typeorm',
-	migrations: [FirstMigration1708364261801],
+	migrations: [Migrations1709706321663],
 };
 
 const dataSource = new TypeORMService({ ...config });

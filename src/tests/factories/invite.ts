@@ -5,9 +5,9 @@ type TOverride = Partial<IInputPropsInvite>;
 export function inviteFactory(input: TOverride = {}, id?: string) {
 	return new Invite(
 		{
-			type: 0,
-			email: 'johndoe@email.com',
-			ttl: 1000,
+			memberId: UUID.genV4().value,
+			code: '123456789123456789',
+			recipient: 'johndoe@email.com',
 			condominiumId: UUID.genV4().value,
 			...input,
 		},

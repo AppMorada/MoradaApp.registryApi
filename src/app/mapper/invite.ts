@@ -2,11 +2,11 @@ import { Invite } from '@app/entities/invite';
 
 interface IConvertToObject {
 	id?: string;
-	email: string;
-	ttl: number;
-	expiresAt?: Date;
+	recipient: string;
 	condominiumId: string;
-	type: number;
+	memberId: string;
+	code: string;
+	createdAt?: Date;
 }
 
 export type TInviteInObject = Required<IConvertToObject>;
@@ -32,11 +32,11 @@ export class InviteMapper {
 	static toObject(input: Invite): TInviteInObject {
 		return {
 			id: input.id.value,
-			email: input.email.value,
-			ttl: input.ttl,
-			expiresAt: input.expiresAt,
-			type: input.type.value,
 			condominiumId: input.condominiumId.value,
+			memberId: input.memberId.value,
+			code: input.code,
+			recipient: input.recipient.value,
+			createdAt: input.createdAt,
 		};
 	}
 }

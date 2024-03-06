@@ -7,8 +7,6 @@ import {
 	MemoryHealthIndicator,
 	TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { RedisHealthIndicator } from '@infra/storages/cache/redis/healthIndicator';
-import { RedisService } from '@infra/storages/cache/redis/redis.service';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 import { DataSource } from 'typeorm';
 import { typeORMConsts } from '@infra/storages/db/typeorm/consts';
@@ -22,8 +20,6 @@ export class HealthController {
 		private readonly typeOrmIndication: TypeOrmHealthIndicator,
 		@Inject(typeORMConsts.databaseProviders)
 		private readonly dataSource: DataSource,
-		private readonly redisIndicator: RedisHealthIndicator,
-		private readonly redisClient: RedisService,
 		private readonly getEnv: GetEnvService,
 	) {}
 
@@ -49,8 +45,6 @@ export class HealthController {
 				this.typeOrmIndication.pingCheck('typeorm_client', {
 					connection: this.dataSource,
 				}),
-			() =>
-				this.redisIndicator.isHealthy('redis_client', this.redisClient),
 		]);
 	}
 }

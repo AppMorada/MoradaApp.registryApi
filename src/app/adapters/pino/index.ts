@@ -1,49 +1,51 @@
 import { Injectable } from '@nestjs/common';
 import { ILoggerDefaultProps, LoggerAdapter, TErrProps } from '../logger';
-import pino from 'pino';
-import pretty from 'pino-pretty';
-
-const logger = pino({
-	transport: {
-		target: 'pino-pretty',
-	},
-});
-
-const loggerTest = pino(pretty({ sync: true }));
-export { logger, loggerTest };
+import winston from 'winston';
 
 @Injectable()
 export class PinoLoggerAdapter implements LoggerAdapter {
-	private readonly logger: ReturnType<typeof pino>;
+	private readonly logger: winston.Logger;
 
 	constructor() {
-		this.logger =
-			process.env.NODE_ENV !== 'test'
-				? pino({ transport: { target: 'pino-pretty' } })
-				: pino(pretty({ sync: true }));
+		this.logger = winston.createLogger({
+			levels: {
+				error: 0,
+				warn: 1,
+				info: 2,
+				debug: 3,
+			},
+			format: winston.format.printf((info) => {
+				return `${JSON.stringify({
+					timestamp: info.timestamp,
+					severity: info.level.toUpperCase(),
+					data: info.message,
+				})}`;
+			}),
+			transports: [new winston.transports.Console()],
+		});
 	}
 
 	async log(input: ILoggerDefaultProps) {
-		this.logger.log(JSON.stringify(input));
+		this.logger.debug(input);
 	}
 
 	async info(input: ILoggerDefaultProps) {
-		this.logger.info(JSON.stringify(input));
+		this.logger.info(input);
 	}
 
 	async warn(input: ILoggerDefaultProps) {
-		this.logger.warn(JSON.stringify(input));
+		this.logger.warn(input);
 	}
 
 	async debug(input: ILoggerDefaultProps) {
-		this.logger.debug(JSON.stringify(input));
+		this.logger.debug(input);
 	}
 
 	async error(input: ILoggerDefaultProps) {
-		this.logger.error(JSON.stringify(input));
+		this.logger.error(input);
 	}
 
 	async fatal(input: TErrProps): Promise<void> {
-		this.logger.fatal(JSON.stringify(input));
+		this.logger.error(input);
 	}
 }

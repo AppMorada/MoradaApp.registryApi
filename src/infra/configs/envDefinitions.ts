@@ -6,6 +6,14 @@ export interface IEnvMetadata {
 type TEnv = Record<string, IEnvMetadata>;
 
 export const environmentVariablesMetadata: TEnv = {
+	INVITE_COMPLEXITY_CODE: {
+		name: 'INVITE_COMPLEXITY_CODE',
+		isOptional: false,
+	},
+	LOG_TYPE: {
+		name: 'LOG_TYPE',
+		isOptional: true,
+	},
 	SIGNATURE_TYPE: {
 		name: 'SIGNATURE_TYPE',
 		isOptional: true,
@@ -24,10 +32,6 @@ export const environmentVariablesMetadata: TEnv = {
 	},
 	DATABASE_URL: {
 		name: 'DATABASE_URL',
-		isOptional: false,
-	},
-	REDIS_URL: {
-		name: 'REDIS_URL',
 		isOptional: false,
 	},
 	FRONT_END_INVITE_URL: {

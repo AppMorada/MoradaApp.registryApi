@@ -9,7 +9,7 @@ export interface IAccessTokenBody {
 	content: {
 		name: string;
 		email: string;
-		phoneNumber: string;
+		phoneNumber?: string;
 		createdAt: Date;
 		updatedAt: Date;
 	};

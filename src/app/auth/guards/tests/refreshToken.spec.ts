@@ -2,17 +2,16 @@ import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { InMemoryUser } from '@tests/inMemoryDatabase/user';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
-import { CreateTokenService } from '@app/services/createToken.service';
+import { CreateTokenService } from '@app/services/login/createToken.service';
 import { userFactory } from '@tests/factories/user';
-import { condominiumRelUserFactory } from '@tests/factories/condominiumRelUser';
 import { RefreshTokenGuard } from '../refreshToken.guard';
 import { CookieAdapter } from '@app/adapters/cookie';
 import { CookieParserAdapter } from '@app/adapters/cookie-parser/cookieParserAdapter';
 import { GuardErrors } from '@app/errors/guard';
 import { TokenType } from '@app/auth/tokenTypes';
 import { InMemoryKey } from '@tests/inMemoryDatabase/key';
-import { GetKeyService } from '@app/services/getKey.service';
-import { ValidateTokenService } from '@app/services/validateToken.service';
+import { GetKeyService } from '@app/services/key/getKey.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
@@ -84,8 +83,7 @@ describe('Refresh token guard test', () => {
 
 	it('should be able to validate refresh token guard', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory();
-		await userRepo.create({ user, condominiumRelUser });
+		userRepo.users.push(user);
 
 		const tokens = await createTokenService.exec({ user });
 
@@ -99,14 +97,12 @@ describe('Refresh token guard test', () => {
 			refreshTokenGuard.canActivate(context),
 		).resolves.toBeTruthy();
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - wrong cookie', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory();
-		await userRepo.create({ user, condominiumRelUser });
+		userRepo.users.push(user);
 
 		const context = createMockExecutionContext({
 			headers: {
@@ -120,7 +116,6 @@ describe('Refresh token guard test', () => {
 				tag: ServiceErrorsTags.unauthorized,
 			}),
 		);
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(0);
 	});
 
@@ -135,7 +130,6 @@ describe('Refresh token guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.create).toEqual(0);
 		expect(userRepo.calls.find).toEqual(0);
 	});
 });

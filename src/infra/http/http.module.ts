@@ -3,7 +3,6 @@ import { AdaptersModule } from '@app/adapters/adapter.module';
 import { GatewayModule } from '../gateways/gateway.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { RedisModule } from '@infra/storages/cache/redis/redis.module';
 import { CondominiumModule } from './controllers/condominium/index.module';
 import { UserModule } from './controllers/user/index.module';
 import { HealthModule } from './controllers/health/index.module';
@@ -13,13 +12,15 @@ import { AuthModule } from '@app/auth/auth.module';
 import { NestjsCacheModule } from '@infra/storages/cache/nestjs/nestjs.module';
 import { CustomTypeOrmModule } from '@infra/storages/db/typeorm/typeorm.module';
 import { IsolatedRepoModule } from '@infra/storages/db/isolateds/isolated.module';
+import { EnterpriseMemberModule } from './controllers/enterpriseMember/index.module';
+import { CondominiumMemberModule } from './controllers/condominiumMember/index.module';
+import { LoginModule } from './controllers/login/index.module';
 
 @Module({
 	imports: [
 		CacheModule.register({
 			isGlobal: true,
 		}),
-		RedisModule,
 		NestjsCacheModule,
 		process.env.SIGNATURE_TYPE === 'dynamic'
 			? FirestoreModule
@@ -35,6 +36,9 @@ import { IsolatedRepoModule } from '@infra/storages/db/isolateds/isolated.module
 		]),
 		HealthModule,
 		CondominiumModule,
+		EnterpriseMemberModule,
+		CondominiumMemberModule,
+		LoginModule,
 		UserModule,
 		AuthModule,
 	],

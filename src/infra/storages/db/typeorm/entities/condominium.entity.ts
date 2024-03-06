@@ -2,30 +2,47 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	JoinColumn,
 	OneToMany,
+	OneToOne,
 	PrimaryGeneratedColumn,
 	Relation,
 	UpdateDateColumn,
 } from 'typeorm';
 import { TypeOrmInviteEntity } from './invite.entity';
-import { TypeOrmCondominiumRelUserEntity } from './condominiumRelUser.entity';
+import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
+import { TypeOrmEnterpriseMemberEntity } from './enterpriseMember.entity';
+import { TypeOrmUserEntity } from './user.entity';
 
 @Entity({ name: 'condominiums' })
 export class TypeOrmCondominiumEntity {
 	@PrimaryGeneratedColumn('uuid')
 		id: string;
 
+	@OneToOne(() => TypeOrmUserEntity, (user) => user.condominium, {
+		nullable: false,
+		onDelete: 'NO ACTION',
+	})
+	@JoinColumn({
+		name: 'owner_id',
+		referencedColumnName: 'id',
+	})
+		user: Relation<TypeOrmUserEntity> | string;
+
 	@Column({ length: 120, type: 'varchar', unique: true })
 		name: string;
 
-	@Column({ length: 8, type: 'char', unique: true, name: 'cep' })
-		CEP: string;
+	@Column({ type: 'int', unique: true, name: 'cep' })
+		CEP: number;
 
 	@Column({ type: 'int' })
 		num: number;
 
-	@Column({ length: 14, type: 'char', unique: true, name: 'cnpj' })
+	@Column({ type: 'bigint', unique: true, name: 'cnpj' })
 		CNPJ: string;
+
+	@Column({ name: 'seed_key', type: 'varchar', length: 60 })
+		seed_key: string;
 
 	@CreateDateColumn({ name: 'created_at' })
 		createdAt: Date;
@@ -37,8 +54,14 @@ export class TypeOrmCondominiumEntity {
 		invite: Relation<TypeOrmInviteEntity>[];
 
 	@OneToMany(
-		() => TypeOrmCondominiumRelUserEntity,
-		(condominiumRelUser) => condominiumRelUser.condominium,
+		() => TypeOrmCondominiumMemberEntity,
+		(member) => member.condominium,
 	)
-		condominiumRelUser: Relation<TypeOrmCondominiumRelUserEntity>[];
+		condominiumMember: Relation<TypeOrmCondominiumMemberEntity>[];
+
+	@OneToMany(
+		() => TypeOrmEnterpriseMemberEntity,
+		(member) => member.condominium,
+	)
+		enterpriseMember: Relation<TypeOrmEnterpriseMemberEntity>[];
 }

@@ -7,9 +7,12 @@ export class PhoneNumber implements ValueObject<PhoneNumber, string> {
 	 * @param _value - Número do telefone do usuário que deve estar entre 30 e 10 caracteres
 	 **/
 	constructor(private readonly _value: string) {
+		this._value = this._value.replace(/[+ )(-]/g, '');
+
 		if (
-			_value.length > userDTORules.phoneNumber.maxLength ||
-			_value.length < userDTORules.phoneNumber.minLength
+			this._value.length > userDTORules.phoneNumber.maxLength ||
+			this._value.length < userDTORules.phoneNumber.minLength ||
+			isNaN(Number(this._value))
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,

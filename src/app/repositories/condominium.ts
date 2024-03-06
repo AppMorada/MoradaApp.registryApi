@@ -1,8 +1,11 @@
-import { CEP, CNPJ, UUID, Name } from '@app/entities/VO';
+import { CEP, CNPJ, UUID, Name, Num } from '@app/entities/VO';
 import { Condominium } from '@app/entities/condominium';
+import { User } from '@app/entities/user';
+import { TCondominiumInObject } from '@app/mapper/condominium';
 
 export namespace CondominiumInterfaces {
 	export interface create {
+		user: User;
 		condominium: Condominium;
 	}
 
@@ -14,11 +17,32 @@ export namespace CondominiumInterfaces {
 		safeSearch: undefined;
 		key: UUID | CNPJ | CEP | Name;
 	}
+
+	export interface getCondominiumsByOwnerId {
+		id: UUID;
+	}
+
+	export interface update {
+		id: UUID;
+		name?: Name;
+		CEP?: CEP;
+		num?: Num;
+	}
+
+	export interface remove {
+		id: UUID;
+	}
 }
 
 export abstract class CondominiumRepo {
 	/** @virtual */
-	abstract create: (input: CondominiumInterfaces.create) => Promise<void>;
+	abstract create(input: CondominiumInterfaces.create): Promise<void>;
+
+	/** @virtual */
+	abstract update(input: CondominiumInterfaces.update): Promise<void>;
+
+	/** @virtual */
+	abstract remove(input: CondominiumInterfaces.remove): Promise<void>;
 
 	/**
 	 * @virtual
@@ -37,4 +61,8 @@ export abstract class CondominiumRepo {
 	abstract find(
 		input: CondominiumInterfaces.search,
 	): Promise<Condominium | undefined>;
+
+	abstract getCondominiumsByOwnerId(
+		input: CondominiumInterfaces.getCondominiumsByOwnerId,
+	): Promise<Required<TCondominiumInObject>[]>;
 }

@@ -8,4 +8,11 @@ describe('CPF Value Object test', () => {
 		expect(sut1).toBeInstanceOf(CPF);
 		expect(sut1.equalTo(sut2)).toBeTruthy();
 	});
+
+	it('should be able to convert to int and string', () => {
+		const sut = new CPF('012.535.604-80');
+		const int = CPF.toInt(sut);
+		const str = CPF.toString(int);
+		expect(str === sut.value);
+	});
 });

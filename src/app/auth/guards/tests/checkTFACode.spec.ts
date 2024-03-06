@@ -4,18 +4,16 @@ import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { InMemoryUser } from '@tests/inMemoryDatabase/user';
 import { CheckTFACodeGuard } from '../checkTFACode.guard';
 import { userFactory } from '@tests/factories/user';
-import { condominiumRelUserFactory } from '@tests/factories/condominiumRelUser';
-import { generateStringCodeContent } from '@utils/generateStringCodeContent';
+import { generateStringCodeContentBasedOnUser } from '@utils/generateStringCodeContent';
 import { User } from '@app/entities/user';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { GuardErrors } from '@app/errors/guard';
 import { InMemoryKey } from '@tests/inMemoryDatabase/key';
-import { GetKeyService } from '@app/services/getKey.service';
-import { ValidateTFAService } from '@app/services/validateTFA.service';
+import { GetKeyService } from '@app/services/key/getKey.service';
+import { ValidateTFAService } from '@app/services/login/validateTFA.service';
 import { KeysEnum } from '@app/repositories/key';
 import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
-import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 
 jest.mock('nodemailer');
 
@@ -30,14 +28,12 @@ describe('Check TFA Code guard test', () => {
 	let checkTFACodeGuard: CheckTFACodeGuard;
 
 	async function genCode(user: User, key: Key) {
-		const code = generateStringCodeContent({
-			email: user.email,
-			id: user.id,
-		});
+		const code = generateStringCodeContentBasedOnUser({ user });
 
 		const metadata = JSON.stringify({
 			iat: Math.floor(Date.now() / 1000),
 			exp: Math.floor((Date.now() + 1000 * 60 * 60 * 3) / 1000),
+			sub: user.email.value,
 		});
 		const hash = encodeURIComponent(
 			`${btoa(metadata)}.${btoa(code)}`.replaceAll('=', ''),
@@ -81,8 +77,7 @@ describe('Check TFA Code guard test', () => {
 
 	it('should be able to validate the CheckTFACodeGuard', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory();
-		await userRepo.create({ user, condominiumRelUser });
+		userRepo.users.push(user);
 		const key = await keyRepo.getSignature(KeysEnum.TFA_TOKEN_KEY);
 
 		const code = await genCode(user, key);
@@ -99,7 +94,6 @@ describe('Check TFA Code guard test', () => {
 			checkTFACodeGuard.canActivate(context),
 		).resolves.toBeTruthy();
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
 	});
 
@@ -118,8 +112,7 @@ describe('Check TFA Code guard test', () => {
 
 	it('should throw one error - invalid code', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory();
-		await userRepo.create({ user, condominiumRelUser });
+		userRepo.users.push(user);
 
 		const context = createMockExecutionContext({
 			headers: {
@@ -133,14 +126,11 @@ describe('Check TFA Code guard test', () => {
 		});
 
 		await expect(checkTFACodeGuard.canActivate(context)).rejects.toThrow(
-			new ServiceErrors({
-				message:
-					'O código de autenticação de dois fatores precisa ter os campos "iat" e "exp"',
-				tag: ServiceErrorsTags.unauthorized,
+			new GuardErrors({
+				message: 'Código de dois fatores não contém o campo "sub"',
 			}),
 		);
 
-		expect(userRepo.calls.create).toEqual(1);
-		expect(userRepo.calls.find).toEqual(1);
+		expect(userRepo.calls.find).toEqual(0);
 	});
 });

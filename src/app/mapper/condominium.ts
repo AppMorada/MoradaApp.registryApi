@@ -1,11 +1,13 @@
 import { Condominium } from '@app/entities/condominium';
 
-interface IConvertToObject {
+export interface IConvertToObject {
 	id?: string;
+	ownerId: string;
 	name: string;
 	CEP: string;
 	num: number;
 	CNPJ: string;
+	seedKey: string;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -24,6 +26,8 @@ export class CondominiumMapper {
 				CNPJ: input.CNPJ,
 				CEP: input.CEP,
 				num: input.num,
+				ownerId: input.ownerId,
+				seedKey: input.seedKey,
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
 			},
@@ -38,10 +42,12 @@ export class CondominiumMapper {
 	static toObject(input: Condominium): TCondominiumInObject {
 		return {
 			id: input.id.value,
+			ownerId: input.ownerId.value,
 			num: input.num.value,
 			CEP: input.CEP.value,
 			name: input.name.value,
 			CNPJ: input.CNPJ.value,
+			seedKey: input.seedKey,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,
 		};

@@ -9,7 +9,7 @@ export function userFactory(input: TOverride = {}, id?: string) {
 			email: 'jhondoe@email.com',
 			password: '12345678',
 			phoneNumber: '1234567891',
-			CPF: '11122233396',
+			tfa: false,
 			...input,
 		},
 		id,

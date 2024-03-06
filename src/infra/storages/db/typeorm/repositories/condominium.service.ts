@@ -5,16 +5,19 @@ import {
 } from '@app/repositories/condominium';
 import { Inject, Injectable } from '@nestjs/common';
 import { TypeOrmCondominiumEntity } from '../entities/condominium.entity';
-import { Repository } from 'typeorm';
-import { CNPJ, Name, UUID } from '@app/entities/VO';
+import { DataSource, Repository } from 'typeorm';
+import { CEP, CNPJ, Name, UUID } from '@app/entities/VO';
 import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 import { TypeOrmCondominiumMapper } from '../mapper/condominium';
 import { typeORMConsts } from '../consts';
+import { TypeOrmUserEntity } from '../entities/user.entity';
+import { TypeOrmUserMapper } from '../mapper/user';
+import { TCondominiumInObject } from '@app/mapper/condominium';
 
 type TQuery =
 	| { id: string }
 	| { CNPJ: string }
-	| { CEP: string }
+	| { CEP: number }
 	| { name: string };
 
 @Injectable()
@@ -22,13 +25,40 @@ export class TypeOrmCondominiumRepo implements CondominiumRepo {
 	constructor(
 		@Inject(typeORMConsts.entity.condominium)
 		private readonly condominiumRepo: Repository<TypeOrmCondominiumEntity>,
+		@Inject(typeORMConsts.databaseProviders)
+		private readonly dataSource: DataSource,
 	) {}
 
 	async create(input: CondominiumInterfaces.create): Promise<void> {
-		const parsedData = TypeOrmCondominiumMapper.toTypeOrm(
-			input.condominium,
-		);
-		await this.condominiumRepo.insert({ ...parsedData });
+		await this.dataSource.transaction(async (t) => {
+			const user = await t.findOne(TypeOrmUserEntity, {
+				where: { id: input.user.id.value },
+			});
+			if (!user)
+				await t.insert(
+					TypeOrmUserEntity,
+					TypeOrmUserMapper.toTypeOrm(input.user),
+				);
+
+			const condominium = TypeOrmCondominiumMapper.toTypeOrm(
+				input.condominium,
+			);
+			await t.insert(TypeOrmCondominiumEntity, condominium);
+		});
+	}
+
+	async getCondominiumsByOwnerId(
+		input: CondominiumInterfaces.getCondominiumsByOwnerId,
+	): Promise<Required<TCondominiumInObject>[]> {
+		const rawData = await this.dataSource
+			.getRepository(TypeOrmCondominiumEntity)
+			.createQueryBuilder('condominium')
+			.where('condominium.owner_id = :owner_id', {
+				owner_id: input.id.value,
+			})
+			.getMany();
+
+		return rawData.map((item) => TypeOrmCondominiumMapper.toObject(item));
 	}
 
 	async find(
@@ -41,16 +71,15 @@ export class TypeOrmCondominiumRepo implements CondominiumRepo {
 	): Promise<Condominium | undefined> {
 		const queryBuilder = (): TQuery => {
 			if (input.key instanceof UUID) return { id: input.key.value };
-
 			if (input.key instanceof Name) return { name: input.key.value };
-
 			if (input.key instanceof CNPJ) return { CNPJ: input.key.value };
 
-			return { CEP: input.key.value };
+			return { CEP: CEP.toInt(input.key) };
 		};
 
 		const rawData = await this.condominiumRepo.findOne({
 			where: queryBuilder(),
+			loadRelationIds: true,
 		});
 
 		if (!rawData && input?.safeSearch)
@@ -63,5 +92,29 @@ export class TypeOrmCondominiumRepo implements CondominiumRepo {
 
 		const condominium = TypeOrmCondominiumMapper.toClass(rawData);
 		return condominium;
+	}
+
+	async remove(input: CondominiumInterfaces.remove): Promise<void> {
+		await this.condominiumRepo.delete({ id: input.id.value });
+	}
+
+	async update(input: CondominiumInterfaces.update): Promise<void> {
+		const modifications = {
+			name: input.name?.value,
+			CEP: input.CEP?.value,
+			num: input.num?.value,
+		};
+
+		for (const rawKey in modifications) {
+			const key = rawKey as keyof typeof modifications;
+			if (!modifications[key]) delete modifications[key];
+		}
+
+		await this.dataSource
+			.createQueryBuilder()
+			.update('condominiums')
+			.set(modifications)
+			.where('id = :id', { id: input.id.value })
+			.execute();
 	}
 }

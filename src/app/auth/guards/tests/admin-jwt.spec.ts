@@ -2,9 +2,8 @@ import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { InMemoryUser } from '@tests/inMemoryDatabase/user';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
-import { CreateTokenService } from '@app/services/createToken.service';
+import { CreateTokenService } from '@app/services/login/createToken.service';
 import { userFactory } from '@tests/factories/user';
-import { condominiumRelUserFactory } from '@tests/factories/condominiumRelUser';
 import { InMemoryError } from '@tests/errors/inMemoryError';
 import { EntitiesEnum } from '@app/entities/entities';
 import { GuardErrors } from '@app/errors/guard';
@@ -12,12 +11,16 @@ import { UUID } from '@app/entities/VO';
 import { AdminJwt } from '../admin-jwt.guard';
 import { BadRequestException, HttpStatus } from '@nestjs/common';
 import { InMemoryKey } from '@tests/inMemoryDatabase/key';
-import { ValidateTokenService } from '@app/services/validateToken.service';
-import { GetKeyService } from '@app/services/getKey.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
+import { GetKeyService } from '@app/services/key/getKey.service';
 import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
+import { InMemoryEnterpriseMembers } from '@tests/inMemoryDatabase/enterpriseMember';
+import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
+import { condominiumFactory } from '@tests/factories/condominium';
+import { enterpriseMemberFactory } from '@tests/factories/enterpriseMember';
 
 describe('Admin Jwt guard test', () => {
 	let jwtService: JwtService;
@@ -28,6 +31,8 @@ describe('Admin Jwt guard test', () => {
 
 	let inMemoryContainer: InMemoryContainer;
 	let userRepo: InMemoryUser;
+	let memberRepo: InMemoryEnterpriseMembers;
+	let condominiumRepo: InMemoryCondominium;
 	let keyRepo: InMemoryKey;
 
 	beforeEach(async () => {
@@ -35,6 +40,8 @@ describe('Admin Jwt guard test', () => {
 		inMemoryContainer = new InMemoryContainer();
 		userRepo = new InMemoryUser(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
+		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
+		memberRepo = new InMemoryEnterpriseMembers(inMemoryContainer);
 
 		getKeyService = new GetKeyService(keyRepo);
 		createTokenService = new CreateTokenService(jwtService, getKeyService);
@@ -43,7 +50,12 @@ describe('Admin Jwt guard test', () => {
 			jwtService,
 			getKeyService,
 		);
-		adminJwtGuard = new AdminJwt(validateTokenService, userRepo);
+		adminJwtGuard = new AdminJwt(
+			validateTokenService,
+			userRepo,
+			memberRepo,
+			condominiumRepo,
+		);
 
 		const accessTokenKey = new Key({
 			name: KeysEnum.ACCESS_TOKEN_KEY,
@@ -69,16 +81,19 @@ describe('Admin Jwt guard test', () => {
 
 	it('should be able to validate admin jwt guard', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory({
-			level: 1,
+		const condominium = condominiumFactory();
+		const member = enterpriseMemberFactory({
+			userId: user.id.value,
+			condominiumId: condominium.id.value,
 		});
-		await userRepo.create({ user, condominiumRelUser });
+		memberRepo.create({ user, member });
+		condominiumRepo.condominiums.push(condominium);
 
 		const tokens = await createTokenService.exec({ user });
 
 		const context = createMockExecutionContext({
 			params: {
-				condominiumId: condominiumRelUser.condominiumId.value,
+				condominiumId: condominium.id.value,
 			},
 			headers: {
 				authorization: `Bearer ${tokens.accessToken}`,
@@ -87,23 +102,21 @@ describe('Admin Jwt guard test', () => {
 
 		await expect(adminJwtGuard.canActivate(context)).resolves.toBeTruthy();
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
-		expect(userRepo.calls.getCondominiumRelation).toEqual(1);
+		expect(memberRepo.calls.getByUserId).toEqual(1);
 	});
 
 	it('should throw one error - user doesn\'t have permission', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory({
-			level: 0,
-		});
-		await userRepo.create({ user, condominiumRelUser });
+		const condominium = condominiumFactory();
+		userRepo.users.push(user);
+		condominiumRepo.condominiums.push(condominium);
 
 		const tokens = await createTokenService.exec({ user });
 
 		const context = createMockExecutionContext({
 			params: {
-				condominiumId: condominiumRelUser.condominiumId.value,
+				condominiumId: condominium.id.value,
 			},
 			headers: {
 				authorization: `Bearer ${tokens.accessToken}`,
@@ -116,9 +129,8 @@ describe('Admin Jwt guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
-		expect(userRepo.calls.getCondominiumRelation).toEqual(1);
+		expect(memberRepo.calls.getByUserId).toEqual(1);
 	});
 
 	it('should throw one error - condominium should be provided', async () => {

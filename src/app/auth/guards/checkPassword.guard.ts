@@ -2,7 +2,7 @@ import { CryptAdapter } from '@app/adapters/crypt';
 import { Email, Password } from '@app/entities/VO';
 import { GuardErrors } from '@app/errors/guard';
 import { UserRepo } from '@app/repositories/user';
-import { StartLoginDTO } from '@infra/http/DTO/login.DTO';
+import { StartLoginDTO } from '@infra/http/DTO/login/login.DTO';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { checkClassValidatorErrors } from '@utils/convertValidatorErr';
 import { plainToClass } from 'class-transformer';
@@ -39,9 +39,9 @@ export class CheckPasswordGuard implements CanActivate {
 
 		const user = await this.userRepo
 			.find({ key: email, safeSearch: true })
-			.catch(() => {
+			.catch((err) => {
 				throw new GuardErrors({
-					message: 'Usuário não existe',
+					message: err.message,
 				});
 			});
 		await this.validate(password, user.password.value);

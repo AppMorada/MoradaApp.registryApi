@@ -2,10 +2,10 @@ import { EntitiesEnum } from '@app/entities/entities';
 import { Invite } from '@app/entities/invite';
 import { InviteRepo, InviteRepoInterfaces } from '@app/repositories/invite';
 import { InMemoryError } from '@tests/errors/inMemoryError';
-import {
-	IInMemoryUserContainer,
-	InMemoryContainer,
-} from '../inMemoryContainer';
+import { InMemoryContainer } from '../inMemoryContainer';
+import { User } from '@app/entities/user';
+import { CondominiumMember } from '@app/entities/condominiumMember';
+import { Email } from '@app/entities/VO';
 
 export class InMemoryInvite implements InviteRepo {
 	public calls = {
@@ -15,31 +15,35 @@ export class InMemoryInvite implements InviteRepo {
 		delete: 0,
 	};
 	public invites: Invite[];
-	public users: IInMemoryUserContainer[];
+	public users: User[];
+	public condominiumMembers: CondominiumMember[];
 
 	constructor(container: InMemoryContainer) {
 		this.invites = container.props.inviteArr;
 		this.users = container.props.userArr;
+		this.condominiumMembers = container.props.condominiumMemberArr;
 	}
 
 	async create(input: InviteRepoInterfaces.create): Promise<void> {
 		++this.calls.create;
 
-		const searchedInvite = this.invites.find(
-			(item) => item.id === input.invite.id,
+		const searchedInvite = this.invites.find((item) =>
+			item.id.equalTo(input.invite.id),
 		);
-		if (searchedInvite)
+		const searchedMember = this.condominiumMembers.find((item) =>
+			item.id.equalTo(input.invite.memberId),
+		);
+		if (searchedInvite || searchedMember)
 			throw new InMemoryError({
 				entity: EntitiesEnum.invite,
 				message: 'Invite already exist',
 			});
 
-		const searchedCondominiumRelUser = this.users.find(
-			(item) =>
-				item.user.condominiumRelUser[input.invite.condominiumId.value],
+		const member = this.condominiumMembers.find((item) =>
+			item.condominiumId.equalTo(input.invite.condominiumId),
 		);
 
-		if (searchedCondominiumRelUser)
+		if (member)
 			throw new InMemoryError({
 				entity: EntitiesEnum.invite,
 				message: 'User is already linked in one condominium',
@@ -48,25 +52,26 @@ export class InMemoryInvite implements InviteRepo {
 		this.invites.push(input.invite);
 	}
 
-	async find(input: InviteRepoInterfaces.safelyFind): Promise<Invite>;
-	async find(input: InviteRepoInterfaces.find): Promise<Invite | undefined>;
+	async find(input: InviteRepoInterfaces.safelyFind): Promise<Invite[]>;
+	async find(input: InviteRepoInterfaces.find): Promise<Invite[]>;
 
 	async find(
 		input: InviteRepoInterfaces.safelyFind | InviteRepoInterfaces.find,
-	): Promise<Invite | undefined> {
+	): Promise<Invite[]> {
 		++this.calls.find;
 
-		const searchedInvite = this.invites.find((item) =>
-			item.email.equalTo(input.key),
+		const searchedInvites = this.invites.filter(
+			(item) =>
+				input.key instanceof Email && item.recipient.equalTo(input.key),
 		);
 
-		if (!searchedInvite && input.safeSearch)
+		if (searchedInvites.length <= 0 && input.safeSearch)
 			throw new InMemoryError({
 				entity: EntitiesEnum.invite,
 				message: 'Invite not found',
 			});
 
-		return searchedInvite;
+		return searchedInvites;
 	}
 
 	async transferToUserResources(
@@ -75,7 +80,7 @@ export class InMemoryInvite implements InviteRepo {
 		++this.calls.transferToUserResources;
 
 		const searchedInviteIndex = this.invites.findIndex((item) =>
-			item.email.equalTo(input.user.email),
+			item.recipient.equalTo(input.user.email),
 		);
 		if (searchedInviteIndex < 0)
 			throw new InMemoryError({
@@ -83,16 +88,27 @@ export class InMemoryInvite implements InviteRepo {
 				message: 'Invite doesn\'t exist',
 			});
 
+		let searchedCondominiumMemberIndex = this.condominiumMembers.findIndex(
+			(item) =>
+				item.condominiumId.equalTo(input.invite.condominiumId) ||
+				item.userId?.equalTo(input.user.id),
+		);
+		if (searchedCondominiumMemberIndex < 0)
+			searchedCondominiumMemberIndex =
+				this.condominiumMembers.push(
+					new CondominiumMember({
+						condominiumId: input.invite.condominiumId.value,
+						userId: input.user.id.value,
+						autoEdit: false,
+						CPF: input.CPF.value,
+						c_email: input.user.email.value,
+					}),
+				) - 1;
+
 		this.invites.splice(searchedInviteIndex, 1);
-		this.users.push({
-			user: {
-				content: input.user,
-				condominiumRelUser: {
-					[input.condominiumRelUser.condominiumId.value]:
-						input.condominiumRelUser,
-				},
-			},
-		});
+		this.users.push(input.user);
+		this.condominiumMembers[searchedCondominiumMemberIndex].userId =
+			input.user.id;
 	}
 
 	async delete(input: InviteRepoInterfaces.remove): Promise<void> {

@@ -2,9 +2,8 @@ import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { InMemoryUser } from '@tests/inMemoryDatabase/user';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
-import { CreateTokenService } from '@app/services/createToken.service';
+import { CreateTokenService } from '@app/services/login/createToken.service';
 import { userFactory } from '@tests/factories/user';
-import { condominiumRelUserFactory } from '@tests/factories/condominiumRelUser';
 import { InMemoryError } from '@tests/errors/inMemoryError';
 import { EntitiesEnum } from '@app/entities/entities';
 import { GuardErrors } from '@app/errors/guard';
@@ -12,12 +11,14 @@ import { UUID } from '@app/entities/VO';
 import { BadRequestException, HttpStatus } from '@nestjs/common';
 import { SuperAdminJwt } from '../super-admin-jwt.guard';
 import { InMemoryKey } from '@tests/inMemoryDatabase/key';
-import { GetKeyService } from '@app/services/getKey.service';
-import { ValidateTokenService } from '@app/services/validateToken.service';
+import { GetKeyService } from '@app/services/key/getKey.service';
+import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
+import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
+import { condominiumFactory } from '@tests/factories/condominium';
 
 describe('Super Admin Jwt guard test', () => {
 	let jwtService: JwtService;
@@ -28,12 +29,14 @@ describe('Super Admin Jwt guard test', () => {
 
 	let inMemoryContainer: InMemoryContainer;
 	let userRepo: InMemoryUser;
+	let condominiumRepo: InMemoryCondominium;
 	let keyRepo: InMemoryKey;
 
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
 		userRepo = new InMemoryUser(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
+		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
 
 		jwtService = new JwtService();
 		getKeyService = new GetKeyService(keyRepo);
@@ -44,7 +47,11 @@ describe('Super Admin Jwt guard test', () => {
 			getKeyService,
 		);
 
-		adminJwtGuard = new SuperAdminJwt(validateTokenService, userRepo);
+		adminJwtGuard = new SuperAdminJwt(
+			validateTokenService,
+			userRepo,
+			condominiumRepo,
+		);
 
 		const accessTokenKey = new Key({
 			name: KeysEnum.ACCESS_TOKEN_KEY,
@@ -70,16 +77,15 @@ describe('Super Admin Jwt guard test', () => {
 
 	it('should be able to validate admin jwt guard', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory({
-			level: 2,
-		});
-		await userRepo.create({ user, condominiumRelUser });
+		const condominium = condominiumFactory({ ownerId: user.id.value });
+		userRepo.users.push(user);
+		condominiumRepo.condominiums.push(condominium);
 
 		const tokens = await createTokenService.exec({ user });
 
 		const context = createMockExecutionContext({
 			params: {
-				condominiumId: condominiumRelUser.condominiumId.value,
+				condominiumId: condominium.id.value,
 			},
 			headers: {
 				authorization: `Bearer ${tokens.accessToken}`,
@@ -88,23 +94,21 @@ describe('Super Admin Jwt guard test', () => {
 
 		await expect(adminJwtGuard.canActivate(context)).resolves.toBeTruthy();
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
-		expect(userRepo.calls.getCondominiumRelation).toEqual(1);
+		expect(condominiumRepo.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - user doesn\'t have permission', async () => {
 		const user = userFactory();
-		const condominiumRelUser = condominiumRelUserFactory({
-			level: 1,
-		});
-		await userRepo.create({ user, condominiumRelUser });
+		const condominium = condominiumFactory();
+		userRepo.users.push(user);
+		condominiumRepo.condominiums.push(condominium);
 
 		const tokens = await createTokenService.exec({ user });
 
 		const context = createMockExecutionContext({
 			params: {
-				condominiumId: condominiumRelUser.condominiumId.value,
+				condominiumId: condominium.id.value,
 			},
 			headers: {
 				authorization: `Bearer ${tokens.accessToken}`,
@@ -117,9 +121,8 @@ describe('Super Admin Jwt guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.create).toEqual(1);
 		expect(userRepo.calls.find).toEqual(1);
-		expect(userRepo.calls.getCondominiumRelation).toEqual(1);
+		expect(condominiumRepo.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - condominium should be provided', async () => {
@@ -136,7 +139,7 @@ describe('Super Admin Jwt guard test', () => {
 			new BadRequestException({
 				statusCode: HttpStatus.BAD_REQUEST,
 				error: 'Bad Request',
-				message: 'Condomínio não especificado',
+				message: ['Condomínio não especificado'],
 			}),
 		);
 	});
