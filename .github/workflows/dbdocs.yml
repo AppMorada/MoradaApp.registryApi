@@ -2,7 +2,7 @@ name: CI - dbdocs
 
 on:
   push:
-    branches: ["trunk"]
+    branches: ["main"]
     paths:
       - ".github/workflows/dbdocs.yml"
       - "docs/dbdocs/**"

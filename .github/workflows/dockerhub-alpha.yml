@@ -27,7 +27,7 @@ env:
 
 on:
   push:
-    branches: ["trunk"]
+    branches: ["main"]
 
 jobs:
   test:
