@@ -16,7 +16,6 @@ import { EnterpriseMember } from '@app/entities/enterpriseMember';
 import { EnterpriseMemberRepo } from '@app/repositories/enterpriseMember';
 import { CondominiumRepo } from '@app/repositories/condominium';
 
-/** Usado para validar se um usuário tem permissões de um funcionário */
 @Injectable()
 export class AdminJwt implements CanActivate {
 	constructor(

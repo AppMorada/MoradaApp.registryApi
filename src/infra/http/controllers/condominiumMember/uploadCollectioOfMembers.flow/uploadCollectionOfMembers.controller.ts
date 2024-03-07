@@ -6,7 +6,6 @@ import { UploadCollectionOfMembersService } from '@app/services/members/condomin
 
 @Controller(CONDOMINIUM_PREFIX)
 export class UploadCollectionOfMembersController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly uploadMembers: UploadCollectionOfMembersService,
 	) {}

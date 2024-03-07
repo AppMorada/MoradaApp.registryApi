@@ -9,7 +9,6 @@ import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
 @Controller(LOGIN_PREFIX)
 export class TfaController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly createToken: CreateTokenService,
 		private readonly getEnv: GetEnvService,

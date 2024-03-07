@@ -8,7 +8,6 @@ import { checkClassValidatorErrors } from '@utils/convertValidatorErr';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 
-/** Usado para validar as senhas */
 @Injectable()
 export class CheckPasswordGuard implements CanActivate {
 	constructor(

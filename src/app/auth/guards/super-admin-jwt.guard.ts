@@ -14,7 +14,6 @@ import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { CondominiumRepo } from '@app/repositories/condominium';
 
-/** Usado para validar se um usuário tem permissões de um administrador */
 @Injectable()
 export class SuperAdminJwt implements CanActivate {
 	constructor(

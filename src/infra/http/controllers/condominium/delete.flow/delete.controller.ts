@@ -6,7 +6,6 @@ import { DeleteCondominiumService } from '@app/services/condominium/delete.servi
 
 @Controller(CONDOMINIUM_PREFIX)
 export class DeleteCondominiumController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(private readonly deleteCondominium: DeleteCondominiumService) {}
 
 	@Delete(':condominiumId')

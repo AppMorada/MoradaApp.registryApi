@@ -6,7 +6,6 @@ import { Request } from 'express';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTFAService } from '@app/services/login/validateTFA.service';
 
-/** Usado para validar o códigos gerados nos fluxos de autenticação de dois fatores */
 @Injectable()
 export class CheckTFACodeGuard implements CanActivate {
 	constructor(

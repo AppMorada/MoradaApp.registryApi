@@ -4,7 +4,6 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { fatalErrorHandler } from '@utils/fatalErrorHandler';
 import { Response, Request } from 'express';
 
-/** Usado para filtrar erros do FirestoreCustomError */
 @Catch(FirestoreCustomError)
 export class FirestoreCustomErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

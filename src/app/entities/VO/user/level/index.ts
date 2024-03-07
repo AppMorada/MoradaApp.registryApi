@@ -3,9 +3,6 @@ import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 import { condominiumRelUserDTORules } from '@app/entities/condominiumRelUser';
 
 export class Level implements ValueObject<Level, number> {
-	/**
-	 * @param _value - O nível do usuário, que deve ser 0 (usuário comum), 1 (funcionário) ou 2 (administrador)
-	 **/
 	constructor(private readonly _value: number) {
 		if (
 			_value > condominiumRelUserDTORules.level.maxLength ||

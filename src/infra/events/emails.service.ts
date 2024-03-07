@@ -4,7 +4,6 @@ import { EmailAdapter } from '@app/adapters/email';
 import { EVENT_ID, EventsTypes } from './ids';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
-/** Evento responsável por lidar com emails */
 @Injectable()
 export class EmailEvents {
 	constructor(

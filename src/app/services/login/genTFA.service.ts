@@ -15,7 +15,6 @@ interface IProps {
 	userId: UUID;
 }
 
-/** Serviço responsável por iniciar o processo de autenticação de dois fatores */
 @Injectable()
 export class GenTFAService implements IService {
 	constructor(

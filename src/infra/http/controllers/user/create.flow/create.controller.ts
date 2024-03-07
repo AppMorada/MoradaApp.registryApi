@@ -13,7 +13,6 @@ import { InviteGuard } from '@app/auth/guards/invite.guard';
 
 @Controller(USER_PREFIX)
 export class CreateUserController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly createUser: CreateUserService,
 		private readonly createToken: CreateTokenService,

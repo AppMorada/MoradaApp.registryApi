@@ -1,7 +1,6 @@
 import { userDTORules } from '@app/entities/user';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 
-/** Usado para validar o corpo das requisições de criação de usuário */
 export class CreateUserDTO {
 	@IsString({
 		message: 'O nome precisa conter caracteres válidos',

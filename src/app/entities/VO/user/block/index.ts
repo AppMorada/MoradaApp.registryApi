@@ -3,9 +3,6 @@ import { ValueObject, EntitiesEnum } from '@app/entities/entities';
 import { condominiumRelUserDTORules } from '@app/entities/condominiumRelUser';
 
 export class Block implements ValueObject<Block, string> {
-	/**
-	 * @param _value - Nome do block que deve estar entre 6 e 0 caracteres
-	 **/
 	constructor(private readonly _value: string) {
 		if (_value.length > condominiumRelUserDTORules.block.maxLength)
 			throw new EntitieError({

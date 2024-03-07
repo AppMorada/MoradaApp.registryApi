@@ -1,7 +1,6 @@
 import { userDTORules } from '@app/entities/user';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 
-/** Usado para validar o corpo das requisições de criação de convites */
 export class InviteUserDTO {
 	@IsString({
 		message: 'O CPF precisa conter caracteres válidos',

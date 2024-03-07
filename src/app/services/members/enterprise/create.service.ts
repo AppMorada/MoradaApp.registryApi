@@ -12,7 +12,6 @@ interface IProps {
 	CPF: string;
 }
 
-/** Serviço responsável por criar um novo usuário de empresa */
 @Injectable()
 export class CreateEnterpriseUserService implements IService {
 	constructor(

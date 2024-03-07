@@ -10,7 +10,6 @@ interface ITypeORMError {
 	httpCode: number;
 }
 
-/** Usado para filtrar erros do Prisma */
 @Catch(QueryFailedError)
 export class TypeORMErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

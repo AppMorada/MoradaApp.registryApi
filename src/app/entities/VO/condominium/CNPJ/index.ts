@@ -3,10 +3,6 @@ import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 import { condominiumDTORules } from '@app/entities/condominium';
 
 export class CNPJ implements ValueObject<CNPJ, string> {
-	/**
-	 * Deve conter valores validos de um CNPJ, formatados ou não
-	 * @param _value - CNPJ em questão
-	 **/
 	constructor(private readonly _value: string) {
 		this._value = this._value.replaceAll(/[./-]/g, '');
 

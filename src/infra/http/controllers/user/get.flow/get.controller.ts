@@ -9,7 +9,6 @@ import { GetEnterpriseMemberByUserIdService } from '@app/services/members/enterp
 
 @Controller(USER_PREFIX)
 export class GetUserController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly getCondominiumRelation: GetCondominiumMemberByUserIdService,
 		private readonly getEnterpriseCondominiumRelation: GetEnterpriseMemberByUserIdService,

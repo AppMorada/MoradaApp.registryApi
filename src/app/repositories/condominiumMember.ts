@@ -55,42 +55,34 @@ export namespace CondominiumMemberRepoInterfaces {
 }
 
 export abstract class CondominiumMemberRepo {
-	/** @virtual */
 	abstract create(
 		input: CondominiumMemberRepoInterfaces.create,
 	): Promise<void>;
 
-	/** @virtual */
 	abstract createMany(
 		input: CondominiumMemberRepoInterfaces.createMany,
 	): Promise<void>;
 
-	/** @virtual */
 	abstract getByUserId(
 		input: CondominiumMemberRepoInterfaces.getByUserId,
 	): Promise<ICondominiumMemberInObject[]>;
 
-	/** @virtual */
 	abstract getById(
 		input: CondominiumMemberRepoInterfaces.getById,
 	): Promise<CondominiumMember | undefined>;
 
-	/** @virtual */
 	abstract getGroupCondominiumId(
 		input: CondominiumMemberRepoInterfaces.getByCondominiumId,
 	): Promise<CondominiumMemberRepoInterfaces.getByCondominiumIdReturn[]>;
 
-	/** @virtual */
 	abstract checkByUserAndCondominiumId(
 		input: CondominiumMemberRepoInterfaces.getByUserIdAndCondominiumId,
 	): Promise<number>;
 
-	/** @virtual */
 	abstract update(
 		input: CondominiumMemberRepoInterfaces.update,
 	): Promise<void>;
 
-	/** @virtual */
 	abstract remove(
 		input: CondominiumMemberRepoInterfaces.remove,
 	): Promise<void>;

@@ -13,7 +13,6 @@ interface IFirestoreErrors {
 	httpCode: number;
 }
 
-/** Usado para filtrar erros customizados do banco de dados */
 @Catch(DatabaseCustomError)
 export class DatabaseCustomErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

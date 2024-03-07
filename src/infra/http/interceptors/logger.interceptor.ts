@@ -10,7 +10,6 @@ import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-/** Usado para interceptar e realizar os logs da aplicação */
 @Injectable()
 export class LogInterceptor implements NestInterceptor {
 	constructor(private readonly logger: LoggerAdapter) {}

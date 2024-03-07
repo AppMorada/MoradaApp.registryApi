@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 
-/** Usado para filtrar erros de Not Found */
 @Catch(NotFoundException)
 export class NotFoundFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

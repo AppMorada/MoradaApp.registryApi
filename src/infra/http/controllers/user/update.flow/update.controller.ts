@@ -11,7 +11,6 @@ import { UpdateUserDTO } from '@infra/http/DTO/user/update.DTO';
 
 @Controller(USER_PREFIX)
 export class UpdateUserController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly updateUserService: UpdateUserService,
 		private readonly createToken: CreateTokenService,

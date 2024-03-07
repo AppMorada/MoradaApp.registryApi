@@ -8,7 +8,6 @@ import { USER_PREFIX } from '../consts';
 
 @Controller(USER_PREFIX)
 export class DeleteUserController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(private readonly deleteUserService: DeleteUserService) {}
 
 	@Throttle({

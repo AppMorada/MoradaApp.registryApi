@@ -11,7 +11,6 @@ import { LOGIN_PREFIX } from '../consts';
 
 @Controller(LOGIN_PREFIX)
 export class StartLoginController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly createToken: CreateTokenService,
 		private readonly genTFA: GenTFAService,

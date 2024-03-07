@@ -7,7 +7,6 @@ import {
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { Response, Request } from 'express';
 
-/** Usado para filtrar erros dos Health Checks */
 @Catch(ServiceUnavailableException)
 export class AxiosCheckErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

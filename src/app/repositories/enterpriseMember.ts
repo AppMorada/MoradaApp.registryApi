@@ -34,32 +34,26 @@ export namespace EnterpriseMemberRepoInterfaces {
 }
 
 export abstract class EnterpriseMemberRepo {
-	/** @virtual */
 	abstract create(
 		input: EnterpriseMemberRepoInterfaces.create,
 	): Promise<void>;
 
-	/** @virtual */
 	abstract getByUserId(
 		input: EnterpriseMemberRepoInterfaces.getByUserId,
 	): Promise<EnterpriseMember | undefined>;
 
-	/** @virtual */
 	abstract getById(
 		input: EnterpriseMemberRepoInterfaces.getById,
 	): Promise<EnterpriseMember | undefined>;
 
-	/** @virtual */
 	abstract getGroupCondominiumId(
 		input: EnterpriseMemberRepoInterfaces.getByCondominiumId,
 	): Promise<IUserInObject[]>;
 
-	/** @virtual */
 	abstract update(
 		input: EnterpriseMemberRepoInterfaces.update,
 	): Promise<void>;
 
-	/** @virtual */
 	abstract remove(
 		input: EnterpriseMemberRepoInterfaces.remove,
 	): Promise<void>;

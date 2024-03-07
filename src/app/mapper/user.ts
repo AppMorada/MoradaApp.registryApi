@@ -23,10 +23,6 @@ export type TUserClassToObject = {
 };
 
 export class UserMapper {
-	/**
-	 * Método usado para converter um objeto de usuário em classe
-	 * @param input - Deve conter os dados em forma de objeto
-	 **/
 	static toClass(input: IUserInObject): User {
 		return new User(
 			{
@@ -38,10 +34,6 @@ export class UserMapper {
 		);
 	}
 
-	/**
-	 * Método usado para converter uma classe de usuário em objeto
-	 * @param input - Deve conter os dados em forma de classe
-	 **/
 	static toObject(input: User): TUserClassToObject {
 		return {
 			id: input.id.value,

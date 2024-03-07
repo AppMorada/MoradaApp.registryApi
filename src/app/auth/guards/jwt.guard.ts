@@ -7,7 +7,6 @@ import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
 
-/** Usado para validar um JWT vindo do authorization header */
 @Injectable()
 export class JwtGuard implements CanActivate {
 	constructor(

@@ -3,10 +3,6 @@ import { ValueObject, EntitiesEnum } from '@app/entities/entities';
 import { userDTORules } from '@app/entities/user';
 
 export class CPF implements ValueObject<CPF, string> {
-	/**
-	 * Deve conter valores validos de CPF, formatados ou não
-	 * @param _value - CPF em questão
-	 **/
 	constructor(private readonly _value: string) {
 		this._value = _value.replace(/[.-]/g, '');
 

@@ -5,10 +5,6 @@ import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 export class UUIDGroup implements ValueObject<UUIDGroup, Set<string>> {
 	private _value: Set<string>;
 
-	/**
-	 * Use UUIDGroup ao invés de simplesmente usar UUID[], esta classe é util para garantir que nenhum id seja repetido e possui a capacidade de validar listas de inteiras com apenas um metódo
-	 * @param _value - Valor iterável de strings em forma de UUID
-	 **/
 	constructor(input: Iterable<string>) {
 		for (const item of input) {
 			if (!UUID.check(item))

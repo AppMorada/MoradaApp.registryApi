@@ -9,7 +9,6 @@ import { GetCondominiumByOwnerIdService } from '@app/services/condominium/getByO
 
 @Controller(CONDOMINIUM_PREFIX)
 export class GetCondominiumController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly getCondominium: GetCondominiumService,
 		private readonly getCondominiumsByOwnerId: GetCondominiumByOwnerIdService,

@@ -16,7 +16,6 @@ interface IProps {
 	CPF: string;
 }
 
-/** Serviço responsável por criar um convite */
 @Injectable()
 export class GenInviteService implements IService {
 	constructor(

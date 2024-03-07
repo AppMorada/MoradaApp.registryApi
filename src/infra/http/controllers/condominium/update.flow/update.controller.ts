@@ -6,7 +6,6 @@ import { SuperAdminJwt } from '@app/auth/guards/super-admin-jwt.guard';
 
 @Controller(CONDOMINIUM_PREFIX)
 export class UpdateCondominiumController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(private readonly updateCondominium: UpdateCondominiumService) {}
 
 	@UseGuards(SuperAdminJwt)

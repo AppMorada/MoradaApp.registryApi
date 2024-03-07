@@ -3,9 +3,6 @@ import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 import { userDTORules } from '@app/entities/user';
 
 export class Password implements ValueObject<Password, string> {
-	/**
-	 * @param _value - Senha do usuário que deve estar entre 64 e 8 caracteres
-	 **/
 	constructor(private readonly _value: string) {
 		if (
 			_value.length > userDTORules.password.maxLength ||

@@ -9,7 +9,6 @@ import { CreateUserDTO } from '@infra/http/DTO/user/create.DTO';
 import { plainToClass } from 'class-transformer';
 import { Invite } from '@app/entities/invite';
 
-/** Usado para validar o código dos convites */
 @Injectable()
 export class InviteGuard implements CanActivate {
 	constructor(

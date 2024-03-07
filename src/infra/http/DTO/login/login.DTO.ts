@@ -1,7 +1,6 @@
 import { userDTORules } from '@app/entities/user';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 
-/** Usado para validar o corpo das requisições de login */
 export class StartLoginDTO {
 	@IsString({
 		message: 'O email precisa conter caracteres válidos',

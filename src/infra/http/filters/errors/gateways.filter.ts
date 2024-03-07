@@ -10,7 +10,6 @@ interface IGatewayError {
 	httpCode: number;
 }
 
-/** Usado para filtrar erros dos Gateways */
 @Catch(GatewayErrors)
 export class GatewayErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

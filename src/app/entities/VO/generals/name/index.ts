@@ -2,7 +2,6 @@ import { EntitieError } from '@app/errors/entities';
 import { ValueObject, EntitiesEnum } from '@app/entities/entities';
 import { userDTORules } from '@app/entities/user';
 
-/** Nome utilizado nas entidades */
 export class Name implements ValueObject<Name, string> {
 	constructor(private readonly _value: string) {
 		if (

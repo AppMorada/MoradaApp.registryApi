@@ -23,7 +23,6 @@ interface IProps {
 	};
 }
 
-/** Serviço responsável por criar um novo condomínio */
 @Injectable()
 export class CreateCondominiumService implements IService {
 	constructor(

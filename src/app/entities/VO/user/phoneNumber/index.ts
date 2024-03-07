@@ -3,9 +3,6 @@ import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 import { userDTORules } from '@app/entities/user';
 
 export class PhoneNumber implements ValueObject<PhoneNumber, string> {
-	/**
-	 * @param _value - Número do telefone do usuário que deve estar entre 30 e 10 caracteres
-	 **/
 	constructor(private readonly _value: string) {
 		this._value = this._value.replace(/[+ )(-]/g, '');
 

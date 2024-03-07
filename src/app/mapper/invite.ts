@@ -12,10 +12,6 @@ interface IConvertToObject {
 export type TInviteInObject = Required<IConvertToObject>;
 
 export class InviteMapper {
-	/**
-	 * Método usado para converter um objeto de convite em classe
-	 * @param input - Deve conter os dados em forma de objeto
-	 **/
 	static toClass(input: IConvertToObject): Invite {
 		return new Invite(
 			{
@@ -25,10 +21,6 @@ export class InviteMapper {
 		);
 	}
 
-	/**
-	 * Método usado para converter uma classe de convite em objeto
-	 * @param input - Deve conter os dados em forma de classe
-	 **/
 	static toObject(input: Invite): TInviteInObject {
 		return {
 			id: input.id.value,

@@ -7,7 +7,6 @@ interface IProps {
 	id: string;
 }
 
-/** Serviço responsável por deletar um usuário */
 @Injectable()
 export class DeleteUserService implements IService {
 	constructor(private readonly userRepo: UserRepo) {}

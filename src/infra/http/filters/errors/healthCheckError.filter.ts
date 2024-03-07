@@ -2,7 +2,6 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
 import { HealthCheckError } from '@nestjs/terminus';
 
-/** Usado para filtrar erros dos Health Checks */
 @Catch(HealthCheckError)
 export class HealthCheckErrorFilter implements ExceptionFilter {
 	/* eslint-disable @typescript-eslint/no-unused-vars */

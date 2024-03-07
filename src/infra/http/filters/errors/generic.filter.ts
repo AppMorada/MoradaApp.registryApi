@@ -9,7 +9,6 @@ interface IUntrackableErrors {
 	httpCode: number;
 }
 
-/** Usado para filtrar erros genéricos */
 @Catch()
 export class GenericErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

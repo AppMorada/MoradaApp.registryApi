@@ -36,7 +36,6 @@ interface IProps {
 	user: User | IUserDataCore;
 }
 
-/** Serviço responsável por gerar o token de acesso e o de renovação */
 @Injectable()
 export class CreateTokenService implements IService {
 	constructor(

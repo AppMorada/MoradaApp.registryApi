@@ -3,10 +3,6 @@ import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 import { condominiumDTORules } from '@app/entities/condominium';
 
 export class CEP implements ValueObject<CEP, string> {
-	/**
-	 * Deve conter valores validos de um CEP, formatados ou não
-	 * @param _value - CEP em questão
-	 **/
 	constructor(private readonly _value: string) {
 		this._value = this._value.replace(/[-]/g, '');
 

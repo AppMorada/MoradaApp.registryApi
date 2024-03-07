@@ -9,7 +9,6 @@ interface IProps {
 	name?: string;
 }
 
-/** Serviço responsável por criar um novo usuário */
 @Injectable()
 export class UpdateUserService implements IService {
 	constructor(private readonly userRepo: UserRepo) {}

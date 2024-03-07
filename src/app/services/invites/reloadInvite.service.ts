@@ -10,7 +10,6 @@ interface IProps {
 	recipient: string;
 }
 
-/** Serviço responsável por recarregar um convite */
 @Injectable()
 export class ReloadInviteService implements IService {
 	constructor(

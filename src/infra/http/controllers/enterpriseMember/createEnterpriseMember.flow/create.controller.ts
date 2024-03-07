@@ -7,7 +7,6 @@ import { AdminJwt } from '@app/auth/guards/admin-jwt.guard';
 
 @Controller(CONDOMINIUM_PREFIX)
 export class CreateEnterpriseMemberController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly createEnterpriseMember: CreateEnterpriseUserService,
 	) {}

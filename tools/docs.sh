@@ -1,1 +1,1 @@
-npx @compodoc/compodoc --output ./docs/compodoc -p tsconfig.build.json --theme postmark
+npx @compodoc/compodoc --output ./docs/compodoc -p tsconfig.build.json --theme vagrant

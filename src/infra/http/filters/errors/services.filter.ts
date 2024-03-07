@@ -10,7 +10,6 @@ interface IServiceErrors {
 	httpCode: number;
 }
 
-/** Usado para filtrar erros dos Services */
 @Catch(ServiceErrors)
 export class ServiceErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

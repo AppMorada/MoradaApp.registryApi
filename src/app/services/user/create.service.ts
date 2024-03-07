@@ -12,7 +12,6 @@ interface IProps {
 	CPF: string;
 }
 
-/** Serviço responsável por criar um novo usuário */
 @Injectable()
 export class CreateUserService implements IService {
 	constructor(

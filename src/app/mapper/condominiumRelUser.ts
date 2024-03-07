@@ -21,18 +21,10 @@ export type TCondominiumRelUserToObject = {
 };
 
 export class CondominiumRelUserMapper {
-	/**
-	 * Método usado para converter um objeto de CondominiumRelUser em classe
-	 * @param input - Deve conter os dados em forma de objeto
-	 **/
 	static toClass({ id, ...input }: ICondominiumRelUserInObject) {
 		return new CondominiumRelUser({ ...input }, id);
 	}
 
-	/**
-	 * Método usado para converter uma classe de CondominiumRelUser em um objeto
-	 * @param input - Deve conter os dados em forma de classe
-	 **/
 	static toObject(input: CondominiumRelUser): TCondominiumRelUserToObject {
 		return {
 			id: input.id.value,

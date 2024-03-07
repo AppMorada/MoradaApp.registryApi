@@ -3,7 +3,6 @@ import { AdapterError } from '@app/errors/adapter';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-/** Usado para filtrar erros dos Adapters */
 @Catch(AdapterError)
 export class AdapterErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

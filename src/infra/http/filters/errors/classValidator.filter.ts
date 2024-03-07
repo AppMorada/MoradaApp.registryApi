@@ -14,7 +14,6 @@ interface IBodyProps {
 	statusCode: number;
 }
 
-/** Usado para filtrar erros do Class Validator */
 @Catch(BadRequestException)
 export class ClassValidatorErrorFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}

@@ -9,7 +9,6 @@ import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 
-/** Usado para validar os tokens do tipo "RefreshToken" */
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
 	constructor(

@@ -3,9 +3,6 @@ import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 import { condominiumRelUserDTORules } from '@app/entities/condominiumRelUser';
 
 export class ApartmentNumber implements ValueObject<ApartmentNumber, number> {
-	/**
-	 * @param _value - Número do apartamento que esta entre 2147483647 e 0
-	 **/
 	constructor(private readonly _value: number) {
 		if (
 			_value > condominiumRelUserDTORules.apartmentNumber.maxLength ||

@@ -21,23 +21,11 @@ export namespace UserRepoInterfaces {
 }
 
 export abstract class UserRepo {
-	/**
-	 * @virtual
-	 * Método usado para pesquisar por um usuário
-	 * @param input - Deve conter chave a ser utilizada para a pesquisa, pode ser um id, email ou o email do usuário. Além disso, pode-se usar como valor opcional o safeSearch, que força um erro, caso o item não seja encontrado
-	 **/
 	abstract find(input: UserRepoInterfaces.search): Promise<User | undefined>;
 
-	/**
-	 * @virtual
-	 * Método usado para pesquisar por um usuário
-	 * @param input.key - Deve conter uma chave a ser utilizada para a pesquisa, pode ser um id, email ou o email do usuário. Além disso, pode-se usar como valor opcional o safeSearch, que força um erro, caso o item não seja encontrado
-	 **/
 	abstract find(input: UserRepoInterfaces.safeSearch): Promise<User>;
 
-	/** @virtual */
 	abstract delete(input: UserRepoInterfaces.remove): Promise<void>;
 
-	/** @virtual */
 	abstract update(input: UserRepoInterfaces.update): Promise<void>;
 }

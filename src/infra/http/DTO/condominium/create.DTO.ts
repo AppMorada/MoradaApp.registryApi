@@ -10,7 +10,6 @@ import {
 	MinLength,
 } from 'class-validator';
 
-/** Usado para validar o corpo das requisições de criação de condomínio */
 export class CreateCondominiumDTO {
 	@IsString({
 		message: 'O nome do usuário precisa conter caracteres válidos',

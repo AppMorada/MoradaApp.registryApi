@@ -13,7 +13,6 @@ export enum EntitiesEnum {
 	vo = 'Value Object',
 }
 
-/** Usado para manter um padrão nas classes da camada de entidades */
 export abstract class Entity {
 	abstract equalTo(input: Entity): boolean;
 	abstract dereference(): Entity;
@@ -23,7 +22,6 @@ export enum VOEnum {
 	NullOrUndefined,
 }
 
-/** Usado para manter um padrão nos Value Objects */
 export abstract class ValueObject<T, O> {
 	abstract equalTo(input: T): boolean;
 	abstract get value(): O;

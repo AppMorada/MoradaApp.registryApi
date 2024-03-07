@@ -15,10 +15,6 @@ export interface IConvertToObject {
 export type TCondominiumInObject = Required<IConvertToObject>;
 
 export class CondominiumMapper {
-	/**
-	 * Método usado para converter um objeto de um condomínio em classe
-	 * @param input - Deve conter os dados do condomínio em forma de objeto
-	 **/
 	static toClass(input: IConvertToObject): Condominium {
 		return new Condominium(
 			{
@@ -35,10 +31,6 @@ export class CondominiumMapper {
 		);
 	}
 
-	/**
-	 * Método usado para converter uma classe de condomínio em objeto
-	 * @param input - Deve conter os dados do condomínio em forma de classe
-	 **/
 	static toObject(input: Condominium): TCondominiumInObject {
 		return {
 			id: input.id.value,

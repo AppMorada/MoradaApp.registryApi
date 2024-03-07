@@ -10,7 +10,6 @@ import { TCondominiumInObject } from '@app/mapper/condominium';
 
 @Controller(CONDOMINIUM_PREFIX)
 export class CreateCondominiumController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(
 		private readonly createCondominium: CreateCondominiumService,
 		private readonly createToken: CreateTokenService,

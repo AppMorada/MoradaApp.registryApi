@@ -15,7 +15,6 @@ import { ValidateTokenService } from '@app/services/login/validateToken.service'
 import { CondominiumMemberRepo } from '@app/repositories/condominiumMember';
 import { CondominiumRepo } from '@app/repositories/condominium';
 
-/** Usado para validar se um usuário tem permissões de um funcionário */
 @Injectable()
 export class CondominiumMemberGuard implements CanActivate {
 	constructor(

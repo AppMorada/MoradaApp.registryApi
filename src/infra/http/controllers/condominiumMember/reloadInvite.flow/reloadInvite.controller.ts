@@ -6,7 +6,6 @@ import { ReloadInviteUserDTO } from '@infra/http/DTO/members/condominium/Reloadi
 
 @Controller(CONDOMINIUM_PREFIX)
 export class ReloadInviteCondominiumMemberController {
-	/** Acesse /api para ver as rotas disponíveis **/
 	constructor(private readonly reloadInvite: ReloadInviteService) {}
 
 	@Throttle({
