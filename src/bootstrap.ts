@@ -14,7 +14,6 @@ import { AdapterErrorFilter } from '@infra/http/filters/errors/adapter.filter';
 import { ClassValidatorErrorFilter } from '@infra/http/filters/errors/classValidator.filter';
 import { ThrottlerErrorFilter } from '@infra/http/filters/errors/throttler.filter';
 import { NotFoundFilter } from '@infra/http/filters/errors/notFound.filter';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { DatabaseCustomErrorFilter } from '@infra/http/filters/errors/databaseCustomError.filter';
 import { HealthCheckErrorFilter } from '@infra/http/filters/errors/healthCheckError.filter';
 import { AxiosCheckErrorFilter } from '@infra/http/filters/errors/serviceUnavailableException.filter';
@@ -46,16 +45,6 @@ export class RegistryAPIBootstrap {
 			env: EnvEnum.COOKIE_KEY,
 		});
 		this.app.use(cookieParser(COOKIE_KEY));
-
-		const config = new DocumentBuilder()
-			.setTitle('MoradaApp: Registry API')
-			.setDescription('Morada App Registry API')
-			.setVersion('1.0')
-			.addTag('moradaApp')
-			.build();
-
-		const document = SwaggerModule.createDocument(this.app, config);
-		SwaggerModule.setup('api', this.app, document);
 
 		process.on('SIGTERM', () => {
 			this.logger.info({
