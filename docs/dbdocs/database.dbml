@@ -20,7 +20,7 @@ Table users {
 Table enterprise_member {
 	id                uuid            [pk, default: `uuid_generate_v4()`]
 	user_id           uuid            [ref: - users.id]
-	condominium_id    uuid            [ref: - condominiums.id]
+	condominium_id    uuid            [ref: > condominiums.id]
 	cpf               bigint
 	created_at        timestamp       [default: `now()`]
 	updated_at        timestamp       [default: `now()`]
@@ -28,6 +28,12 @@ Table enterprise_member {
 	Indexes {
 		(condominium_id, cpf) [name: 'idx_cpf_condominium_id']
 		cpf [unique]
+		condominium_id [unique]
+	}
+
+	Indexes {
+		(condominium_id, user_id) [name: 'idx_user_id_condominium_id']
+		user_id [unique]
 		condominium_id [unique]
 	}
 }
@@ -39,19 +45,18 @@ Table condominiums {
 	cep             int
 	num             int             [note: 'Número do condomínio']
 	cnpj            bigint          [unique]
-	seed_key        binary(100)
+	seed_key        varchar(60)
 	created_at      timestamp       [default: `now()`]
 	updated_at      timestamp       [default: `now()`]
 }
 
 Table condominium_members {
 	id                     uuid                [pk, default: `uuid_generate_v4()`]
-	condominium_id         uuid                [ref: - condominiums.id]
+	condominium_id         uuid                [ref: > condominiums.id]
 	user_id                uuid                [ref: > users.id]
 
 	c_email                varchar(320)
 	cpf                    bigint
-	c_phone_number         bigint              [null]
 	apartment_number       int                 [null]
 	block                  varchar(6)          [null, note: 'Bloco do condomínio']
 
@@ -59,6 +64,12 @@ Table condominium_members {
 
 	created_at             timestamp           [default: `now()`]
 	updated_at             timestamp           [default: `now()`]
+
+	Indexes {
+		(condominium_id, user_id) [name: 'idx_user_id_condominium_id']
+		user_id [unique]
+		condominium_id [unique]
+	}
 
 	Indexes {
 		(condominium_id, c_email) [name: 'idx_c_email_condominium_id']
@@ -75,7 +86,7 @@ Table condominium_members {
 
 Table invites {
 	id                        uuid            [pk, default: `uuid_generate_v4()`]
-	condominium_id            uuid            [ref: - condominiums.id]
+	condominium_id            uuid            [ref: > condominiums.id]
 	member_id                 uuid            [ref: - condominium_members.id]
 	recipient                 varchar(320)
 	code                      char(60) 
@@ -84,6 +95,12 @@ Table invites {
 	Indexes {
 		(condominium_id, recipient) [name: 'idx_recipient_condominium_id']
 		recipient [unique]
+		condominium_id [unique]
+	}
+
+	Indexes {
+		(condominium_id, member_id) [name: 'idx_member_id_condominium_id']
+		member_id [unique]
 		condominium_id [unique]
 	}
 }
