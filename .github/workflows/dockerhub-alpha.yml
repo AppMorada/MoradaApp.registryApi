@@ -114,6 +114,8 @@ jobs:
               - "package.json"
             lockfile:
               - "pnpm-lock.yaml"
+            dockerfileprod:
+              - "Dockerfile.prod"
             sql:
               - "example/init.sql"
             pgimage:
@@ -126,7 +128,10 @@ jobs:
           steps.path.outputs.workflow == 'true' ||
           steps.path.outputs.src == 'true' ||
           steps.path.outputs.packagejson == 'true' ||
-          steps.path.outputs.lockfile == 'true'
+          steps.path.outputs.lockfile == 'true' ||
+          steps.path.outputs.dockerfileprod == 'true' ||
+          steps.path.outputs.pgimage == 'true' ||
+          steps.path.outputs.sql == 'true'
         with:
           username: ${{secrets.DOCKER_HUB_USERNAME}}
           password: ${{secrets.DOCKER_HUB_PASSWORD}}
@@ -138,7 +143,8 @@ jobs:
           steps.path.outputs.workflow == 'true' ||
           steps.path.outputs.src == 'true' ||
           steps.path.outputs.packagejson == 'true' ||
-          steps.path.outputs.lockfile == 'true'
+          steps.path.outputs.lockfile == 'true' ||
+          steps.path.outputs.dockerfileprod == 'true'
         with:
           context: .
           file: Dockerfile.prod

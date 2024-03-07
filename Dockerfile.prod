@@ -10,6 +10,7 @@ RUN corepack enable
 COPY src ./src
 COPY package.json .
 COPY pnpm-lock.yaml .
+COPY docs ./docs
 
 #---------- prod deps ------------
 FROM base AS prod_deps

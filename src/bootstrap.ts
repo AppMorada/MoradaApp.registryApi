@@ -21,6 +21,8 @@ import { FirestoreCustomErrorFilter } from '@infra/http/filters/errors/firestore
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 import { TypeORMErrorFilter } from '@infra/http/filters/errors/typeorm.filter';
 import { UnprocessableEntityFilter } from '@infra/http/filters/errors/unprocessableEntity.filter';
+import oas from '../docs/openapi/openapi.json';
+import * as swaggerUi from 'swagger-ui-express';
 
 export class RegistryAPIBootstrap {
 	private app: NestExpressApplication;
@@ -45,6 +47,10 @@ export class RegistryAPIBootstrap {
 			env: EnvEnum.COOKIE_KEY,
 		});
 		this.app.use(cookieParser(COOKIE_KEY));
+
+		const express = this.app.getHttpAdapter();
+		express.use('/api', swaggerUi.serve as any);
+		express.get('/api', swaggerUi.setup(oas));
 
 		process.on('SIGTERM', () => {
 			this.logger.info({
