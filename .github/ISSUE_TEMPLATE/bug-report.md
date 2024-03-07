@@ -3,7 +3,8 @@ name: Bug report
 about: Informe o bug que você encontrou
 title: "[BUG] <título do bug>"
 labels: bug
-assignees: NicolasCBV
+assignees: rodrigosv91, srdmatheus, Lucas-A-Araujo, NicolasCBV, cairocarrilho, mfjack,
+  devjoselima, phlete, Gusdev06
 
 ---
 
