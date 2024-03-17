@@ -7,6 +7,7 @@ import { TypeOrmCommunityInfosEntity } from '../entities/communityInfos.entity';
 import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
 import { CockroachConnectionOptions } from 'typeorm/driver/cockroachdb/CockroachConnectionOptions';
 import { FirstProdMigration1710642771706 } from './1710642771706-firstProdMigration';
+import { AddCascadeDeletionOnCondominiumOwnerId1710703928497 } from './1710703928497-addCascadeDeletionOnCondominiumOwnerId';
 
 const config: CockroachConnectionOptions = {
 	type: 'cockroachdb',
@@ -24,7 +25,10 @@ const config: CockroachConnectionOptions = {
 	synchronize: false,
 	migrationsRun: false,
 	migrationsTableName: 'migration_typeorm',
-	migrations: [FirstProdMigration1710642771706],
+	migrations: [
+		FirstProdMigration1710642771706,
+		AddCascadeDeletionOnCondominiumOwnerId1710703928497,
+	],
 };
 
 const dataSource = new TypeORMService({ ...config });

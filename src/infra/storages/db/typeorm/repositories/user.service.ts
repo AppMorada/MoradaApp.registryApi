@@ -60,18 +60,20 @@ export class TypeOrmUserRepo implements UserRepo {
 
 	async delete(input: UserRepoInterfaces.remove): Promise<void> {
 		await this.dataSource.transaction(async (t) => {
-			const user = await t
-				.getRepository(TypeOrmUserEntity)
-				.createQueryBuilder('user')
-				.innerJoinAndSelect('user.uniqueRegistry', 'a')
-				.where('user.id = :id', { id: input.key.value })
-				.getOne();
+			const user = await t.getRepository(TypeOrmUserEntity).findOne({
+				where: {
+					id: input.key.value,
+				},
+				loadRelationIds: true,
+			});
 			if (!user) return;
 
-			const uniqueRegistry =
-				user.uniqueRegistry as TypeOrmUniqueRegistryEntity;
-			await t.delete('unique_registries', uniqueRegistry);
-			await t.delete('users', user);
+			await t
+				.createQueryBuilder()
+				.delete()
+				.from('unique_registries')
+				.where('id = :id', { id: user.uniqueRegistry as string })
+				.execute();
 		});
 	}
 

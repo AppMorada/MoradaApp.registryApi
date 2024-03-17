@@ -56,7 +56,7 @@ export class TypeOrmCondominiumEntity {
 
 	@OneToOne(() => TypeOrmUserEntity, (user) => user.condominium, {
 		nullable: false,
-		onDelete: 'NO ACTION',
+		onDelete: 'CASCADE',
 	})
 	@JoinColumn({
 		name: 'owner_id',
