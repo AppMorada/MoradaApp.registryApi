@@ -1,3 +1,4 @@
+import { PhoneNumber } from '@app/entities/VO';
 import { TypeOrmUserEntity } from '../entities/user.entity';
 import { User } from '@app/entities/user';
 import { TUserClassToObject } from '@app/mapper/user';
@@ -17,12 +18,18 @@ export class TypeOrmUserMapper {
 	}
 
 	static toClass(input: TypeOrmUserEntity): User {
+		const phoneNumber = input.phoneNumber
+			? parseInt(input.phoneNumber)
+			: null;
+		const parsedPhoneNumber = phoneNumber
+			? PhoneNumber.toString(phoneNumber)
+			: null;
 		return new User(
 			{
 				name: input.name,
 				uniqueRegistryId: String(input.uniqueRegistry),
 				password: input.password,
-				phoneNumber: input.phoneNumber,
+				phoneNumber: parsedPhoneNumber,
 				tfa: Boolean(input.tfa),
 				updatedAt: input.updatedAt,
 				createdAt: input.createdAt,
@@ -32,13 +39,19 @@ export class TypeOrmUserMapper {
 	}
 
 	static toObject(input: TypeOrmUserEntity): TUserClassToObject {
+		const phoneNumber = input.phoneNumber
+			? parseInt(input.phoneNumber)
+			: null;
+		const parsedPhoneNumber = phoneNumber
+			? PhoneNumber.toString(phoneNumber)
+			: null;
 		return {
 			id: input.id,
 			uniqueRegistryId: String(input.uniqueRegistry),
 			name: input.name,
 			password: input.password,
 			tfa: Boolean(input.tfa),
-			phoneNumber: input.phoneNumber,
+			phoneNumber: parsedPhoneNumber,
 			createdAt: input.createdAt,
 			updatedAt: input.updatedAt,
 		};

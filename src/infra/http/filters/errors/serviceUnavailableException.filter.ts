@@ -5,7 +5,7 @@ import {
 	ServiceUnavailableException,
 } from '@nestjs/common';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 
 @Catch(ServiceUnavailableException)
 export class AxiosCheckErrorFilter implements ExceptionFilter {
@@ -14,10 +14,9 @@ export class AxiosCheckErrorFilter implements ExceptionFilter {
 	catch(exception: ServiceUnavailableException, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
-		const request = context.getRequest<Request>();
 
 		this.logger.error({
-			name: `SessionId(${request.sessionId}): ${exception.name}`,
+			name: exception.name,
 			layer: LayersEnum.gateway,
 			description: exception.message,
 			stack: exception.stack,

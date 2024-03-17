@@ -1,6 +1,6 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 
 interface IUntrackableErrors {
 	name: string;
@@ -25,7 +25,6 @@ export class GenericErrorFilter implements ExceptionFilter {
 	catch(exception: Error, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
-		const request = context.getRequest<Request>();
 
 		const error = this.untrackableErrors.find((item) => {
 			return exception?.message?.includes(item.key);
@@ -33,7 +32,7 @@ export class GenericErrorFilter implements ExceptionFilter {
 
 		if (error) {
 			this.logger.error({
-				name: `SessionId(${request.sessionId}): ${error.name} - ${exception.name}`,
+				name: `${error.name} - ${exception.name}`,
 				layer: LayersEnum.database,
 				description: error.message,
 				stack: exception.stack,
@@ -46,7 +45,7 @@ export class GenericErrorFilter implements ExceptionFilter {
 		}
 
 		this.logger.error({
-			name: `SessionId(${request.sessionId}): Erro interno do servidor ${exception?.name}`,
+			name: `Erro interno do servidor ${exception?.name}`,
 			layer: LayersEnum.unknown,
 			description: exception?.message ?? 'Causa desconhecida',
 			stack: exception?.stack ?? 'Causa desconhecida',

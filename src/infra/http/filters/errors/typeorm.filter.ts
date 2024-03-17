@@ -1,6 +1,6 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import { QueryFailedError } from 'typeorm';
 
 interface ITypeORMError {
@@ -26,7 +26,6 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 	catch(exception: QueryFailedError, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
-		const request = context.getRequest<Request>();
 
 		const error = this.possibleErrors.find((item) => {
 			return item.code === exception.driverError?.code;
@@ -34,7 +33,7 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 
 		if (error) {
 			this.logger.error({
-				name: `SessionId(${request.sessionId}): ${error.name} - ${exception.driverError.code}`,
+				name: `${error.name} - ${exception.driverError.code}`,
 				layer: LayersEnum.database,
 				description: error.message,
 				stack: exception.stack,
@@ -47,7 +46,7 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 		}
 
 		this.logger.error({
-			name: `SessionId(${request.sessionId}): ${exception.name}`,
+			name: exception.name,
 			layer: LayersEnum.database,
 			description: exception.message,
 			stack: exception.stack,

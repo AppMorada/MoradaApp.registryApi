@@ -1,6 +1,6 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 import {
 	DatabaseCustomError,
 	DatabaseCustomErrorsTags,
@@ -65,7 +65,6 @@ export class DatabaseCustomErrorFilter implements ExceptionFilter {
 	catch(exception: DatabaseCustomError, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
-		const request = context.getRequest<Request>();
 
 		const error = this.possibleErrors.find((item) => {
 			return item.tag === exception.tag;
@@ -73,7 +72,7 @@ export class DatabaseCustomErrorFilter implements ExceptionFilter {
 
 		if (error) {
 			this.logger.error({
-				name: `SessionId(${request.sessionId}): ${error.name} - ${exception.name}`,
+				name: `${error.name} - ${exception.name}`,
 				layer: LayersEnum.database,
 				description: error.message,
 				stack: exception.stack,
@@ -86,7 +85,7 @@ export class DatabaseCustomErrorFilter implements ExceptionFilter {
 		}
 
 		this.logger.error({
-			name: `SessionId(${request.sessionId}): ${exception.name}`,
+			name: `${exception.name}`,
 			layer: LayersEnum.database,
 			description: exception.message,
 			stack: exception.stack,

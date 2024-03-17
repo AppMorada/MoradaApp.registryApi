@@ -1,7 +1,7 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { GuardErrors } from '@app/errors/guard';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 
 @Catch(GuardErrors)
 export class GuardErrorFilter implements ExceptionFilter {
@@ -10,10 +10,9 @@ export class GuardErrorFilter implements ExceptionFilter {
 	catch(exception: GuardErrors, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
-		const request = context.getRequest<Request>();
 
 		this.logger.error({
-			name: `SessionId(${request.sessionId}): Camada de autenticação - ${exception.name}`,
+			name: `Camada de autenticação - ${exception.name}`,
 			layer: LayersEnum.auth,
 			description: exception.message,
 			stack: exception.stack,

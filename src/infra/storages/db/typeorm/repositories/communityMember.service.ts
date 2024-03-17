@@ -244,18 +244,18 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 		await this.dataSource.transaction(async (t) => {
 			const member = await t
 				.getRepository(TypeOrmCondominiumMemberEntity)
-				.createQueryBuilder('condominium_member')
-				.innerJoinAndSelect('condominium_member.uniqueRegistry', 'a')
-				.where('condominium_member.id = :id', { id: input.id.value })
-				.getOne();
+				.findOne({
+					where: {
+						id: input.id.value,
+					},
+					loadRelationIds: true,
+				});
 			if (!member) return;
 
-			const uniqueRegistry =
-				member.uniqueRegistry as TypeOrmUniqueRegistryEntity;
 			const userExists = await t.getRepository(TypeOrmUserEntity).exist({
 				where: {
 					uniqueRegistry: {
-						id: uniqueRegistry.id,
+						id: member.uniqueRegistry as string,
 					},
 				},
 				lock: {
@@ -268,7 +268,7 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 					.createQueryBuilder()
 					.delete()
 					.from('unique_registries')
-					.where('id = :id', { id: uniqueRegistry.id })
+					.where('id = :id', { id: member.uniqueRegistry as string })
 					.execute();
 
 			await t

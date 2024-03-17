@@ -5,7 +5,6 @@ import {
 	ExecutionContext,
 	CallHandler,
 } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -16,12 +15,10 @@ export class LogInterceptor implements NestInterceptor {
 
 	intercept(content: ExecutionContext, next: CallHandler): Observable<any> {
 		const req = content.switchToHttp().getRequest<Request>();
-		const sessionId = randomUUID();
-		req.sessionId = sessionId;
 
 		this.logger.info({
 			name: `"${req.path}" acessado`,
-			description: `SessionId(${sessionId}) - Method(${req.method})`,
+			description: `Method(${req.method})`,
 			layer: LayersEnum.interceptors,
 		});
 
@@ -29,7 +26,7 @@ export class LogInterceptor implements NestInterceptor {
 			tap(() => {
 				this.logger.info({
 					name: `"${req.path}" acesso finalizado sem erros`,
-					description: `SessionId(${sessionId}) - Method(${req.method})`,
+					description: `Method(${req.method})`,
 					layer: LayersEnum.interceptors,
 				});
 			}),

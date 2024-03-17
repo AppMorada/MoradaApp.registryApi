@@ -5,7 +5,7 @@ import {
 	ExceptionFilter,
 	NotFoundException,
 } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 
 @Catch(NotFoundException)
 export class NotFoundFilter implements ExceptionFilter {
@@ -14,10 +14,9 @@ export class NotFoundFilter implements ExceptionFilter {
 	catch(_: NotFoundException, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
-		const request = context.getRequest<Request>();
 
 		this.logger.error({
-			name: `SessionId(${request.sessionId}): Não encontrado`,
+			name: 'Não encontrado',
 			layer: LayersEnum.controller,
 			description: 'O recurso que você está procurando não existe',
 		});

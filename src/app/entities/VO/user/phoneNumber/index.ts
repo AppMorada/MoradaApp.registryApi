@@ -17,6 +17,24 @@ export class PhoneNumber implements ValueObject<PhoneNumber, string> {
 			});
 	}
 
+	static toInt(input: PhoneNumber) {
+		return parseInt(input.value);
+	}
+
+	static toString(input: number): string {
+		const raw = String(input);
+		if (raw.length < userDTORules.phoneNumber.minLength) {
+			const newPaddingValue =
+				userDTORules.phoneNumber.minLength - raw.length;
+			return raw.padStart(
+				raw.length + newPaddingValue,
+				'0'.repeat(newPaddingValue),
+			);
+		}
+
+		return raw;
+	}
+
 	public equalTo(input: PhoneNumber) {
 		return input.value === this._value;
 	}
