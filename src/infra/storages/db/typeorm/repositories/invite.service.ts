@@ -7,8 +7,10 @@ import { TypeOrmInviteMapper } from '../mapper/invite';
 import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 import { TypeOrmUserMapper } from '../mapper/user';
 import { typeORMConsts } from '../consts';
-import { TypeOrmUserEntity } from '../entities/user.entity';
 import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.entity';
+import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
+import { TypeOrmUniqueRegistryMapper } from '../mapper/uniqueRegistry';
 
 @Injectable()
 export class TypeOrmInviteRepo implements InviteRepo {
@@ -18,29 +20,6 @@ export class TypeOrmInviteRepo implements InviteRepo {
 		@Inject(typeORMConsts.databaseProviders)
 		private readonly dataSource: DataSource,
 	) {}
-
-	async create(input: InviteRepoInterfaces.create): Promise<void> {
-		await this.dataSource.transaction(async (t) => {
-			const data = TypeOrmInviteMapper.toTypeOrm(input.invite);
-			const user = await t
-				.getRepository(TypeOrmUserEntity)
-				.createQueryBuilder('users')
-				.innerJoin('condominium_members', 'a', 'a.user_id = users.id')
-				.where('email = :email', {
-					email: input.invite.recipient.value,
-				})
-				.setLock('pessimistic_read')
-				.getOne();
-
-			if (user)
-				throw new DatabaseCustomError({
-					message: 'Content already exist',
-					tag: DatabaseCustomErrorsTags.contentAlreadyExists,
-				});
-
-			await t.insert(TypeOrmInviteEntity, data);
-		});
-	}
 
 	async find(input: InviteRepoInterfaces.find): Promise<Invite[]>;
 	async find(input: InviteRepoInterfaces.safelyFind): Promise<Invite[]>;
@@ -72,7 +51,7 @@ export class TypeOrmInviteRepo implements InviteRepo {
 		await this.dataSource.transaction(async (t) => {
 			await t
 				.getRepository(TypeOrmInviteEntity)
-				.createQueryBuilder('invites')
+				.createQueryBuilder('invite')
 				.delete()
 				.where('condominium_id = :condominium_id', {
 					condominium_id: input.invite.condominiumId.value,
@@ -82,12 +61,33 @@ export class TypeOrmInviteRepo implements InviteRepo {
 				})
 				.execute();
 
-			const user = TypeOrmUserMapper.toTypeOrm(input.user);
-			await t.insert<TypeOrmUserEntity>('users', user);
+			let uniqueRegistry = await t
+				.getRepository(TypeOrmUniqueRegistryEntity)
+				.findOne({
+					where: {
+						email: input.rawUniqueRegistry.email.value,
+						CPF: input.rawUniqueRegistry.CPF.value,
+					},
+					lock: {
+						mode: 'pessimistic_read',
+					},
+				});
+			if (!uniqueRegistry) {
+				uniqueRegistry = TypeOrmUniqueRegistryMapper.toTypeOrm(
+					new UniqueRegistry({
+						CPF: input.rawUniqueRegistry.CPF.value,
+						email: input.rawUniqueRegistry.email.value,
+					}),
+				);
+				await t.insert('unique_registries', uniqueRegistry);
+			}
 
+			const user = TypeOrmUserMapper.toTypeOrm(input.user);
+			user.uniqueRegistry = uniqueRegistry.id;
+			await t.insert('users', user);
 			await t
 				.getRepository(TypeOrmCondominiumMemberEntity)
-				.createQueryBuilder()
+				.createQueryBuilder('condominium_member')
 				.update('condominium_members')
 				.set({ user: user.id })
 				.andWhere('id = :id', { id: input.invite.memberId.value })
@@ -96,6 +96,11 @@ export class TypeOrmInviteRepo implements InviteRepo {
 	}
 
 	async delete(input: InviteRepoInterfaces.remove): Promise<void> {
-		await this.inviteRepo.delete({ id: input.key.value });
+		await this.dataSource
+			.getRepository(TypeOrmInviteEntity)
+			.createQueryBuilder('invite')
+			.delete()
+			.where('member_id = :id', { id: input.key.value })
+			.execute();
 	}
 }

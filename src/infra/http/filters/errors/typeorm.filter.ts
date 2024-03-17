@@ -18,8 +18,8 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 		{
 			name: 'Erro ao criar dado repetido',
 			code: '23505',
-			message: 'Acesso não autorizado',
-			httpCode: 401,
+			message: 'Conteúdo já existe',
+			httpCode: 409,
 		},
 	];
 

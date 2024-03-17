@@ -1,11 +1,13 @@
 import { CEP, CNPJ, UUID, Name, Num } from '@app/entities/VO';
 import { Condominium } from '@app/entities/condominium';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { User } from '@app/entities/user';
 import { TCondominiumInObject } from '@app/mapper/condominium';
 
 export namespace CondominiumInterfaces {
 	export interface create {
 		user: User;
+		uniqueRegistry: UniqueRegistry;
 		condominium: Condominium;
 	}
 

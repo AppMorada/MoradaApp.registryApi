@@ -3,25 +3,19 @@ import { CondominiumMember } from '@app/entities/condominiumMember';
 export interface IConvertToObject {
 	id?: string;
 	condominiumId: string;
+	uniqueRegistryId?: string;
 	userId?: string | null;
-	CPF: string;
-	c_email: string;
-	apartmentNumber?: number | null;
-	block?: string | null;
-	autoEdit: boolean;
+	role: number;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
 
 export interface ICondominiumMemberInObject {
 	id: string;
+	uniqueRegistryId: string;
 	condominiumId: string;
 	userId?: string | null;
-	c_email: string;
-	CPF: string;
-	apartmentNumber?: number | null;
-	block?: string | null;
-	autoEdit: boolean;
+	role: number;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -34,15 +28,10 @@ export class CondominiumMemberMapper {
 	static toObject(input: CondominiumMember): ICondominiumMemberInObject {
 		return {
 			id: input.id.value,
+			uniqueRegistryId: input.uniqueRegistryId.value,
 			condominiumId: input.condominiumId.value,
-			CPF: input.CPF.value,
-			block: input.block ? input.block.value : input.block,
-			apartmentNumber: input.apartmentNumber
-				? input.apartmentNumber.value
-				: input.apartmentNumber,
-			c_email: input.c_email.value,
+			role: input.role.value,
 			userId: input.userId?.value,
-			autoEdit: input.autoEdit,
 			updatedAt: input.updatedAt,
 			createdAt: input.createdAt,
 		};

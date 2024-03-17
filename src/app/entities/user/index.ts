@@ -1,9 +1,9 @@
-import { Name, Email, Password, PhoneNumber, UUID } from '../VO';
+import { Name, Password, PhoneNumber, UUID } from '../VO';
 import { Entity, ValueObject } from '../entities';
 
 interface IPropsUser {
 	name: Name;
-	email: Email;
+	uniqueRegistryId: UUID;
 	password: Password;
 	phoneNumber?: PhoneNumber | null;
 	tfa: boolean;
@@ -13,7 +13,7 @@ interface IPropsUser {
 
 export type TInputPropsUser = {
 	name: string;
-	email: string;
+	uniqueRegistryId?: string;
 	password: string;
 	phoneNumber?: string | null;
 	tfa: boolean;
@@ -61,7 +61,9 @@ export class User implements Entity {
 	constructor(input: TInputPropsUser, id?: string) {
 		this.props = {
 			name: new Name(input.name),
-			email: new Email(input.email),
+			uniqueRegistryId: ValueObject.build(UUID, input.uniqueRegistryId)
+				.or(UUID.genV4())
+				.exec(),
 			password: new Password(input.password),
 			phoneNumber: ValueObject.build(PhoneNumber, input.phoneNumber)
 				.allowNullish()
@@ -77,7 +79,7 @@ export class User implements Entity {
 		return new User(
 			{
 				name: this.name.value,
-				email: this.email.value,
+				uniqueRegistryId: this.uniqueRegistryId.value,
 				password: this.password.value,
 				phoneNumber: this.phoneNumber
 					? this.phoneNumber.value
@@ -97,19 +99,27 @@ export class User implements Entity {
 			this.updatedAt === input.updatedAt &&
 			this.tfa === input.tfa &&
 			ValueObject.compare(this._id, input.id) &&
+			ValueObject.compare(
+				this.uniqueRegistryId,
+				input.uniqueRegistryId,
+			) &&
 			ValueObject.compare(this.phoneNumber, input.phoneNumber) &&
 			ValueObject.compare(this.password, input.password) &&
-			ValueObject.compare(this.name, input.name) &&
-			ValueObject.compare(this.email, input.email)
+			ValueObject.compare(this.name, input.name)
 		);
 	}
 
-	// Id
 	get id(): UUID {
 		return this._id;
 	}
 
-	// tfa
+	get uniqueRegistryId() {
+		return this.props.uniqueRegistryId;
+	}
+	set uniqueRegistryId(input: UUID) {
+		this.props.uniqueRegistryId = input;
+	}
+
 	get tfa(): boolean {
 		return this.props.tfa;
 	}
@@ -117,7 +127,6 @@ export class User implements Entity {
 		this.props.tfa = input;
 	}
 
-	// Name
 	get name(): Name {
 		return this.props.name;
 	}
@@ -125,15 +134,6 @@ export class User implements Entity {
 		this.props.name = input;
 	}
 
-	// Email
-	get email(): Email {
-		return this.props.email;
-	}
-	set email(input: Email) {
-		this.props.email = input;
-	}
-
-	// Password
 	get password(): Password {
 		return this.props.password;
 	}
@@ -141,7 +141,6 @@ export class User implements Entity {
 		this.props.password = input;
 	}
 
-	// PhoneNumber
 	get phoneNumber(): PhoneNumber | null | undefined {
 		return this.props.phoneNumber;
 	}
@@ -149,12 +148,10 @@ export class User implements Entity {
 		this.props.phoneNumber = input;
 	}
 
-	// CreatedAt
 	get createdAt(): Date {
 		return this.props.createdAt;
 	}
 
-	// UpdatedAt
 	get updatedAt(): Date {
 		return this.props.updatedAt;
 	}

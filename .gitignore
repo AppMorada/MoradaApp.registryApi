@@ -28,4 +28,4 @@ project-metadata.dev.json
 gcp-envs.yaml
 
 ormconfig.json
-
+docker-compose.yml

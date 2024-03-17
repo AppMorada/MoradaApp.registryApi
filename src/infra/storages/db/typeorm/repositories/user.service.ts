@@ -1,39 +1,45 @@
-import { User } from '@app/entities/user';
 import { UserRepo, UserRepoInterfaces } from '@app/repositories/user';
 import { Inject, Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { TypeOrmUserEntity } from '../entities/user.entity';
-import { UUID } from '@app/entities/VO';
 import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 import { TypeOrmUserMapper } from '../mapper/user';
 import { typeORMConsts } from '../consts';
-
-type TQuery = { id: string } | { email: string };
+import { TypeOrmUniqueRegistryMapper } from '../mapper/uniqueRegistry';
+import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
+import { UUID } from '@app/entities/VO';
 
 @Injectable()
 export class TypeOrmUserRepo implements UserRepo {
 	constructor(
-		@Inject(typeORMConsts.entity.user)
-		private readonly userRepo: Repository<TypeOrmUserEntity>,
 		@Inject(typeORMConsts.databaseProviders)
 		private readonly dataSource: DataSource,
 	) {}
 
-	async find(input: UserRepoInterfaces.safeSearch): Promise<User>;
-	async find(input: UserRepoInterfaces.search): Promise<User | undefined>;
+	async find(
+		input: UserRepoInterfaces.safeSearch,
+	): Promise<UserRepoInterfaces.searchReturnableData>;
+	async find(
+		input: UserRepoInterfaces.search,
+	): Promise<UserRepoInterfaces.searchReturnableData | undefined>;
 
 	async find(
 		input: UserRepoInterfaces.search | UserRepoInterfaces.safeSearch,
-	): Promise<User | undefined> {
-		const buildQuery = (): TQuery => {
-			if (input.key instanceof UUID) return { id: input.key.value };
-			return { email: input.key.value };
-		};
-
-		const rawUser = await this.userRepo.findOne({
-			where: buildQuery(),
-			loadRelationIds: true,
-		});
+	): Promise<UserRepoInterfaces.searchReturnableData | undefined> {
+		let rawUser: TypeOrmUserEntity | null = null;
+		input.key instanceof UUID
+			? (rawUser = await this.dataSource
+				.getRepository(TypeOrmUserEntity)
+				.createQueryBuilder('user')
+				.innerJoinAndSelect('user.uniqueRegistry', 'a')
+				.where('user.id = :id', { id: input.key.value })
+				.getOne())
+			: (rawUser = await this.dataSource
+				.getRepository(TypeOrmUserEntity)
+				.createQueryBuilder('user')
+				.innerJoinAndSelect('user.uniqueRegistry', 'a')
+				.where('a.email = :email', { email: input.key.value })
+				.getOne());
 
 		if (!rawUser && input?.safeSearch)
 			throw new DatabaseCustomError({
@@ -43,12 +49,30 @@ export class TypeOrmUserRepo implements UserRepo {
 
 		if (!rawUser) return undefined;
 
+		const uniqueRegistry = TypeOrmUniqueRegistryMapper.toClass(
+			rawUser.uniqueRegistry as TypeOrmUniqueRegistryEntity,
+		);
+		rawUser.uniqueRegistry = uniqueRegistry.id.value;
+
 		const user = TypeOrmUserMapper.toClass(rawUser);
-		return user;
+		return { user, uniqueRegistry };
 	}
 
 	async delete(input: UserRepoInterfaces.remove): Promise<void> {
-		await this.userRepo.delete({ id: input.key.value });
+		await this.dataSource.transaction(async (t) => {
+			const user = await t
+				.getRepository(TypeOrmUserEntity)
+				.createQueryBuilder('user')
+				.innerJoinAndSelect('user.uniqueRegistry', 'a')
+				.where('user.id = :id', { id: input.key.value })
+				.getOne();
+			if (!user) return;
+
+			const uniqueRegistry =
+				user.uniqueRegistry as TypeOrmUniqueRegistryEntity;
+			await t.delete('unique_registries', uniqueRegistry);
+			await t.delete('users', user);
+		});
 	}
 
 	async update(input: UserRepoInterfaces.update): Promise<void> {

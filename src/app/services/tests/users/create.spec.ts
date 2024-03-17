@@ -5,28 +5,56 @@ import { InMemoryInvite } from '@tests/inMemoryDatabase/invites';
 import { inviteFactory } from '@tests/factories/invite';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
+import { communityInfosFactory } from '@tests/factories/communityInfos';
+import { InMemoryCommunityMembers } from '@tests/inMemoryDatabase/communityMember';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Create user test', () => {
 	let sut: CreateUserService;
 	let inMemoryContainer: InMemoryContainer;
 	let inviteRepo: InMemoryInvite;
+	let memberRepo: InMemoryCommunityMembers;
 	let crypt: CryptSpy;
 
 	beforeEach(() => {
 		crypt = new CryptSpy();
 		inMemoryContainer = new InMemoryContainer();
 		inviteRepo = new InMemoryInvite(inMemoryContainer);
+		memberRepo = new InMemoryCommunityMembers(inMemoryContainer);
 		sut = new CreateUserService(inviteRepo, crypt);
 	});
 
 	it('should be able to create a user', async () => {
-		const invite = inviteFactory();
-		const member = condominiumMemberFactory();
-		await inviteRepo.create({ invite });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const member = condominiumMemberFactory({
+			uniqueRegistryId: uniqueRegistry.id.value,
+		});
+		const communityInfos = communityInfosFactory({
+			memberId: member.id.value,
+		});
+		const invite = inviteFactory({
+			memberId: member.id.value,
+			recipient: uniqueRegistry.email.value,
+		});
+		await memberRepo.create({
+			member,
+			communityInfos,
+			invite,
+			rawUniqueRegistry: {
+				CPF: uniqueRegistry.CPF!,
+				email: uniqueRegistry.email,
+			},
+		});
 
-		const user = userFactory({ email: invite.recipient.value });
-
-		await sut.exec({ user, CPF: member.CPF.value, invite });
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		await sut.exec({
+			user,
+			invite,
+			flatAndRawUniqueRegistry: {
+				email: uniqueRegistry.email.value,
+				CPF: uniqueRegistry.CPF!.value,
+			},
+		});
 		expect(inviteRepo.calls.transferToUserResources).toEqual(1);
 	});
 });

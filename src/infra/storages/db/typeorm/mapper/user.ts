@@ -7,7 +7,7 @@ export class TypeOrmUserMapper {
 		const user = new TypeOrmUserEntity();
 		user.id = input.id.value;
 		user.name = input.name.value;
-		user.email = input.email.value;
+		user.uniqueRegistry = input.uniqueRegistryId.value;
 		user.password = input.password.value;
 		user.phoneNumber = input.phoneNumber ? input.phoneNumber.value : null;
 		user.createdAt = input.createdAt;
@@ -20,7 +20,7 @@ export class TypeOrmUserMapper {
 		return new User(
 			{
 				name: input.name,
-				email: input.email,
+				uniqueRegistryId: String(input.uniqueRegistry),
 				password: input.password,
 				phoneNumber: input.phoneNumber,
 				tfa: Boolean(input.tfa),
@@ -34,7 +34,7 @@ export class TypeOrmUserMapper {
 	static toObject(input: TypeOrmUserEntity): TUserClassToObject {
 		return {
 			id: input.id,
-			email: input.email,
+			uniqueRegistryId: String(input.uniqueRegistry),
 			name: input.name,
 			password: input.password,
 			tfa: Boolean(input.tfa),

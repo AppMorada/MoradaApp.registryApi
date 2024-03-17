@@ -6,6 +6,7 @@ import { CreateTokenService } from '@app/services/login/createToken.service';
 import { Request, Response } from 'express';
 import { LOGIN_PREFIX } from '../consts';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(LOGIN_PREFIX)
 export class TfaController {
@@ -14,10 +15,15 @@ export class TfaController {
 		private readonly getEnv: GetEnvService,
 	) {}
 
-	private async processTokens(res: Response, user: User) {
+	private async processTokens(
+		res: Response,
+		user: User,
+		uniqueRegistry: UniqueRegistry,
+	) {
 		const { accessToken, refreshToken, refreshTokenExp } =
 			await this.createToken.exec({
 				user,
+				uniqueRegistry,
 			});
 
 		const expires = new Date(Date.now() + refreshTokenExp * 1000);
@@ -52,6 +58,8 @@ export class TfaController {
 		@Req() req: Request,
 	) {
 		const user = req.inMemoryData.user as User;
-		return await this.processTokens(res, user);
+		const uniqueRegistry = req.inMemoryData
+			.uniqueRegistry as UniqueRegistry;
+		return await this.processTokens(res, user, uniqueRegistry);
 	}
 }

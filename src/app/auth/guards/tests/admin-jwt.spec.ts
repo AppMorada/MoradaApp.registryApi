@@ -17,10 +17,11 @@ import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
-import { InMemoryEnterpriseMembers } from '@tests/inMemoryDatabase/enterpriseMember';
 import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
 import { condominiumFactory } from '@tests/factories/condominium';
-import { enterpriseMemberFactory } from '@tests/factories/enterpriseMember';
+import { InMemoryEmployeeMembers } from '@tests/inMemoryDatabase/employeeMember';
+import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Admin Jwt guard test', () => {
 	let jwtService: JwtService;
@@ -31,7 +32,7 @@ describe('Admin Jwt guard test', () => {
 
 	let inMemoryContainer: InMemoryContainer;
 	let userRepo: InMemoryUser;
-	let memberRepo: InMemoryEnterpriseMembers;
+	let memberRepo: InMemoryEmployeeMembers;
 	let condominiumRepo: InMemoryCondominium;
 	let keyRepo: InMemoryKey;
 
@@ -41,7 +42,7 @@ describe('Admin Jwt guard test', () => {
 		userRepo = new InMemoryUser(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
 		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
-		memberRepo = new InMemoryEnterpriseMembers(inMemoryContainer);
+		memberRepo = new InMemoryEmployeeMembers(inMemoryContainer);
 
 		getKeyService = new GetKeyService(keyRepo);
 		createTokenService = new CreateTokenService(jwtService, getKeyService);
@@ -80,16 +81,27 @@ describe('Admin Jwt guard test', () => {
 	});
 
 	it('should be able to validate admin jwt guard', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory();
-		const member = enterpriseMemberFactory({
+		const member = condominiumMemberFactory({
 			userId: user.id.value,
 			condominiumId: condominium.id.value,
+			uniqueRegistryId: uniqueRegistry.id.value,
+			role: 1,
 		});
-		memberRepo.create({ user, member });
+
+		memberRepo.create({
+			user,
+			member,
+			rawUniqueRegistry: {
+				email: uniqueRegistry.email,
+				CPF: uniqueRegistry.CPF!,
+			},
+		});
 		condominiumRepo.condominiums.push(condominium);
 
-		const tokens = await createTokenService.exec({ user });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
@@ -107,12 +119,27 @@ describe('Admin Jwt guard test', () => {
 	});
 
 	it('should throw one error - user doesn\'t have permission', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory();
-		userRepo.users.push(user);
+		const member = condominiumMemberFactory({
+			userId: user.id.value,
+			condominiumId: condominium.id.value,
+			uniqueRegistryId: uniqueRegistry.id.value,
+			role: 0,
+		});
+
+		memberRepo.create({
+			user,
+			member,
+			rawUniqueRegistry: {
+				email: uniqueRegistry.email,
+				CPF: uniqueRegistry.CPF!,
+			},
+		});
 		condominiumRepo.condominiums.push(condominium);
 
-		const tokens = await createTokenService.exec({ user });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
@@ -134,8 +161,9 @@ describe('Admin Jwt guard test', () => {
 	});
 
 	it('should throw one error - condominium should be provided', async () => {
-		const user = userFactory();
-		const tokens = await createTokenService.exec({ user });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			headers: {
@@ -153,8 +181,9 @@ describe('Admin Jwt guard test', () => {
 	});
 
 	it('should throw one error - user doesn\'t exists', async () => {
-		const user = userFactory();
-		const tokens = await createTokenService.exec({ user });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {

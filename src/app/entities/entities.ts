@@ -7,8 +7,9 @@ export enum EntitiesEnum {
 	condominium = 'Condominium',
 	member = 'Member',
 	condominiumMember = 'Condominium Member',
-	enterpriseMember = 'Enterprise Member',
+	communityInfo = 'Community Info',
 	user = 'User',
+	uniqueRegistry = 'Unique Registry',
 	invite = 'Invite',
 	vo = 'Value Object',
 }

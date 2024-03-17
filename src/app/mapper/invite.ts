@@ -1,7 +1,6 @@
 import { Invite } from '@app/entities/invite';
 
 interface IConvertToObject {
-	id?: string;
 	recipient: string;
 	condominiumId: string;
 	memberId: string;
@@ -13,17 +12,13 @@ export type TInviteInObject = Required<IConvertToObject>;
 
 export class InviteMapper {
 	static toClass(input: IConvertToObject): Invite {
-		return new Invite(
-			{
-				...input,
-			},
-			input.id,
-		);
+		return new Invite({
+			...input,
+		});
 	}
 
 	static toObject(input: Invite): TInviteInObject {
 		return {
-			id: input.id.value,
 			condominiumId: input.condominiumId.value,
 			memberId: input.memberId.value,
 			code: input.code,

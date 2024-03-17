@@ -14,14 +14,26 @@ export class UpdateUserService implements IService {
 	constructor(private readonly userRepo: UserRepo) {}
 
 	async exec(input: IProps) {
-		if (!input.name && !input.phoneNumber) return;
+		const name = input.name ? new Name(input.name) : undefined;
+		const phoneNumber = input.phoneNumber
+			? new PhoneNumber(input.phoneNumber)
+			: undefined;
+
+		const returnableContent = {
+			requestedModifications: {
+				name,
+				phoneNumber,
+			},
+		};
+
+		if (!name && !phoneNumber) return returnableContent;
 
 		await this.userRepo.update({
 			id: new UUID(input.id),
-			name: input.name ? new Name(input.name) : undefined,
-			phoneNumber: input.phoneNumber
-				? new PhoneNumber(input.phoneNumber)
-				: undefined,
+			name,
+			phoneNumber,
 		});
+
+		return returnableContent;
 	}
 }

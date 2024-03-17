@@ -15,11 +15,12 @@ import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
 import { CondominiumMemberGuard } from '../condominium-member.guard';
-import { InMemoryCondominiumMembers } from '@tests/inMemoryDatabase/condominiumMember';
 import { condominiumFactory } from '@tests/factories/condominium';
 import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
 import { UUID } from '@app/entities/VO';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
+import { InMemoryCommunityMembers } from '@tests/inMemoryDatabase/communityMember';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Condominium Member Guard test', () => {
 	let jwtService: JwtService;
@@ -29,7 +30,7 @@ describe('Condominium Member Guard test', () => {
 
 	let inMemoryContainer: InMemoryContainer;
 	let userRepo: InMemoryUser;
-	let condominiumMemberRepo: InMemoryCondominiumMembers;
+	let communityMemberRepo: InMemoryCommunityMembers;
 	let condominiumRepo: InMemoryCondominium;
 	let keyRepo: InMemoryKey;
 
@@ -39,9 +40,7 @@ describe('Condominium Member Guard test', () => {
 		inMemoryContainer = new InMemoryContainer();
 		userRepo = new InMemoryUser(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
-		condominiumMemberRepo = new InMemoryCondominiumMembers(
-			inMemoryContainer,
-		);
+		communityMemberRepo = new InMemoryCommunityMembers(inMemoryContainer);
 		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
 
 		jwtService = new JwtService();
@@ -55,7 +54,7 @@ describe('Condominium Member Guard test', () => {
 		sut = new CondominiumMemberGuard(
 			validateTokenService,
 			userRepo,
-			condominiumMemberRepo,
+			communityMemberRepo,
 			condominiumRepo,
 		);
 
@@ -82,17 +81,21 @@ describe('Condominium Member Guard test', () => {
 	});
 
 	it('should be able to validate condominium member', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 		const member = condominiumMemberFactory({
 			userId: user.id.value,
 			condominiumId: condominium.id.value,
+			uniqueRegistryId: uniqueRegistry.id.value,
 		});
+
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
-		condominiumMemberRepo.condominiumMembers.push(member);
+		communityMemberRepo.condominiumMembers.push(member);
 		condominiumRepo.condominiums.push(condominium);
 
-		const tokens = await createTokenService.exec({ user });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
@@ -106,15 +109,16 @@ describe('Condominium Member Guard test', () => {
 		await expect(sut.canActivate(context)).resolves.toBeTruthy();
 
 		expect(userRepo.calls.find).toEqual(1);
-		expect(condominiumMemberRepo.calls.checkByUserAndCondominiumId).toEqual(
+		expect(communityMemberRepo.calls.checkByUserAndCondominiumId).toEqual(
 			1,
 		);
 		expect(condominiumRepo.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - user doesn\'t exists', async () => {
-		const user = userFactory();
-		const tokens = await createTokenService.exec({ user });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
@@ -136,9 +140,12 @@ describe('Condominium Member Guard test', () => {
 	});
 
 	it('should throw one error - condominium doesn\'t exists', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
-		const tokens = await createTokenService.exec({ user });
+
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
@@ -161,11 +168,14 @@ describe('Condominium Member Guard test', () => {
 	});
 
 	it('should throw one error - condominium member doesn\'t exists', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 		condominiumRepo.condominiums.push(condominium);
-		const tokens = await createTokenService.exec({ user });
+
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {

@@ -59,7 +59,7 @@ export class RefreshTokenGuard implements CanActivate {
 
 		const parsedToken = await this.checkCookie(token);
 		const data = await this.checkToken(parsedToken);
-		const user = await this.userRepo
+		const userContent = await this.userRepo
 			.find({
 				key: new Email(data.email),
 				safeSearch: true,
@@ -73,7 +73,8 @@ export class RefreshTokenGuard implements CanActivate {
 		req.inMemoryData = {
 			...req.inMemoryData,
 			refreshTokenContent: data,
-			user,
+			user: userContent.user,
+			uniqueRegistry: userContent.uniqueRegistry,
 		};
 
 		return true;

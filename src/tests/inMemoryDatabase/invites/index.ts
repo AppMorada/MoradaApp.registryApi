@@ -1,4 +1,4 @@
-import { EntitiesEnum } from '@app/entities/entities';
+import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 import { Invite } from '@app/entities/invite';
 import { InviteRepo, InviteRepoInterfaces } from '@app/repositories/invite';
 import { InMemoryError } from '@tests/errors/inMemoryError';
@@ -6,50 +6,27 @@ import { InMemoryContainer } from '../inMemoryContainer';
 import { User } from '@app/entities/user';
 import { CondominiumMember } from '@app/entities/condominiumMember';
 import { Email } from '@app/entities/VO';
+import { CommunityInfos } from '@app/entities/communityInfos';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 export class InMemoryInvite implements InviteRepo {
-	public calls = {
-		create: 0,
+	calls = {
 		find: 0,
 		transferToUserResources: 0,
 		delete: 0,
 	};
-	public invites: Invite[];
-	public users: User[];
-	public condominiumMembers: CondominiumMember[];
+	invites: Invite[];
+	users: User[];
+	condominiumMembers: CondominiumMember[];
+	communityInfos: CommunityInfos[];
+	uniqueRegistries: UniqueRegistry[];
 
 	constructor(container: InMemoryContainer) {
 		this.invites = container.props.inviteArr;
+		this.uniqueRegistries = container.props.uniqueRegistryArr;
 		this.users = container.props.userArr;
 		this.condominiumMembers = container.props.condominiumMemberArr;
-	}
-
-	async create(input: InviteRepoInterfaces.create): Promise<void> {
-		++this.calls.create;
-
-		const searchedInvite = this.invites.find((item) =>
-			item.id.equalTo(input.invite.id),
-		);
-		const searchedMember = this.condominiumMembers.find((item) =>
-			item.id.equalTo(input.invite.memberId),
-		);
-		if (searchedInvite || searchedMember)
-			throw new InMemoryError({
-				entity: EntitiesEnum.invite,
-				message: 'Invite already exist',
-			});
-
-		const member = this.condominiumMembers.find((item) =>
-			item.condominiumId.equalTo(input.invite.condominiumId),
-		);
-
-		if (member)
-			throw new InMemoryError({
-				entity: EntitiesEnum.invite,
-				message: 'User is already linked in one condominium',
-			});
-
-		this.invites.push(input.invite);
+		this.communityInfos = container.props.communityInfosArr;
 	}
 
 	async find(input: InviteRepoInterfaces.safelyFind): Promise<Invite[]>;
@@ -79,31 +56,36 @@ export class InMemoryInvite implements InviteRepo {
 	): Promise<void> {
 		++this.calls.transferToUserResources;
 
-		const searchedInviteIndex = this.invites.findIndex((item) =>
-			item.recipient.equalTo(input.user.email),
-		);
-		if (searchedInviteIndex < 0)
-			throw new InMemoryError({
-				entity: EntitiesEnum.invite,
-				message: 'Invite doesn\'t exist',
-			});
-
-		let searchedCondominiumMemberIndex = this.condominiumMembers.findIndex(
+		const searchedUniqueRegistryIndex = this.uniqueRegistries.findIndex(
 			(item) =>
-				item.condominiumId.equalTo(input.invite.condominiumId) ||
-				item.userId?.equalTo(input.user.id),
+				item.email.equalTo(input.rawUniqueRegistry.email) &&
+				ValueObject.compare(item.CPF, input.rawUniqueRegistry.CPF),
 		);
-		if (searchedCondominiumMemberIndex < 0)
-			searchedCondominiumMemberIndex =
-				this.condominiumMembers.push(
-					new CondominiumMember({
-						condominiumId: input.invite.condominiumId.value,
-						userId: input.user.id.value,
-						autoEdit: false,
-						CPF: input.CPF.value,
-						c_email: input.user.email.value,
-					}),
-				) - 1;
+		const searchedCondominiumMemberIndex =
+			this.condominiumMembers.findIndex((item) =>
+				input.invite.memberId.equalTo(item.id),
+			);
+		const searchedCommunityInfoIndex = this.communityInfos.findIndex(
+			(item) =>
+				ValueObject.compare(
+					item.memberId,
+					this.condominiumMembers[searchedCondominiumMemberIndex]?.id,
+				),
+		);
+		const searchedInviteIndex = this.invites.findIndex((item) =>
+			item.recipient.equalTo(input.rawUniqueRegistry.email),
+		);
+
+		if (
+			searchedInviteIndex < 0 ||
+			searchedCommunityInfoIndex < 0 ||
+			searchedCondominiumMemberIndex < 0 ||
+			searchedUniqueRegistryIndex < 0
+		)
+			throw new InMemoryError({
+				entity: EntitiesEnum.condominiumMember,
+				message: 'Invite or condominium member doesn\'t exist',
+			});
 
 		this.invites.splice(searchedInviteIndex, 1);
 		this.users.push(input.user);
@@ -115,7 +97,7 @@ export class InMemoryInvite implements InviteRepo {
 		++this.calls.delete;
 
 		const searchedInviteIndex = this.invites.findIndex((item) =>
-			item.id.equalTo(input.key),
+			item.memberId.equalTo(input.key),
 		);
 		if (searchedInviteIndex < 0)
 			throw new InMemoryError({

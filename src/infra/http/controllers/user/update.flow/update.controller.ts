@@ -8,6 +8,7 @@ import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 import { JwtGuard } from '@app/auth/guards/jwt.guard';
 import { UpdateUserService } from '@app/services/user/update.service';
 import { UpdateUserDTO } from '@infra/http/DTO/user/update.DTO';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(USER_PREFIX)
 export class UpdateUserController {
@@ -17,10 +18,15 @@ export class UpdateUserController {
 		private readonly getEnv: GetEnvService,
 	) {}
 
-	private async processTokens(res: Response, user: User) {
+	private async processTokens(
+		res: Response,
+		user: User,
+		uniqueRegistry: UniqueRegistry,
+	) {
 		const { accessToken, refreshToken, refreshTokenExp } =
 			await this.createToken.exec({
 				user,
+				uniqueRegistry,
 			});
 
 		const expires = new Date(Date.now() + refreshTokenExp);
@@ -55,8 +61,19 @@ export class UpdateUserController {
 		@Body() body: UpdateUserDTO,
 	) {
 		const user = req.inMemoryData.user as User;
-		await this.updateUserService.exec({ id: user.id.value, ...body });
-		await this.createToken.exec({ user });
-		return await this.processTokens(res, user);
+		const uniqueRegistry = req.inMemoryData
+			.uniqueRegistry as UniqueRegistry;
+
+		const { requestedModifications } = await this.updateUserService.exec({
+			id: user.id.value,
+			...body,
+		});
+		await this.createToken.exec({ user, uniqueRegistry });
+
+		user.phoneNumber =
+			requestedModifications.phoneNumber ?? user.phoneNumber;
+		user.name = requestedModifications.name ?? user.name;
+
+		return await this.processTokens(res, user, uniqueRegistry);
 	}
 }

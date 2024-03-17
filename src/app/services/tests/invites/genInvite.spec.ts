@@ -1,11 +1,9 @@
 import { userFactory } from '@tests/factories/user';
 import { GenInviteService } from '../../invites/genInvite.service';
 import { condominiumFactory } from '@tests/factories/condominium';
-import { InMemoryInvite } from '@tests/inMemoryDatabase/invites';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
-import { InviteRepo } from '@app/repositories/invite';
 import { EVENT_ID } from '@infra/events/ids';
 import { KeyRepo, KeysEnum } from '@app/repositories/key';
 import { InMemoryKey } from '@tests/inMemoryDatabase/key';
@@ -17,12 +15,12 @@ import { GetEnvService } from '@infra/configs/getEnv.service';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { CryptSpy } from '@tests/adapters/cryptSpy';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Gen invite test', () => {
 	let sut: GenInviteService;
 
 	let app: TestingModule;
-	let inviteRepo: InMemoryInvite;
 	let eventEmitter: EventEmitter2;
 
 	beforeEach(async () => {
@@ -55,10 +53,6 @@ describe('Gen invite test', () => {
 					useValue: new CryptSpy(),
 				},
 				{
-					provide: InviteRepo,
-					useValue: new InMemoryInvite(container),
-				},
-				{
 					provide: KeyRepo,
 					useValue: new InMemoryKey(container),
 				},
@@ -68,7 +62,6 @@ describe('Gen invite test', () => {
 		}).compile();
 
 		eventEmitter = app.get(EventEmitter2);
-		inviteRepo = app.get(InviteRepo);
 
 		sut = app.get(GenInviteService);
 
@@ -92,6 +85,7 @@ describe('Gen invite test', () => {
 	});
 
 	it('should be able to invite a user', async () => {
+		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory();
 		const condominium = condominiumFactory();
 		const member = condominiumMemberFactory({
@@ -99,14 +93,14 @@ describe('Gen invite test', () => {
 			condominiumId: condominium.id.value,
 		});
 
-		await sut.exec({
-			recipient: user.email.value,
-			CPF: member.CPF.value,
+		const { sendInviteOnEmail } = await sut.exec({
+			recipient: uniqueRegistry.email.value,
+			CPF: uniqueRegistry.CPF!.value,
 			condominiumId: condominium.id.value,
 			memberId: member.id.value,
 		});
+		await sendInviteOnEmail();
 
-		expect(inviteRepo.calls.create).toEqual(1);
 		expect(eventEmitter.emit).toHaveBeenCalled();
 	});
 });

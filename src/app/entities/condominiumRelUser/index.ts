@@ -46,6 +46,7 @@ export const condominiumRelUserDTORules = {
 	},
 };
 
+/** @deprecated */
 export class CondominiumRelUser implements Entity {
 	private readonly _id: UUID;
 	private props: ICondominiumRelUserProps;

@@ -3,6 +3,7 @@ import { InMemoryUser } from '.';
 import { userFactory } from '@tests/factories/user';
 import { EntitiesEnum } from '@app/entities/entities';
 import { InMemoryContainer } from '../inMemoryContainer';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('InMemoryData test: User delete method', () => {
 	let container: InMemoryContainer;
@@ -14,8 +15,12 @@ describe('InMemoryData test: User delete method', () => {
 	});
 
 	it('should be able to delete one user', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({
+			uniqueRegistryId: uniqueRegistry.id.value,
+		});
 
+		sut.uniqueRegistries.push(uniqueRegistry);
 		sut.users.push(user);
 		await sut.delete({ key: user.id });
 

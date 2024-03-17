@@ -3,6 +3,7 @@ import { InMemoryUser } from '.';
 import { userFactory } from '@tests/factories/user';
 import { EntitiesEnum } from '@app/entities/entities';
 import { InMemoryContainer } from '../inMemoryContainer';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('InMemoryData test: User find method', () => {
 	let container: InMemoryContainer;
@@ -14,14 +15,29 @@ describe('InMemoryData test: User find method', () => {
 	});
 
 	it('should be able to find one user', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({
+			uniqueRegistryId: uniqueRegistry.id.value,
+		});
 
+		sut.uniqueRegistries.push(uniqueRegistry);
 		sut.users.push(user);
 
-		const sut2 = await sut.find({ key: user.email });
-		const sut3 = await sut.find({ key: user.id });
+		const searchedUserContentById = await sut.find({ key: user.id });
+		const searchedUserContentByEmail = await sut.find({
+			key: uniqueRegistry.email,
+		});
 
-		expect(sut2 && sut3 && sut2.equalTo(sut3)).toBeTruthy();
+		expect(
+			searchedUserContentById.uniqueRegistry.equalTo(uniqueRegistry),
+		).toEqual(true);
+		expect(searchedUserContentById.user.equalTo(user)).toEqual(true);
+
+		expect(
+			searchedUserContentByEmail.uniqueRegistry.equalTo(uniqueRegistry),
+		).toEqual(true);
+		expect(searchedUserContentByEmail.user.equalTo(user)).toEqual(true);
+
 		expect(sut.calls.find).toEqual(2);
 	});
 

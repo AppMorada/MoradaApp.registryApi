@@ -10,6 +10,7 @@ import { USER_PREFIX } from '../consts';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 import { Invite } from '@app/entities/invite';
 import { InviteGuard } from '@app/auth/guards/invite.guard';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(USER_PREFIX)
 export class CreateUserController {
@@ -19,10 +20,15 @@ export class CreateUserController {
 		private readonly getEnv: GetEnvService,
 	) {}
 
-	private async processTokens(res: Response, user: User) {
+	private async processTokens(
+		res: Response,
+		user: User,
+		uniqueRegistry: UniqueRegistry,
+	) {
 		const { accessToken, refreshToken, refreshTokenExp } =
 			await this.createToken.exec({
 				user,
+				uniqueRegistry,
 			});
 
 		const expires = new Date(Date.now() + refreshTokenExp);
@@ -58,11 +64,22 @@ export class CreateUserController {
 	) {
 		const invite = req.inMemoryData.invite as Invite;
 		/* eslint-disable @typescript-eslint/no-unused-vars */
-		const { CPF, code: __, ...rest } = body;
+		const { CPF, code: _, ...rest } = body;
 
+		const uniqueRegistry = new UniqueRegistry({
+			CPF,
+			email: body.email,
+		});
 		const user = UserMapper.toClass({ ...rest, tfa: false });
-		await this.createUser.exec({ user, CPF, invite });
+		await this.createUser.exec({
+			user,
+			invite,
+			flatAndRawUniqueRegistry: {
+				email: uniqueRegistry.email.value,
+				CPF: uniqueRegistry.CPF!.value,
+			},
+		});
 
-		return await this.processTokens(res, user);
+		return await this.processTokens(res, user, uniqueRegistry);
 	}
 }

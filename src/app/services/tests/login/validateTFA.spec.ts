@@ -10,6 +10,7 @@ import { CryptAdapter } from '@app/adapters/crypt';
 import { BcryptAdapter } from '@app/adapters/bcrypt/bcryptAdapter';
 import { userFactory } from '@tests/factories/user';
 import { generateStringCodeContentBasedOnUser } from '@utils/generateStringCodeContent';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('ValidateTFAService Service', () => {
 	let container: InMemoryContainer;
@@ -23,8 +24,12 @@ describe('ValidateTFAService Service', () => {
 		rawExp?: number,
 		sigState: 'OK' | 'DEPREACATED' = 'OK',
 	) {
-		const user = userFactory();
-		let code = generateStringCodeContentBasedOnUser({ user });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		let code = generateStringCodeContentBasedOnUser({
+			user,
+			uniqueRegistry,
+		});
 		const { key } = await getKey.exec({ name: KeysEnum.TFA_TOKEN_KEY });
 
 		const iat = rawIat ?? Date.now();
@@ -32,7 +37,7 @@ describe('ValidateTFAService Service', () => {
 		const metadata = JSON.stringify({
 			iat: Math.floor(iat / 1000),
 			exp: Math.floor(exp / 1000),
-			sub: user.email.value,
+			sub: uniqueRegistry.email.value,
 		});
 		code = encodeURIComponent(
 			`${btoa(metadata)}.${btoa(code)}`.replaceAll('=', ''),
@@ -44,6 +49,7 @@ describe('ValidateTFAService Service', () => {
 		});
 		return {
 			user,
+			uniqueRegistry,
 			code: encodeURIComponent(
 				`${btoa(metadata)}.${btoa(inviteSignature)}`.replaceAll(
 					'=',
@@ -76,15 +82,20 @@ describe('ValidateTFAService Service', () => {
 			});
 			await keyRepo.create(key);
 
-			const { code, user } = await genCode(iat, key.renewTime, 'OK');
+			const { code, user, uniqueRegistry } = await genCode(
+				iat,
+				key.renewTime,
+				'OK',
+			);
 
 			const { sigState, email } = await sut.exec({
 				name: KeysEnum.TFA_TOKEN_KEY,
 				code,
+				uniqueRegistry,
 				user,
 			});
 			expect(sigState === 'OK').toEqual(true);
-			expect(email === user.email.value).toEqual(true);
+			expect(email === uniqueRegistry.email.value).toEqual(true);
 			expect(keyRepo.calls.create).toEqual(1);
 			expect(keyRepo.calls.getSignature).toEqual(2);
 
@@ -109,7 +120,7 @@ describe('ValidateTFAService Service', () => {
 			});
 
 			await keyRepo.create(key);
-			const { code, user } = await genCode(
+			const { code, user, uniqueRegistry } = await genCode(
 				iat,
 				iat + oneHour + 1000,
 				'OK',
@@ -118,10 +129,11 @@ describe('ValidateTFAService Service', () => {
 			const { sigState, email } = await sut.exec({
 				name: KeysEnum.TFA_TOKEN_KEY,
 				code,
+				uniqueRegistry,
 				user,
 			});
 			expect(sigState === 'OK').toEqual(true);
-			expect(email === user.email.value).toEqual(true);
+			expect(email === uniqueRegistry.email.value).toEqual(true);
 			expect(keyRepo.calls.create).toEqual(2);
 			expect(keyRepo.calls.getSignature).toEqual(4);
 
@@ -155,7 +167,7 @@ describe('ValidateTFAService Service', () => {
 			});
 
 			await keyRepo.create(key);
-			const { code, user } = await genCode(
+			const { code, user, uniqueRegistry } = await genCode(
 				iat,
 				iat + oneHour,
 				'DEPREACATED',
@@ -164,10 +176,11 @@ describe('ValidateTFAService Service', () => {
 			const { sigState, email } = await sut.exec({
 				name: KeysEnum.TFA_TOKEN_KEY,
 				code,
+				uniqueRegistry,
 				user,
 			});
 			expect(sigState === 'DEPREACATED').toEqual(true);
-			expect(email === user.email.value).toEqual(true);
+			expect(email === uniqueRegistry.email.value).toEqual(true);
 			expect(keyRepo.calls.create).toEqual(1);
 			expect(keyRepo.calls.getSignature).toEqual(2);
 
@@ -196,7 +209,7 @@ describe('ValidateTFAService Service', () => {
 			});
 
 			await keyRepo.create(key);
-			const { code, user } = await genCode(
+			const { code, user, uniqueRegistry } = await genCode(
 				iat,
 				iat + oneHour,
 				'DEPREACATED',
@@ -205,10 +218,11 @@ describe('ValidateTFAService Service', () => {
 			const { sigState, email } = await sut.exec({
 				name: KeysEnum.TFA_TOKEN_KEY,
 				code,
+				uniqueRegistry,
 				user,
 			});
 			expect(sigState === 'DEPREACATED').toEqual(true);
-			expect(email === user.email.value).toEqual(true);
+			expect(email === uniqueRegistry.email.value).toEqual(true);
 			expect(keyRepo.calls.create).toEqual(2);
 			expect(keyRepo.calls.getSignature).toEqual(4);
 
@@ -238,7 +252,7 @@ describe('ValidateTFAService Service', () => {
 		});
 
 		await keyRepo.create(key);
-		const { code, user } = await genCode(
+		const { code, user, uniqueRegistry } = await genCode(
 			oneHourEarlier - 1,
 			actualDate - 1,
 			'DEPREACATED',
@@ -248,6 +262,7 @@ describe('ValidateTFAService Service', () => {
 			sut.exec({
 				name: KeysEnum.TFA_TOKEN_KEY,
 				code,
+				uniqueRegistry,
 				user,
 			}),
 		).rejects.toThrow(
@@ -275,7 +290,7 @@ describe('ValidateTFAService Service', () => {
 		});
 
 		await keyRepo.create(key);
-		const { code, user } = await genCode(
+		const { code, user, uniqueRegistry } = await genCode(
 			oneHourEarlier - 1,
 			actualDate - 1,
 		);
@@ -284,6 +299,7 @@ describe('ValidateTFAService Service', () => {
 			sut.exec({
 				name: KeysEnum.TFA_TOKEN_KEY,
 				code,
+				uniqueRegistry,
 				user,
 			}),
 		).rejects.toThrow(

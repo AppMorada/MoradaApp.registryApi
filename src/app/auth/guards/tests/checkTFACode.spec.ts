@@ -14,6 +14,8 @@ import { ValidateTFAService } from '@app/services/login/validateTFA.service';
 import { KeysEnum } from '@app/repositories/key';
 import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 jest.mock('nodemailer');
 
@@ -27,13 +29,20 @@ describe('Check TFA Code guard test', () => {
 
 	let checkTFACodeGuard: CheckTFACodeGuard;
 
-	async function genCode(user: User, key: Key) {
-		const code = generateStringCodeContentBasedOnUser({ user });
+	async function genCode(
+		user: User,
+		uniqueRegistry: UniqueRegistry,
+		key: Key,
+	) {
+		const code = generateStringCodeContentBasedOnUser({
+			user,
+			uniqueRegistry,
+		});
 
 		const metadata = JSON.stringify({
 			iat: Math.floor(Date.now() / 1000),
 			exp: Math.floor((Date.now() + 1000 * 60 * 60 * 3) / 1000),
-			sub: user.email.value,
+			sub: uniqueRegistry.email.value,
 		});
 		const hash = encodeURIComponent(
 			`${btoa(metadata)}.${btoa(code)}`.replaceAll('=', ''),
@@ -76,17 +85,21 @@ describe('Check TFA Code guard test', () => {
 	});
 
 	it('should be able to validate the CheckTFACodeGuard', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
+
 		const key = await keyRepo.getSignature(KeysEnum.TFA_TOKEN_KEY);
 
-		const code = await genCode(user, key);
+		const code = await genCode(user, uniqueRegistry, key);
 		const context = createMockExecutionContext({
 			headers: {
 				authorization: `Bearer ${code}`,
 			},
 			body: {
-				email: user.email.value,
+				email: uniqueRegistry.email.value,
 			},
 		});
 
@@ -111,7 +124,10 @@ describe('Check TFA Code guard test', () => {
 	});
 
 	it('should throw one error - invalid code', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 
 		const context = createMockExecutionContext({
@@ -121,7 +137,7 @@ describe('Check TFA Code guard test', () => {
 				)}.${btoa(JSON.stringify({ msg: 'token' }))}`,
 			},
 			body: {
-				email: user.email.value,
+				email: uniqueRegistry.email.value,
 			},
 		});
 

@@ -31,7 +31,7 @@ export class JwtGuard implements CanActivate {
 
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
 
-		const user = await this.userRepo
+		const userContent = await this.userRepo
 			.find({
 				key: new UUID(tokenData.sub),
 				safeSearch: true,
@@ -44,7 +44,8 @@ export class JwtGuard implements CanActivate {
 
 		req.inMemoryData = {
 			...req.inMemoryData,
-			user,
+			user: userContent.user,
+			uniqueRegistry: userContent.uniqueRegistry,
 		};
 
 		return true;

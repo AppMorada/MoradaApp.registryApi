@@ -8,6 +8,7 @@ import { CryptAdapter } from '@app/adapters/crypt';
 import { randomBytes } from 'crypto';
 import { Password } from '@app/entities/VO';
 import { CondominiumMapper } from '@app/mapper/condominium';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 interface IProps {
 	condominium: {
@@ -32,9 +33,12 @@ export class CreateCondominiumService implements IService {
 	) {}
 
 	async exec(input: IProps) {
-		const user = new User({
-			name: input.user.name,
+		const uniqueRegistry = new UniqueRegistry({
 			email: input.user.email,
+		});
+		const user = new User({
+			uniqueRegistryId: uniqueRegistry.id.value,
+			name: input.user.name,
 			password: input.user.password,
 			tfa: false,
 		});
@@ -55,12 +59,17 @@ export class CreateCondominiumService implements IService {
 		});
 
 		await this.cepGate.check(condominium.CEP.value);
-		await this.condominiumRepo.create({ condominium, user });
+		await this.condominiumRepo.create({
+			condominium,
+			user,
+			uniqueRegistry,
+		});
 
 		const parsedCondominium = CondominiumMapper.toObject(
 			condominium,
 		) as any;
 		delete parsedCondominium.seedKey;
-		return { user, condominium: parsedCondominium };
+
+		return { user, condominium: parsedCondominium, uniqueRegistry };
 	}
 }

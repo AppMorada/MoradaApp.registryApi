@@ -8,6 +8,7 @@ import { GetKeyService } from '../../key/getKey.service';
 import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Create token test', () => {
 	let sut: CreateTokenService;
@@ -50,9 +51,11 @@ describe('Create token test', () => {
 	});
 
 	it('should be able to create token', async () => {
-		const user = userFactory();
-
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
+
 		const accessKey = await keyRepo.getSignature(KeysEnum.ACCESS_TOKEN_KEY);
 		const refreshKey = await keyRepo.getSignature(
 			KeysEnum.REFRESH_TOKEN_KEY,
@@ -60,6 +63,7 @@ describe('Create token test', () => {
 
 		const { accessToken, refreshToken } = await sut.exec({
 			user,
+			uniqueRegistry,
 		});
 
 		await tokenService.verify(accessToken, {

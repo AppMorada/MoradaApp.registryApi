@@ -18,6 +18,7 @@ import { randomBytes } from 'crypto';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
 import { GetEnvService } from '@infra/configs/getEnv.service';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Refresh token guard test', () => {
 	let jwtService: JwtService;
@@ -82,10 +83,12 @@ describe('Refresh token guard test', () => {
 	});
 
 	it('should be able to validate refresh token guard', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 
-		const tokens = await createTokenService.exec({ user });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			headers: {

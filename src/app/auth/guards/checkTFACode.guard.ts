@@ -44,7 +44,7 @@ export class CheckTFACodeGuard implements CanActivate {
 				message: 'Código de dois fatores não contém o campo "sub"',
 			});
 
-		const user = await this.userRepo
+		const userContent = await this.userRepo
 			.find({
 				key: new Email(decodedData.sub),
 				safeSearch: true,
@@ -56,12 +56,17 @@ export class CheckTFACodeGuard implements CanActivate {
 			});
 
 		await this.validateTFA.exec({
-			user,
+			user: userContent.user,
+			uniqueRegistry: userContent.uniqueRegistry,
 			code: token,
 			name: KeysEnum.TFA_TOKEN_KEY,
 		});
 
-		req.inMemoryData = { ...req.inMemoryData, user };
+		req.inMemoryData = {
+			...req.inMemoryData,
+			user: userContent.user,
+			uniqueRegistry: userContent.uniqueRegistry,
+		};
 		return true;
 	}
 }

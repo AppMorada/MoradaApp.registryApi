@@ -26,8 +26,14 @@ export class GenTFAService implements IService {
 	) {}
 
 	private async genCode(input: UUID) {
-		const user = await this.userRepo.find({ key: input, safeSearch: true });
-		let code = generateStringCodeContentBasedOnUser({ user });
+		const userContent = await this.userRepo.find({
+			key: input,
+			safeSearch: true,
+		});
+		let code = generateStringCodeContentBasedOnUser({
+			uniqueRegistry: userContent.uniqueRegistry,
+			user: userContent.user,
+		});
 		const { key } = await this.getKey.exec({
 			name: KeysEnum.TFA_TOKEN_KEY,
 		});
@@ -35,7 +41,7 @@ export class GenTFAService implements IService {
 		const metadata = JSON.stringify({
 			iat: Math.floor(Date.now() / 1000),
 			exp: Math.floor((Date.now() + 1000 * 60 * 60 * 3) / 1000),
-			sub: user.email.value,
+			sub: userContent.uniqueRegistry.email.value,
 		});
 		code = encodeURIComponent(
 			`${btoa(metadata)}.${btoa(code)}`.replaceAll('=', ''),
