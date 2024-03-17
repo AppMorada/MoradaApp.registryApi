@@ -7,6 +7,7 @@ import { InMemoryInvite } from '@tests/inMemoryDatabase/invites';
 import { InviteGuard } from '../invite.guard';
 import { inviteFactory } from '@tests/factories/invite';
 import { CPF } from '@app/entities/VO';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Invite guard test', () => {
 	let sut: InviteGuard;
@@ -28,18 +29,19 @@ describe('Invite guard test', () => {
 		const cpf = '614.159.380-16';
 		const code = '12345678';
 
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const invite = inviteFactory({
-			recipient: user.email.value,
+			recipient: uniqueRegistry.email.value,
 			code: `${new CPF(cpf).value}-${code}`,
 		});
-		await inviteRepo.create({ invite });
-		await inviteRepo.create({ invite: inviteFactory() });
+		inviteRepo.invites.push(invite);
+		inviteRepo.invites.push(inviteFactory());
 
 		const context = createMockExecutionContext({
 			body: {
 				name: user.name.value,
-				email: user.email.value,
+				email: uniqueRegistry.email.value,
 				password: user.password.value,
 				CPF: cpf,
 				code: code,
@@ -52,11 +54,12 @@ describe('Invite guard test', () => {
 	});
 
 	it('should throw one error - invite doesn\'t exist', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const context = createMockExecutionContext({
 			body: {
 				name: user.name.value,
-				email: user.email.value,
+				email: uniqueRegistry.email.value,
 				password: user.password.value,
 				CPF: '614.159.380-16',
 				code: '12345678',
@@ -69,17 +72,18 @@ describe('Invite guard test', () => {
 	});
 
 	it('should throw one error - wrong code exist', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const invite = inviteFactory({
-			recipient: user.email.value,
+			recipient: uniqueRegistry.email.value,
 		});
-		await inviteRepo.create({ invite });
-		await inviteRepo.create({ invite: inviteFactory() });
+		inviteRepo.invites.push(invite);
+		inviteRepo.invites.push(inviteFactory());
 
 		const context = createMockExecutionContext({
 			body: {
 				name: user.name.value,
-				email: user.email.value,
+				email: uniqueRegistry.email.value,
 				password: user.password.value,
 				CPF: '614.159.380-16',
 				code: '12345678',

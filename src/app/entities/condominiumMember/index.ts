@@ -1,26 +1,20 @@
-import { ApartmentNumber, Block, CPF, Email, UUID } from '../VO';
+import { Level, UUID } from '../VO';
 import { Entity, ValueObject } from '../entities';
 
 interface IProps {
 	condominiumId: UUID;
+	uniqueRegistryId: UUID;
 	userId?: UUID | null;
-	c_email: Email;
-	CPF: CPF;
-	apartmentNumber?: ApartmentNumber | null;
-	block?: Block | null;
-	autoEdit: boolean;
+	role: Level;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
 export interface ICondominiumMemberInput {
 	condominiumId: string;
+	uniqueRegistryId?: string;
 	userId?: string | null;
-	c_email: string;
-	CPF: string;
-	apartmentNumber?: number | null;
-	block?: string | null;
-	autoEdit: boolean;
+	role?: number;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -32,20 +26,14 @@ export class CondominiumMember implements Entity {
 	constructor(input: ICondominiumMemberInput, id?: string) {
 		this._id = id ? new UUID(id) : UUID.genV4();
 		this.props = {
+			uniqueRegistryId: ValueObject.build(UUID, input.uniqueRegistryId)
+				.or(UUID.genV4())
+				.exec(),
 			condominiumId: ValueObject.build(UUID, input.condominiumId)
 				.or(UUID.genV4())
 				.exec(),
 			userId: ValueObject.build(UUID, input.userId).allowNullish().exec(),
-			block: ValueObject.build(Block, input.block).allowNullish().exec(),
-			autoEdit: input.autoEdit,
-			c_email: new Email(input.c_email),
-			CPF: new CPF(input.CPF),
-			apartmentNumber: ValueObject.build(
-				ApartmentNumber,
-				input.apartmentNumber,
-			)
-				.allowNullish()
-				.exec(),
+			role: ValueObject.build(Level, input.role).or(new Level(0)).exec(),
 			createdAt: input.createdAt ?? new Date(),
 			updatedAt: input.updatedAt ?? new Date(),
 		};
@@ -56,13 +44,13 @@ export class CondominiumMember implements Entity {
 			input instanceof CondominiumMember &&
 			input.createdAt === this.createdAt &&
 			input.updatedAt === this.updatedAt &&
-			input.autoEdit === this.autoEdit &&
 			ValueObject.compare(this.condominiumId, input.condominiumId) &&
+			ValueObject.compare(
+				this.uniqueRegistryId,
+				input.uniqueRegistryId,
+			) &&
 			ValueObject.compare(this.userId, input.userId) &&
-			ValueObject.compare(this.block, input.block) &&
-			ValueObject.compare(this.c_email, input.c_email) &&
-			ValueObject.compare(this.CPF, input.CPF) &&
-			ValueObject.compare(this.apartmentNumber, input.apartmentNumber) &&
+			ValueObject.compare(this.role, input.role) &&
 			ValueObject.compare(this.id, input.id)
 		);
 	}
@@ -71,12 +59,9 @@ export class CondominiumMember implements Entity {
 		return new CondominiumMember(
 			{
 				condominiumId: this.condominiumId.value,
+				uniqueRegistryId: this.uniqueRegistryId.value,
 				userId: this.userId?.value,
-				block: this.block?.value,
-				autoEdit: this.autoEdit,
-				c_email: this.c_email.value,
-				CPF: this.CPF.value,
-				apartmentNumber: this.apartmentNumber?.value,
+				role: this.role.value,
 				createdAt: this.createdAt,
 				updatedAt: this.updatedAt,
 			},
@@ -95,6 +80,13 @@ export class CondominiumMember implements Entity {
 		this.props.condominiumId = input;
 	}
 
+	get uniqueRegistryId() {
+		return this.props.uniqueRegistryId;
+	}
+	set uniqueRegistryId(input: UUID) {
+		this.props.uniqueRegistryId = input;
+	}
+
 	get userId(): UUID | null | undefined {
 		return this.props.userId;
 	}
@@ -102,39 +94,11 @@ export class CondominiumMember implements Entity {
 		this.props.userId = input;
 	}
 
-	get apartmentNumber(): ApartmentNumber | undefined | null {
-		return this.props.apartmentNumber;
+	get role(): Level {
+		return this.props.role;
 	}
-	set apartmentNumber(input: ApartmentNumber | undefined | null) {
-		this.props.apartmentNumber = input;
-	}
-
-	get block(): Block | undefined | null {
-		return this.props.block;
-	}
-	set block(input: Block | undefined | null) {
-		this.props.block = input;
-	}
-
-	get autoEdit(): boolean {
-		return this.props.autoEdit;
-	}
-	set autoEdit(input: boolean) {
-		this.props.autoEdit = input;
-	}
-
-	get CPF(): CPF {
-		return this.props.CPF;
-	}
-	set CPF(input: CPF) {
-		this.props.CPF = input;
-	}
-
-	get c_email(): Email {
-		return this.props.c_email;
-	}
-	set c_email(input: Email) {
-		this.props.c_email = input;
+	set role(input: Level) {
+		this.props.role = input;
 	}
 
 	get createdAt(): Date {

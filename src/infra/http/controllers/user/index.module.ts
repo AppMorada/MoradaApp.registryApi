@@ -10,8 +10,8 @@ import { GenTFAService } from '@app/services/login/genTFA.service';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserController } from './update.flow/update.controller';
 import { UpdateUserService } from '@app/services/user/update.service';
-import { GetEnterpriseMemberByUserIdService } from '@app/services/members/enterprise/getByUserId.service';
-import { GetCondominiumMemberByUserIdService } from '@app/services/members/condominium/getByUserId.service';
+import { GetEmployeeMemberByUserIdService } from '@app/services/members/employee/getByUserId.service';
+import { GetCommunityMemberByUserIdService } from '@app/services/members/community/getByUserId.service';
 
 @Module({
 	controllers: [
@@ -26,8 +26,8 @@ import { GetCondominiumMemberByUserIdService } from '@app/services/members/condo
 		CreateTokenService,
 		GenInviteService,
 		DeleteUserService,
-		GetCondominiumMemberByUserIdService,
-		GetEnterpriseMemberByUserIdService,
+		GetEmployeeMemberByUserIdService,
+		GetCommunityMemberByUserIdService,
 		UpdateUserService,
 		GenTFAService,
 	],

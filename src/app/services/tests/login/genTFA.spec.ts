@@ -16,6 +16,7 @@ import { randomBytes } from 'crypto';
 import { LoggerAdapter } from '@app/adapters/logger';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Gen TFA Service', () => {
 	let sut: GenTFAService;
@@ -94,11 +95,14 @@ describe('Gen TFA Service', () => {
 	});
 
 	it('should be able to gen a TFA', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 
 		const { code } = await sut.exec({
-			email: user.email,
+			email: uniqueRegistry.email,
 			userId: user.id,
 		});
 
@@ -110,7 +114,7 @@ describe('Gen TFA Service', () => {
 		});
 
 		const payload: EventsTypes.Email.ISendProps = {
-			to: user.email.value,
+			to: uniqueRegistry.email.value,
 			subject: `${PROJECT_NAME} - Solicitação de login`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>

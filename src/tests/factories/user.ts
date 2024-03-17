@@ -6,7 +6,6 @@ export function userFactory(input: TOverride = {}, id?: string) {
 	return new User(
 		{
 			name: 'John Doe',
-			email: 'jhondoe@email.com',
 			password: '12345678',
 			phoneNumber: '1234567891',
 			tfa: false,

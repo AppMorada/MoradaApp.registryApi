@@ -12,8 +12,8 @@ import { AuthModule } from '@app/auth/auth.module';
 import { NestjsCacheModule } from '@infra/storages/cache/nestjs/nestjs.module';
 import { CustomTypeOrmModule } from '@infra/storages/db/typeorm/typeorm.module';
 import { IsolatedRepoModule } from '@infra/storages/db/isolateds/isolated.module';
-import { EnterpriseMemberModule } from './controllers/enterpriseMember/index.module';
-import { CondominiumMemberModule } from './controllers/condominiumMember/index.module';
+import { EmployeeMemberModule } from './controllers/employeeMember/index.module';
+import { CommunityMemberModule } from './controllers/communityMember/index.module';
 import { LoginModule } from './controllers/login/index.module';
 
 @Module({
@@ -36,8 +36,8 @@ import { LoginModule } from './controllers/login/index.module';
 		]),
 		HealthModule,
 		CondominiumModule,
-		EnterpriseMemberModule,
-		CondominiumMemberModule,
+		EmployeeMemberModule,
+		CommunityMemberModule,
 		LoginModule,
 		UserModule,
 		AuthModule,

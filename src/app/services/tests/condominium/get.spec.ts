@@ -4,6 +4,7 @@ import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { userFactory } from '@tests/factories/user';
 import { GetCondominiumService } from '@app/services/condominium/get.service';
 import { CondominiumMapper } from '@app/mapper/condominium';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Get condominium service test', () => {
 	let sut: GetCondominiumService;
@@ -19,10 +20,11 @@ describe('Get condominium service test', () => {
 	});
 
 	it('should be able to get a condominium', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
-		await condominiumRepo.create({ user, condominium });
+		await condominiumRepo.create({ user, condominium, uniqueRegistry });
 		const { data: searchedCondominium } = await sut.exec({
 			id: condominium.id,
 		});

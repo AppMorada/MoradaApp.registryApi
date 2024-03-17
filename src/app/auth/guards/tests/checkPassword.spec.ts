@@ -6,6 +6,7 @@ import { CheckPasswordGuard } from '../checkPassword.guard';
 import { userFactory } from '@tests/factories/user';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { GuardErrors } from '@app/errors/guard';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Password guard test', () => {
 	let cryptAdapter: CryptAdapter;
@@ -34,12 +35,15 @@ describe('Password guard test', () => {
 			},
 		);
 
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 
 		const context = createMockExecutionContext({
 			body: {
-				email: user.email.value,
+				email: uniqueRegistry.email.value,
 				password: user.password.value,
 			},
 		});
@@ -52,12 +56,15 @@ describe('Password guard test', () => {
 	});
 
 	it('should throw one error - incorrect password and email', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 
 		const context = createMockExecutionContext({
 			body: {
-				email: user.email.value,
+				email: uniqueRegistry.email.value,
 				password: 'wrongpassword',
 			},
 		});

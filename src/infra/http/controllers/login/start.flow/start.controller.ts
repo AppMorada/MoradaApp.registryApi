@@ -8,6 +8,7 @@ import { Request, Response } from 'express';
 import { StartLoginDTO } from '@infra/http/DTO/login/login.DTO';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 import { LOGIN_PREFIX } from '../consts';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(LOGIN_PREFIX)
 export class StartLoginController {
@@ -17,10 +18,15 @@ export class StartLoginController {
 		private readonly getEnv: GetEnvService,
 	) {}
 
-	private async processTokens(res: Response, user: User) {
+	private async processTokens(
+		res: Response,
+		user: User,
+		uniqueRegistry: UniqueRegistry,
+	) {
 		const { accessToken, refreshToken, refreshTokenExp } =
 			await this.createToken.exec({
 				user,
+				uniqueRegistry,
 			});
 
 		const expires = new Date(Date.now() + refreshTokenExp * 1000);
@@ -56,14 +62,16 @@ export class StartLoginController {
 		@Body() _: StartLoginDTO,
 	) {
 		const user = req.inMemoryData.user as User;
+		const uniqueRegistry = req.inMemoryData
+			.uniqueRegistry as UniqueRegistry;
 		if (user.tfa) {
 			await this.genTFA.exec({
-				email: user.email,
+				email: uniqueRegistry.email,
 				userId: user.id,
 			});
 			return res.status(202).end();
 		}
 
-		await this.processTokens(res, user);
+		await this.processTokens(res, user, uniqueRegistry);
 	}
 }

@@ -5,6 +5,7 @@ import { CepGatewaySpy } from '@tests/gateways/CEP.gateway';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { userFactory } from '@tests/factories/user';
 import { CryptSpy } from '@tests/adapters/cryptSpy';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Create condominium service test', () => {
 	let sut: CreateCondominiumService;
@@ -28,6 +29,7 @@ describe('Create condominium service test', () => {
 	});
 
 	it('should be able to create a condominium', async () => {
+		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory();
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
@@ -40,7 +42,7 @@ describe('Create condominium service test', () => {
 			},
 			user: {
 				name: user.name.value,
-				email: user.email.value,
+				email: uniqueRegistry.email.value,
 				password: user.password.value,
 			},
 		});

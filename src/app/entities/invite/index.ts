@@ -19,9 +19,8 @@ export interface IInputPropsInvite {
 
 export class Invite implements Entity {
 	private readonly props: IInviteProps;
-	private readonly _id: UUID;
 
-	constructor(input: IInputPropsInvite, id?: string) {
+	constructor(input: IInputPropsInvite) {
 		this.props = {
 			recipient: new Email(input.recipient),
 			condominiumId: new UUID(input.condominiumId),
@@ -29,20 +28,16 @@ export class Invite implements Entity {
 			code: input.code,
 			createdAt: input.createdAt ?? new Date(),
 		};
-		this._id = id ? new UUID(id) : UUID.genV4();
 	}
 
 	dereference(): Invite {
-		return new Invite(
-			{
-				condominiumId: this.condominiumId.value,
-				memberId: this.memberId.value,
-				code: this.code,
-				recipient: this.recipient.value,
-				createdAt: this.createdAt,
-			},
-			this.id.value,
-		);
+		return new Invite({
+			condominiumId: this.condominiumId.value,
+			memberId: this.memberId.value,
+			code: this.code,
+			recipient: this.recipient.value,
+			createdAt: this.createdAt,
+		});
 	}
 
 	equalTo(input: Invite): boolean {
@@ -50,7 +45,6 @@ export class Invite implements Entity {
 			input instanceof Invite &&
 			input.createdAt === this.createdAt &&
 			input.code === this.code &&
-			ValueObject.compare(input.id, this.id) &&
 			ValueObject.compare(input.condominiumId, this.condominiumId) &&
 			ValueObject.compare(input.memberId, this.memberId) &&
 			ValueObject.compare(input.recipient, this.recipient)
@@ -68,9 +62,6 @@ export class Invite implements Entity {
 	}
 	get memberId(): UUID {
 		return this.props.memberId;
-	}
-	get id(): UUID {
-		return this._id;
 	}
 	get createdAt(): Date {
 		return this.props.createdAt;

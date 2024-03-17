@@ -2,6 +2,7 @@ import { InMemoryUser } from '@tests/inMemoryDatabase/user';
 import { userFactory } from '@tests/factories/user';
 import { DeleteUserService } from '../../user/delete.service';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Delete user test', () => {
 	let sut: DeleteUserService;
@@ -16,9 +17,12 @@ describe('Delete user test', () => {
 	});
 
 	it('should be able to delete a user', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
+
 		await sut.exec({ id: user.id.value });
 
 		expect(Boolean(userRepo.users[0])).toBeFalsy();

@@ -7,38 +7,33 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 	Relation,
+	Unique,
 	UpdateDateColumn,
 } from 'typeorm';
 import { TypeOrmInviteEntity } from './invite.entity';
 import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
-import { TypeOrmEnterpriseMemberEntity } from './enterpriseMember.entity';
 import { TypeOrmUserEntity } from './user.entity';
 
+@Unique('UQ_condominiums_name', ['name'])
+@Unique('UQ_condominiums_cnpj', ['CNPJ'])
+@Unique('UQ_condominiums_cep', ['CEP'])
 @Entity({ name: 'condominiums' })
 export class TypeOrmCondominiumEntity {
-	@PrimaryGeneratedColumn('uuid')
+	@PrimaryGeneratedColumn('uuid', {
+		primaryKeyConstraintName: 'PK_condominiums_id',
+	})
 		id: string;
 
-	@OneToOne(() => TypeOrmUserEntity, (user) => user.condominium, {
-		nullable: false,
-		onDelete: 'NO ACTION',
-	})
-	@JoinColumn({
-		name: 'owner_id',
-		referencedColumnName: 'id',
-	})
-		user: Relation<TypeOrmUserEntity> | string;
-
-	@Column({ length: 120, type: 'varchar', unique: true })
+	@Column({ length: 120, type: 'varchar' })
 		name: string;
 
-	@Column({ type: 'int', unique: true, name: 'cep' })
+	@Column({ type: 'int', name: 'cep' })
 		CEP: number;
 
 	@Column({ type: 'int' })
 		num: number;
 
-	@Column({ type: 'bigint', unique: true, name: 'cnpj' })
+	@Column({ type: 'bigint', name: 'cnpj' })
 		CNPJ: string;
 
 	@Column({ name: 'seed_key', type: 'varchar', length: 60 })
@@ -59,9 +54,14 @@ export class TypeOrmCondominiumEntity {
 	)
 		condominiumMember: Relation<TypeOrmCondominiumMemberEntity>[];
 
-	@OneToMany(
-		() => TypeOrmEnterpriseMemberEntity,
-		(member) => member.condominium,
-	)
-		enterpriseMember: Relation<TypeOrmEnterpriseMemberEntity>[];
+	@OneToOne(() => TypeOrmUserEntity, (user) => user.condominium, {
+		nullable: false,
+		onDelete: 'NO ACTION',
+	})
+	@JoinColumn({
+		name: 'owner_id',
+		referencedColumnName: 'id',
+		foreignKeyConstraintName: 'FK_condominiums_owner_id',
+	})
+		user: string;
 }

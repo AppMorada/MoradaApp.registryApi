@@ -23,7 +23,7 @@ export class SuperAdminJwt implements CanActivate {
 	) {}
 
 	private async getEntities(sub: string, condominiumId: string) {
-		const user = await this.userRepo
+		const userContent = await this.userRepo
 			.find({
 				key: new UUID(sub),
 				safeSearch: true,
@@ -45,7 +45,7 @@ export class SuperAdminJwt implements CanActivate {
 				});
 			});
 
-		return { user, condominium };
+		return { userContent, condominium };
 	}
 
 	private async checkToken(token: string) {
@@ -72,18 +72,19 @@ export class SuperAdminJwt implements CanActivate {
 		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
 
-		const { user, condominium } = await this.getEntities(
+		const { userContent, condominium } = await this.getEntities(
 			tokenData.sub,
 			condominiumId,
 		);
-		if (!condominium.ownerId.equalTo(user.id))
+		if (!condominium.ownerId.equalTo(userContent.user.id))
 			throw new GuardErrors({
 				message: 'Usuário não tem autorização para realizar tal ação',
 			});
 
 		req.inMemoryData = {
 			...req.inMemoryData,
-			user,
+			user: userContent.user,
+			uniqueRegistry: userContent.uniqueRegistry,
 			condominium,
 		};
 

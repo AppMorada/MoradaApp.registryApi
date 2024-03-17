@@ -2,6 +2,7 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	JoinColumn,
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
@@ -9,19 +10,18 @@ import {
 	UpdateDateColumn,
 } from 'typeorm';
 import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
-import { TypeOrmEnterpriseMemberEntity } from './enterpriseMember.entity';
 import { TypeOrmCondominiumEntity } from './condominium.entity';
+import { TypeOrmUniqueRegistryEntity } from './uniqueRegistry.entity';
 
 @Entity({ name: 'users' })
 export class TypeOrmUserEntity {
-	@PrimaryGeneratedColumn('uuid')
+	@PrimaryGeneratedColumn('uuid', {
+		primaryKeyConstraintName: 'PK_users_id',
+	})
 		id: string;
 
 	@Column({ length: 120, type: 'varchar' })
 		name: string;
-
-	@Column({ length: 320, type: 'varchar', unique: true })
-		email: string;
 
 	@Column({ type: 'bigint', name: 'phone_number', nullable: true })
 		phoneNumber: string | null;
@@ -35,9 +35,6 @@ export class TypeOrmUserEntity {
 	@OneToMany(() => TypeOrmCondominiumMemberEntity, (member) => member.user)
 		condominiumMember: Relation<TypeOrmCondominiumMemberEntity>[];
 
-	@OneToMany(() => TypeOrmEnterpriseMemberEntity, (member) => member.user)
-		enterpriseMember: Relation<TypeOrmEnterpriseMemberEntity>[];
-
 	@OneToOne(() => TypeOrmCondominiumEntity, (condominium) => condominium.user)
 		condominium: Relation<TypeOrmCondominiumEntity>;
 
@@ -46,4 +43,15 @@ export class TypeOrmUserEntity {
 
 	@UpdateDateColumn({ name: 'updated_at' })
 		updatedAt: Date;
+
+	@OneToOne(() => TypeOrmUniqueRegistryEntity, (registry) => registry.user, {
+		nullable: false,
+		onDelete: 'CASCADE',
+	})
+	@JoinColumn({
+		name: 'unique_registry_id',
+		referencedColumnName: 'id',
+		foreignKeyConstraintName: 'FK_users_registry_id',
+	})
+		uniqueRegistry: string | Relation<TypeOrmUniqueRegistryEntity>;
 }

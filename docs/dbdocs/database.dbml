@@ -7,100 +7,75 @@ Project RegistryApi {
 }
 
 Table users {
-	id                uuid            [pk, default: `uuid_generate_v4()`]
-	name              varchar(100)
-	email             varchar(320)    [unique]
-	phone_number      bigint          [null]
-	password          char(60)
-	tfa               smallint        [default: 0]
-	created_at        timestamp       [default: `now()`]
-	updated_at        timestamp       [default: `now()`]
-}
-
-Table enterprise_member {
-	id                uuid            [pk, default: `uuid_generate_v4()`]
-	user_id           uuid            [ref: - users.id]
-	condominium_id    uuid            [ref: > condominiums.id]
-	cpf               bigint
-	created_at        timestamp       [default: `now()`]
-	updated_at        timestamp       [default: `now()`]
-
-	Indexes {
-		(condominium_id, cpf) [name: 'idx_cpf_condominium_id']
-		cpf [unique]
-		condominium_id [unique]
-	}
-
-	Indexes {
-		(condominium_id, user_id) [name: 'idx_user_id_condominium_id']
-		user_id [unique]
-		condominium_id [unique]
-	}
+	id                    uuid            [not null, pk, default: `uuid_generate_v4()`]
+	name                  varchar(100)    [not null]
+	unique_registry_id    uuid            [not null, ref: - unique_registries.id]
+	phone_number          bigint          [null]
+	password              char(60)        [not null]
+	tfa                   smallint        [not null, default: 0]
+	created_at            timestamp       [not null, default: `now()`]
+	updated_at            timestamp       [not null, default: `now()`]
 }
 
 Table condominiums {
-	id              uuid            [pk, default: `uuid_generate_v4()`]
-	owner_id        uuid            [ref: - users.id]
-	name            varchar(120)    [unique]
-	cep             int
-	num             int             [note: 'Número do condomínio']
-	cnpj            bigint          [unique]
-	seed_key        varchar(60)
-	created_at      timestamp       [default: `now()`]
-	updated_at      timestamp       [default: `now()`]
+	id              uuid            [not null, pk, default: `uuid_generate_v4()`]
+	owner_id        uuid            [not null, ref: - users.id]
+	name            varchar(120)    [not null, unique]
+	cep             int             [not null]
+	num             int             [not null, note: 'Número do condomínio']
+	cnpj            bigint          [not null, unique]
+	seed_key        varchar(60)     [not null]
+	created_at      timestamp       [not null, default: `now()`]
+	updated_at      timestamp       [not null, default: `now()`]
 }
 
 Table condominium_members {
-	id                     uuid                [pk, default: `uuid_generate_v4()`]
-	condominium_id         uuid                [ref: > condominiums.id]
-	user_id                uuid                [ref: > users.id]
+	id                     uuid                [not null, pk, default: `uuid_generate_v4()`]
+	condominium_id         uuid                [not null, ref: > condominiums.id]
+	user_id                uuid                [not null, ref: > users.id]
 
-	c_email                varchar(320)
-	cpf                    bigint
-	apartment_number       int                 [null]
-	block                  varchar(6)          [null, note: 'Bloco do condomínio']
+	unique_registry_id     uuid                [not null, ref: > unique_registries.id]
+	role                   smallint            [not null, default: 0]
 
-	auto_edit              smallint            [default: 0, note: 'Este usuário pode alterar dados desta tabela? 0/Não; 1;Sim']
+	created_at             timestamp           [not null, default: `now()`]
+	updated_at             timestamp           [not null, default: `now()`]
 
-	created_at             timestamp           [default: `now()`]
-	updated_at             timestamp           [default: `now()`]
+    Indexes {
+	    (unique_registry_id, user_id) [name: 'UQ_condominium_members_unique_registry_id_condominium_id']
+		unique_registry_id [unique]
+		condominium_id [unique]
+	}
 
 	Indexes {
-		(condominium_id, user_id) [name: 'idx_user_id_condominium_id']
+		(condominium_id, user_id) [name: 'UQ_condominium_members_user_id_condominium_id']
 		user_id [unique]
-		condominium_id [unique]
-	}
-
-	Indexes {
-		(condominium_id, c_email) [name: 'idx_c_email_condominium_id']
-		c_email [unique]
-		condominium_id [unique]
-	}
-
-	Indexes {
-		(condominium_id, cpf) [name: 'idx_cpf_condominium_id']
-		cpf [unique]
 		condominium_id [unique]
 	}
 }
 
+Table unique_registries {
+	id                  uuid            [not null, pk]
+	cpf                 bigint          [null, unique]
+	email               varchar(320)    [not null, unique]
+}
+
+Table community_infos {
+    member_id           uuid            [not null, pk, ref: - condominium_members.id]
+	apartment_number    int             [not null]
+	block               varchar(6)      [not null]
+	updated_at          timestamp       [not null, default: `now()`]
+}
+
 Table invites {
-	id                        uuid            [pk, default: `uuid_generate_v4()`]
-	condominium_id            uuid            [ref: > condominiums.id]
-	member_id                 uuid            [ref: - condominium_members.id]
-	recipient                 varchar(320)
-	code                      char(60) 
-	created_at                timestamp       [default: `now()`]
+	condominium_id            uuid            [not null, ref: > condominiums.id]
+	member_id                 uuid            [not null, ref: - condominium_members.id]
+	recipient                 varchar(320)    [not null]
+	code                      char(60)        [not null]
+	created_at                timestamp       [not null, default: `now()`]
 
 	Indexes {
-		(condominium_id, recipient) [name: 'idx_recipient_condominium_id']
+		(recipient, member_id) [name: 'UQ_invites_c_email_member_id']
 		recipient [unique]
-		condominium_id [unique]
-	}
-
-	Indexes {
-		(condominium_id, member_id) [name: 'idx_member_id_condominium_id']
 		member_id [unique]
-		condominium_id [unique]
 	}
 }

@@ -2,8 +2,8 @@ import { User } from '../entities/user';
 
 export interface IUserInObject {
 	id?: string;
+	uniqueRegistryId?: string;
 	name: string;
-	email: string;
 	password: string;
 	phoneNumber?: string | null;
 	tfa: boolean;
@@ -13,8 +13,8 @@ export interface IUserInObject {
 
 export type TUserClassToObject = {
 	id: string;
+	uniqueRegistryId: string;
 	name: string;
-	email: string;
 	password: string;
 	phoneNumber?: string | null;
 	tfa: boolean;
@@ -23,7 +23,7 @@ export type TUserClassToObject = {
 };
 
 export class UserMapper {
-	static toClass(input: IUserInObject): User {
+	static toClass({ ...input }: IUserInObject): User {
 		return new User(
 			{
 				...input,
@@ -37,8 +37,8 @@ export class UserMapper {
 	static toObject(input: User): TUserClassToObject {
 		return {
 			id: input.id.value,
+			uniqueRegistryId: input.uniqueRegistryId.value,
 			name: input.name.value,
-			email: input.email.value,
 			password: input.password.value,
 			phoneNumber: input.phoneNumber
 				? input.phoneNumber.value

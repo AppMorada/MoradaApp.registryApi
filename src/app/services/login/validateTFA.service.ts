@@ -7,11 +7,13 @@ import { Key } from '@app/entities/key';
 import { User } from '@app/entities/user';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { generateStringCodeContentBasedOnUser } from '@utils/generateStringCodeContent';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 interface IProps {
 	name: KeysEnum;
 	code: string;
 	user: User;
+	uniqueRegistry: UniqueRegistry;
 }
 
 @Injectable()
@@ -47,10 +49,14 @@ export class ValidateTFAService implements IService {
 		key: Key,
 		token: string,
 		user: User,
+		uniqueRegistry: UniqueRegistry,
 		state: 'OK' | 'DEPREACATED',
 	) {
 		const metadata = token.split('.')[0];
-		const code = generateStringCodeContentBasedOnUser({ user });
+		const code = generateStringCodeContentBasedOnUser({
+			user,
+			uniqueRegistry,
+		});
 
 		const signature = await this.crypt.hashWithHmac({
 			data: encodeURIComponent(
@@ -73,7 +79,7 @@ export class ValidateTFAService implements IService {
 	private async handleDepreacatedSignatures(
 		key: Key,
 		iat: number,
-		{ code, user }: IProps,
+		{ code, user, uniqueRegistry }: IProps,
 	): Promise<{ sigState: 'DEPREACATED' }> {
 		const sigState = 'DEPREACATED';
 		const buildedAtFloor = Math.floor(key.prev!.buildedAt / 1000);
@@ -84,16 +90,16 @@ export class ValidateTFAService implements IService {
 				tag: ServiceErrorsTags.unauthorized,
 			});
 
-		await this.checkCode(key, code, user, sigState);
+		await this.checkCode(key, code, user, uniqueRegistry, sigState);
 		return { sigState };
 	}
 
 	private async handleNewerSignatures(
 		key: Key,
-		{ code, user }: IProps,
+		{ code, user, uniqueRegistry }: IProps,
 	): Promise<{ sigState: 'OK' }> {
 		const sigState = 'OK';
-		await this.checkCode(key, code, user, sigState);
+		await this.checkCode(key, code, user, uniqueRegistry, sigState);
 		return { sigState };
 	}
 

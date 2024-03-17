@@ -16,17 +16,16 @@ describe('InMemoryData test: Invite delete method', () => {
 	it('should be able to delete one Invite', async () => {
 		const invite = inviteFactory();
 
-		await sut.create({ invite });
-		await sut.delete({ key: invite.id });
+		sut.invites.push(invite);
+		await sut.delete({ key: invite.memberId });
 
 		expect(Boolean(sut.invites[0])).toBeFalsy();
-		expect(sut.calls.create).toEqual(1);
 		expect(sut.calls.delete).toEqual(1);
 	});
 
 	it('should be able to throw one error: Invite does not exist - delete operation', async () => {
 		const invite = inviteFactory();
-		await expect(sut.delete({ key: invite.id })).rejects.toThrow(
+		await expect(sut.delete({ key: invite.memberId })).rejects.toThrow(
 			new InMemoryError({
 				entity: EntitiesEnum.invite,
 				message: 'Invite doesn\'t exist',

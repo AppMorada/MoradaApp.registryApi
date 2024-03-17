@@ -19,6 +19,7 @@ import { randomBytes } from 'crypto';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
 import { condominiumFactory } from '@tests/factories/condominium';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Super Admin Jwt guard test', () => {
 	let jwtService: JwtService;
@@ -76,12 +77,14 @@ describe('Super Admin Jwt guard test', () => {
 	});
 
 	it('should be able to validate admin jwt guard', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 		condominiumRepo.condominiums.push(condominium);
 
-		const tokens = await createTokenService.exec({ user });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
@@ -99,12 +102,14 @@ describe('Super Admin Jwt guard test', () => {
 	});
 
 	it('should throw one error - user doesn\'t have permission', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory();
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 		condominiumRepo.condominiums.push(condominium);
 
-		const tokens = await createTokenService.exec({ user });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
@@ -126,8 +131,9 @@ describe('Super Admin Jwt guard test', () => {
 	});
 
 	it('should throw one error - condominium should be provided', async () => {
-		const user = userFactory();
-		const tokens = await createTokenService.exec({ user });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			headers: {
@@ -145,8 +151,9 @@ describe('Super Admin Jwt guard test', () => {
 	});
 
 	it('should throw one error - user doesn\'t exists', async () => {
-		const user = userFactory();
-		const tokens = await createTokenService.exec({ user });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {

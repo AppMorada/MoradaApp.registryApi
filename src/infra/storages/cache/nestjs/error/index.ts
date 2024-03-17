@@ -1,14 +1,14 @@
-export enum RedisErrorsTags {
+export enum NestjsErrorsTags {
 	notFound = 'Entity doesn\'t exist',
 }
 
 interface IProps {
-	tag: RedisErrorsTags;
+	tag: NestjsErrorsTags;
 	message: string;
 }
 
 export class NestjsCacheLogicError extends Error {
-	readonly tag: RedisErrorsTags;
+	readonly tag: NestjsErrorsTags;
 
 	constructor(input: IProps) {
 		super();

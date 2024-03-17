@@ -1,4 +1,3 @@
-import { userFactory } from '@tests/factories/user';
 import { InMemoryInvite } from '@tests/inMemoryDatabase/invites';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
@@ -15,6 +14,7 @@ import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 import { ReloadInviteService } from '@app/services/invites/reloadInvite.service';
 import { inviteFactory } from '@tests/factories/invite';
 import { condominiumFactory } from '@tests/factories/condominium';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Reload invite test', () => {
 	let sut: ReloadInviteService;
@@ -89,25 +89,25 @@ describe('Reload invite test', () => {
 	});
 
 	it('should be able to invite a user', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
 		const condominium = condominiumFactory();
+
 		const invite = inviteFactory({
-			recipient: user.email.value,
+			recipient: uniqueRegistry.email.value,
 			condominiumId: condominium.id.value,
 		});
-		inviteRepo.create({ invite });
-		await sut.exec({
-			recipient: user.email.value,
-		});
+		inviteRepo.invites.push(invite);
 
-		expect(inviteRepo.calls.create).toEqual(1);
+		await sut.exec({
+			recipient: uniqueRegistry.email.value,
+		});
 
 		const { env: PROJECT_NAME } = await getEnv.exec({
 			env: EnvEnum.PROJECT_NAME,
 		});
 
 		const payload: EventsTypes.Email.ISendProps = {
-			to: user.email.value,
+			to: uniqueRegistry.email.value,
 			subject: `${PROJECT_NAME} - Convite para o condomínio`,
 			body: `<h1>Seja bem-vindo!</h1>
 			<p>O seu nome acabou de ser registrado na base dados de um condomínio</p>`,

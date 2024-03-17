@@ -7,6 +7,7 @@ import { CreateTokenService } from '@app/services/login/createToken.service';
 import { User } from '@app/entities/user';
 import { Response } from 'express';
 import { TCondominiumInObject } from '@app/mapper/condominium';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(CONDOMINIUM_PREFIX)
 export class CreateCondominiumController {
@@ -19,11 +20,13 @@ export class CreateCondominiumController {
 	private async processTokens(
 		res: Response,
 		user: User,
+		uniqueRegistry: UniqueRegistry,
 		condominium: Omit<TCondominiumInObject, 'seedKey'>,
 	) {
 		const { accessToken, refreshToken, refreshTokenExp } =
 			await this.createToken.exec({
 				user,
+				uniqueRegistry,
 			});
 
 		const expires = new Date(Date.now() + refreshTokenExp);
@@ -49,19 +52,20 @@ export class CreateCondominiumController {
 		@Res({ passthrough: true }) res: Response,
 		@Body() body: CreateCondominiumDTO,
 	) {
-		const { user, condominium } = await this.createCondominium.exec({
-			user: {
-				name: body.userName,
-				email: body.email,
-				password: body.password,
-			},
-			condominium: {
-				name: body.condominiumName,
-				CEP: body.CEP,
-				CNPJ: body.CNPJ,
-				num: body.num,
-			},
-		});
-		return await this.processTokens(res, user, condominium);
+		const { user, condominium, uniqueRegistry } =
+			await this.createCondominium.exec({
+				user: {
+					name: body.userName,
+					email: body.email,
+					password: body.password,
+				},
+				condominium: {
+					name: body.condominiumName,
+					CEP: body.CEP,
+					CNPJ: body.CNPJ,
+					num: body.num,
+				},
+			});
+		return await this.processTokens(res, user, uniqueRegistry, condominium);
 	}
 }

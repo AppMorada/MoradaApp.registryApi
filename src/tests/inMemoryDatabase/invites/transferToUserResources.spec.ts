@@ -6,6 +6,8 @@ import { userFactory } from '@tests/factories/user';
 import { InMemoryContainer } from '../inMemoryContainer';
 import { UUID } from '@app/entities/VO';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
+import { communityInfosFactory } from '@tests/factories/communityInfos';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('InMemoryData test: Invite transferToUserResources method', () => {
 	let sut: InMemoryInvite;
@@ -19,30 +21,55 @@ describe('InMemoryData test: Invite transferToUserResources method', () => {
 	it('should be able to transfer invite to another collection', async () => {
 		const condominiumId = UUID.genV4().value;
 
-		const invite = inviteFactory({ condominiumId });
-		const user = userFactory({ email: invite.recipient.value });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({
+			uniqueRegistryId: uniqueRegistry.id.value,
+		});
 		const member = condominiumMemberFactory({
-			userId: user.id.value,
+			uniqueRegistryId: uniqueRegistry.id.value,
 			condominiumId,
 		});
+		const communityInfos = communityInfosFactory({
+			memberId: member.id.value,
+		});
+		const invite = inviteFactory({
+			memberId: member.id.value,
+			condominiumId,
+			recipient: uniqueRegistry.email.value,
+		});
 
-		await sut.create({ invite });
+		sut.uniqueRegistries.push(uniqueRegistry);
+		sut.condominiumMembers.push(member);
+		sut.communityInfos.push(communityInfos);
+		sut.invites.push(invite);
+
 		await sut.transferToUserResources({
 			user,
 			invite,
-			CPF: member.CPF,
+			rawUniqueRegistry: {
+				email: uniqueRegistry.email,
+				CPF: uniqueRegistry.CPF!,
+			},
 		});
 
 		expect(Boolean(sut.invites[0])).toBeFalsy();
 
-		await expect(sut.create({ invite })).rejects.toThrow(
+		await expect(
+			sut.transferToUserResources({
+				invite,
+				user,
+				rawUniqueRegistry: {
+					email: uniqueRegistry.email,
+					CPF: uniqueRegistry.CPF!,
+				},
+			}),
+		).rejects.toThrow(
 			new InMemoryError({
-				entity: EntitiesEnum.invite,
-				message: 'User is already linked in one condominium',
+				entity: EntitiesEnum.condominiumMember,
+				message: 'Invite or condominium member doesn\'t exist',
 			}),
 		);
 
-		expect(sut.calls.create).toEqual(2);
-		expect(sut.calls.transferToUserResources).toEqual(1);
+		expect(sut.calls.transferToUserResources).toEqual(2);
 	});
 });

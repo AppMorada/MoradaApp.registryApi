@@ -4,30 +4,39 @@ import { Request } from 'express';
 import { User } from '@app/entities/user';
 import { JwtGuard } from '@app/auth/guards/jwt.guard';
 import { USER_PREFIX } from '../consts';
-import { GetCondominiumMemberByUserIdService } from '@app/services/members/condominium/getByUserId.service';
-import { GetEnterpriseMemberByUserIdService } from '@app/services/members/enterprise/getByUserId.service';
+import { GetEmployeeMemberByUserIdService } from '@app/services/members/employee/getByUserId.service';
+import { GetCommunityMemberByUserIdService } from '@app/services/members/community/getByUserId.service';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
+import { UniqueRegistryMapper } from '@app/mapper/uniqueRegistry';
 
 @Controller(USER_PREFIX)
 export class GetUserController {
 	constructor(
-		private readonly getCondominiumRelation: GetCondominiumMemberByUserIdService,
-		private readonly getEnterpriseCondominiumRelation: GetEnterpriseMemberByUserIdService,
+		private readonly getCommunityRelation: GetCommunityMemberByUserIdService,
+		private readonly getEmployeeRelation: GetEmployeeMemberByUserIdService,
 	) {}
 
 	@UseGuards(JwtGuard)
-	@Get('me/condominium-member-section')
+	@Get('me/community-member-section')
 	@HttpCode(200)
 	async getCondominiumMemberSection(@Req() req: Request) {
 		const user = req.inMemoryData.user as User;
-		const relations = await this.getCondominiumRelation.exec({
+		const uniqueRegistry = req.inMemoryData
+			.uniqueRegistry as UniqueRegistry;
+
+		const relations = await this.getCommunityRelation.exec({
 			id: user.id.value,
 		});
 
-		/* eslint-disable @typescript-eslint/no-unused-vars */
-		const { password: _, ...userAsObject } = UserMapper.toObject(user);
+		const uniqueRegistryAsObjt =
+			UniqueRegistryMapper.toObject(uniqueRegistry);
+		const userAsObjt = UserMapper.toObject(user) as any;
+		delete userAsObjt.password;
+
 		return {
-			...userAsObject,
-			condominiumStoredDatas: relations.content,
+			...userAsObjt,
+			uniqueRegistry: uniqueRegistryAsObjt,
+			memberInfos: relations.communityInfos,
 		};
 	}
 
@@ -36,15 +45,22 @@ export class GetUserController {
 	@HttpCode(200)
 	async getEnterpriseMemberSection(@Req() req: Request) {
 		const user = req.inMemoryData.user as User;
-		const relations = await this.getEnterpriseCondominiumRelation.exec({
+		const uniqueRegistry = req.inMemoryData
+			.uniqueRegistry as UniqueRegistry;
+
+		const relations = await this.getEmployeeRelation.exec({
 			id: user.id.value,
 		});
 
-		/* eslint-disable @typescript-eslint/no-unused-vars */
-		const { password: _, ...userAsObject } = UserMapper.toObject(user);
+		const uniqueRegistryAsObjt =
+			UniqueRegistryMapper.toObject(uniqueRegistry);
+		const userAsObjt = UserMapper.toObject(user) as any;
+		delete userAsObjt.password;
+
 		return {
-			...userAsObject,
-			condominiumStoredData: relations.content,
+			...userAsObjt,
+			uniqueRegistry: uniqueRegistryAsObjt,
+			employeeRelations: relations.content?.worksOn ?? [],
 		};
 	}
 }

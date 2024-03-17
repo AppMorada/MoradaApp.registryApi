@@ -4,6 +4,7 @@ import { InMemoryError } from '@tests/errors/inMemoryError';
 import { EntitiesEnum } from '@app/entities/entities';
 import { InMemoryContainer } from '../inMemoryContainer';
 import { userFactory } from '@tests/factories/user';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('InMemoryData test: Condominium create method', () => {
 	let container: InMemoryContainer;
@@ -15,17 +16,22 @@ describe('InMemoryData test: Condominium create method', () => {
 	});
 
 	it('should be able to create one condominium', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
-		expect(sut.create({ condominium, user })).resolves;
+		expect(sut.create({ condominium, user, uniqueRegistry })).resolves;
 		expect(sut.calls.create).toEqual(1);
 	});
 
 	it('should be able to throw error: condominium already exist', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
-		expect(sut.create({ condominium, user })).resolves;
-		await expect(sut.create({ condominium, user })).rejects.toThrow(
+
+		expect(sut.create({ condominium, user, uniqueRegistry })).resolves;
+		await expect(
+			sut.create({ condominium, user, uniqueRegistry }),
+		).rejects.toThrow(
 			new InMemoryError({
 				entity: EntitiesEnum.condominium,
 				message: 'Condominium already exist',

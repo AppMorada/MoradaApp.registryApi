@@ -12,21 +12,20 @@ import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
-import { EnterpriseMember } from '@app/entities/enterpriseMember';
-import { EnterpriseMemberRepo } from '@app/repositories/enterpriseMember';
 import { CondominiumRepo } from '@app/repositories/condominium';
+import { EmployeeMemberRepo } from '@app/repositories/employeeMember';
 
 @Injectable()
 export class AdminJwt implements CanActivate {
 	constructor(
 		private readonly validateToken: ValidateTokenService,
 		private readonly userRepo: UserRepo,
-		private readonly memberRepo: EnterpriseMemberRepo,
+		private readonly memberRepo: EmployeeMemberRepo,
 		private readonly condominiumRepo: CondominiumRepo,
 	) {}
 
 	private async getEntities(sub: string, condominiumId: string) {
-		const user = await this.userRepo
+		const userContent = await this.userRepo
 			.find({
 				key: new UUID(sub),
 				safeSearch: true,
@@ -48,7 +47,7 @@ export class AdminJwt implements CanActivate {
 				});
 			});
 
-		return { user, condominium };
+		return { userContent, condominium };
 	}
 
 	private async checkToken(token: string) {
@@ -75,25 +74,29 @@ export class AdminJwt implements CanActivate {
 		if (!token) throw new GuardErrors({ message: 'Token não encontrado' });
 
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
-		const { user, condominium } = await this.getEntities(
+		const { userContent, condominium } = await this.getEntities(
 			tokenData.sub,
 			condominiumId,
 		);
 
-		const member = await this.memberRepo.getByUserId({ id: user.id });
+		const member = await this.memberRepo.getByUserId({
+			id: userContent.user.id,
+		});
 
-		if (
-			!member?.condominiumId.equalTo(condominium.id) &&
-			!(member instanceof EnterpriseMember) &&
-			!condominium.ownerId.equalTo(user.id)
-		)
+		const isEmployee = member?.worksOn.find(
+			(item) => item.condominiumId === condominiumId,
+		);
+		const isOwner = condominium.ownerId.equalTo(userContent.user.id);
+
+		if (!isEmployee && !isOwner)
 			throw new GuardErrors({
 				message: 'Usuário não tem autorização para realizar tal ação',
 			});
 
 		req.inMemoryData = {
 			...req.inMemoryData,
-			user,
+			user: userContent.user,
+			uniqueRegistry: userContent.uniqueRegistry,
 			member,
 			condominium,
 		};

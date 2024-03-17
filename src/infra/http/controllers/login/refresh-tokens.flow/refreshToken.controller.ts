@@ -6,6 +6,7 @@ import { CreateTokenService } from '@app/services/login/createToken.service';
 import { Request, Response } from 'express';
 import { REFRESH_TOKEN_PREFIX } from '../consts';
 import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(REFRESH_TOKEN_PREFIX)
 export class RefreshTokenController {
@@ -14,10 +15,15 @@ export class RefreshTokenController {
 		private readonly getEnv: GetEnvService,
 	) {}
 
-	private async processTokens(res: Response, user: User) {
+	private async processTokens(
+		res: Response,
+		user: User,
+		uniqueRegistry: UniqueRegistry,
+	) {
 		const { accessToken, refreshToken, refreshTokenExp } =
 			await this.createToken.exec({
 				user,
+				uniqueRegistry,
 			});
 
 		const expires = new Date(Date.now() + refreshTokenExp * 1000);
@@ -52,7 +58,10 @@ export class RefreshTokenController {
 		@Req() req: Request,
 	) {
 		const user = req.inMemoryData.user as User;
-		this.createToken.exec({ user });
-		return await this.processTokens(res, user);
+		const uniqueRegistry = req.inMemoryData
+			.uniqueRegistry as UniqueRegistry;
+
+		this.createToken.exec({ user, uniqueRegistry });
+		return await this.processTokens(res, user, uniqueRegistry);
 	}
 }

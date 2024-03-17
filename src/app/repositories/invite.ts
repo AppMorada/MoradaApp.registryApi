@@ -3,9 +3,6 @@ import { Invite } from '@app/entities/invite';
 import { User } from '@app/entities/user';
 
 export namespace InviteRepoInterfaces {
-	export interface create {
-		invite: Invite;
-	}
 	export interface find {
 		key: Email;
 		safeSearch: undefined;
@@ -20,13 +17,14 @@ export namespace InviteRepoInterfaces {
 	export interface transferToUserResources {
 		user: User;
 		invite: Invite;
-		CPF: CPF;
+		rawUniqueRegistry: {
+			CPF: CPF;
+			email: Email;
+		};
 	}
 }
 
 export abstract class InviteRepo {
-	abstract create(input: InviteRepoInterfaces.create): Promise<void>;
-
 	abstract find(input: InviteRepoInterfaces.find): Promise<Invite[]>;
 
 	abstract find(input: InviteRepoInterfaces.safelyFind): Promise<Invite[]>;

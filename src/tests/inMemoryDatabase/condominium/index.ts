@@ -9,30 +9,31 @@ import { InMemoryError } from '@tests/errors/inMemoryError';
 import { InMemoryContainer } from '../inMemoryContainer';
 import { User } from '@app/entities/user';
 import { CondominiumMember } from '@app/entities/condominiumMember';
-import { EnterpriseMember } from '@app/entities/enterpriseMember';
 import {
 	CondominiumMapper,
 	TCondominiumInObject,
 } from '@app/mapper/condominium';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 export class InMemoryCondominium implements CondominiumRepo {
-	public calls = {
+	calls = {
 		create: 0,
 		find: 0,
 		remove: 0,
 		update: 0,
 		getCondominiumsByOwnerId: 0,
 	};
-	public condominiums: Condominium[];
-	public users: User[];
-	public condominiumMembers: CondominiumMember[];
-	public enterpriseMembers: EnterpriseMember[];
+
+	condominiums: Condominium[];
+	users: User[];
+	condominiumMembers: CondominiumMember[];
+	uniqueRegistries: UniqueRegistry[];
 
 	constructor(container: InMemoryContainer) {
 		this.condominiums = container.props.condominiumArr;
 		this.users = container.props.userArr;
 		this.condominiumMembers = container.props.condominiumMemberArr;
-		this.enterpriseMembers = container.props.enterpriseMemberArr;
+		this.uniqueRegistries = container.props.uniqueRegistryArr;
 	}
 
 	async remove(input: CondominiumInterfaces.remove): Promise<void> {
@@ -47,19 +48,12 @@ export class InMemoryCondominium implements CondominiumRepo {
 				message: 'Condominium doesn\'t exist',
 			});
 
-		this.condominiums.splice(existentDataIndex, 1);
-
 		const condominium = this.condominiums[existentDataIndex];
-		this.condominiumMembers.filter((item) =>
-			item.condominiumId.equalTo(condominium.id),
+		this.condominiumMembers = this.condominiumMembers.filter(
+			(item) => !item.condominiumId.equalTo(condominium.id),
 		);
 
-		for (const enterpriseMember of this.enterpriseMembers) {
-			const userIndex = this.users.findIndex((item) =>
-				item.id.equalTo(enterpriseMember.userId),
-			);
-			this.users.splice(userIndex, 1);
-		}
+		this.condominiums.splice(existentDataIndex, 1);
 	}
 
 	async update(input: CondominiumInterfaces.update): Promise<void> {
@@ -89,15 +83,19 @@ export class InMemoryCondominium implements CondominiumRepo {
 		const existentUser = this.users.find((item) =>
 			item.id.equalTo(input.user.id),
 		);
+		const uniqueRegistry = this.uniqueRegistries.find((item) =>
+			item.email.equalTo(input.uniqueRegistry.email),
+		);
 
-		if (existentUser || existentCondominium)
+		if (existentUser || existentCondominium || uniqueRegistry)
 			throw new InMemoryError({
 				entity: EntitiesEnum.condominium,
 				message: 'Condominium already exist',
 			});
 
-		this.condominiums.push(input.condominium);
+		this.uniqueRegistries.push(input.uniqueRegistry);
 		this.users.push(input.user);
+		this.condominiums.push(input.condominium);
 	}
 
 	async getCondominiumsByOwnerId(
@@ -115,7 +113,7 @@ export class InMemoryCondominium implements CondominiumRepo {
 		input: CondominiumInterfaces.search,
 	): Promise<Condominium | undefined>;
 
-	public async find(
+	async find(
 		input: CondominiumInterfaces.search,
 	): Promise<Condominium | undefined> {
 		++this.calls.find;

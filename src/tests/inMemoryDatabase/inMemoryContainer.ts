@@ -1,16 +1,18 @@
+import { CommunityInfos } from '@app/entities/communityInfos';
 import { Condominium } from '@app/entities/condominium';
 import { CondominiumMember } from '@app/entities/condominiumMember';
-import { EnterpriseMember } from '@app/entities/enterpriseMember';
 import { Invite } from '@app/entities/invite';
 import { Key } from '@app/entities/key';
 import { Secret } from '@app/entities/secret';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { User } from '@app/entities/user';
 
 interface IInMemoryContainerProps {
 	userArr: User[];
+	uniqueRegistryArr: UniqueRegistry[];
 	condominiumMemberArr: CondominiumMember[];
-	enterpriseMemberArr: EnterpriseMember[];
 	condominiumArr: Condominium[];
+	communityInfosArr: CommunityInfos[];
 	inviteArr: Invite[];
 	secretArr: Secret[];
 	keyArr: { name: string; value: Key }[];
@@ -20,25 +22,27 @@ interface IInMemoryContainerProps {
 export class InMemoryContainer {
 	props: IInMemoryContainerProps = {
 		userArr: [],
+		uniqueRegistryArr: [],
 		condominiumMemberArr: [],
-		enterpriseMemberArr: [],
 		condominiumArr: [],
 		inviteArr: [],
 		secretArr: [],
 		keyArr: [],
 		keyCacheArr: [],
+		communityInfosArr: [],
 	};
 
 	erase() {
 		this.props = {
 			userArr: [],
+			uniqueRegistryArr: [],
 			inviteArr: [],
 			condominiumMemberArr: [],
-			enterpriseMemberArr: [],
 			condominiumArr: [],
 			keyArr: [],
 			keyCacheArr: [],
 			secretArr: [],
+			communityInfosArr: [],
 		};
 	}
 }

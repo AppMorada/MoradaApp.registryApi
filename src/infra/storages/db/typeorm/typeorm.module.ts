@@ -7,10 +7,10 @@ import { entitiesProviders } from './entities.provider';
 import { TypeOrmCondominiumRepo } from './repositories/condominium.service';
 import { TypeOrmInviteRepo } from './repositories/invite.service';
 import { TypeOrmUserRepo } from './repositories/user.service';
-import { EnterpriseMemberRepo } from '@app/repositories/enterpriseMember';
-import { TypeOrmEnterpriseMemberRepo } from './repositories/enterpriseMember.service';
-import { CondominiumMemberRepo } from '@app/repositories/condominiumMember';
-import { TypeOrmCondominiumMemberRepo } from './repositories/condominiumMember.service';
+import { EmployeeMemberRepo } from '@app/repositories/employeeMember';
+import { TypeOrmEmployeeMemberRepo } from './repositories/employeeMember.service';
+import { CommunityMemberRepo } from '@app/repositories/communityMember';
+import { TypeOrmCommunityMemberRepo } from './repositories/communityMember.service';
 
 @Global()
 @Module({
@@ -30,20 +30,20 @@ import { TypeOrmCondominiumMemberRepo } from './repositories/condominiumMember.s
 			useClass: TypeOrmUserRepo,
 		},
 		{
-			provide: EnterpriseMemberRepo,
-			useClass: TypeOrmEnterpriseMemberRepo,
+			provide: EmployeeMemberRepo,
+			useClass: TypeOrmEmployeeMemberRepo,
 		},
 		{
-			provide: CondominiumMemberRepo,
-			useClass: TypeOrmCondominiumMemberRepo,
+			provide: CommunityMemberRepo,
+			useClass: TypeOrmCommunityMemberRepo,
 		},
 	],
 	exports: [
 		UserRepo,
 		InviteRepo,
 		CondominiumRepo,
-		EnterpriseMemberRepo,
-		CondominiumMemberRepo,
+		CommunityMemberRepo,
+		EmployeeMemberRepo,
 		...databaseProviders,
 		...entitiesProviders,
 	],

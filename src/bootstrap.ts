@@ -25,9 +25,9 @@ import oas from '../docs/openapi/openapi.json';
 import * as swaggerUi from 'swagger-ui-express';
 
 export class RegistryAPIBootstrap {
-	private app: NestExpressApplication;
-	private logger: LoggerAdapter;
-	private envManager: GetEnvService;
+	app: NestExpressApplication;
+	logger: LoggerAdapter;
+	envManager: GetEnvService;
 
 	private async build() {
 		this.app = await NestFactory.create<NestExpressApplication>(AppModule, {

@@ -10,9 +10,11 @@ import { CEP, CNPJ, Name, UUID } from '@app/entities/VO';
 import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../error';
 import { TypeOrmCondominiumMapper } from '../mapper/condominium';
 import { typeORMConsts } from '../consts';
-import { TypeOrmUserEntity } from '../entities/user.entity';
-import { TypeOrmUserMapper } from '../mapper/user';
 import { TCondominiumInObject } from '@app/mapper/condominium';
+import { TypeOrmUniqueRegistryMapper } from '../mapper/uniqueRegistry';
+import { TypeOrmUserMapper } from '../mapper/user';
+import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
+import { TypeOrmUserEntity } from '../entities/user.entity';
 
 type TQuery =
 	| { id: string }
@@ -31,18 +33,16 @@ export class TypeOrmCondominiumRepo implements CondominiumRepo {
 
 	async create(input: CondominiumInterfaces.create): Promise<void> {
 		await this.dataSource.transaction(async (t) => {
-			const user = await t.findOne(TypeOrmUserEntity, {
-				where: { id: input.user.id.value },
-			});
-			if (!user)
-				await t.insert(
-					TypeOrmUserEntity,
-					TypeOrmUserMapper.toTypeOrm(input.user),
-				);
-
+			const uniqueRegistry = TypeOrmUniqueRegistryMapper.toTypeOrm(
+				input.uniqueRegistry,
+			);
+			const user = TypeOrmUserMapper.toTypeOrm(input.user);
 			const condominium = TypeOrmCondominiumMapper.toTypeOrm(
 				input.condominium,
 			);
+
+			await t.insert(TypeOrmUniqueRegistryEntity, uniqueRegistry);
+			await t.insert(TypeOrmUserEntity, user);
 			await t.insert(TypeOrmCondominiumEntity, condominium);
 		});
 	}
@@ -53,7 +53,7 @@ export class TypeOrmCondominiumRepo implements CondominiumRepo {
 		const rawData = await this.dataSource
 			.getRepository(TypeOrmCondominiumEntity)
 			.createQueryBuilder('condominium')
-			.where('condominium.owner_id = :owner_id', {
+			.where('owner_id = :owner_id', {
 				owner_id: input.id.value,
 			})
 			.getMany();

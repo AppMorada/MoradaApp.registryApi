@@ -1,14 +1,19 @@
-import { UUID, Email, Name, PhoneNumber } from '@app/entities/VO';
+import { UUID, Name, PhoneNumber, Email } from '@app/entities/VO';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { User } from '@app/entities/user';
 
 export namespace UserRepoInterfaces {
 	export interface search {
 		safeSearch?: undefined;
-		key: Email | UUID;
+		key: UUID | Email;
 	}
 	export interface safeSearch {
 		safeSearch?: true;
-		key: Email | UUID;
+		key: UUID | Email;
+	}
+	export interface searchReturnableData {
+		user: User;
+		uniqueRegistry: UniqueRegistry;
 	}
 	export interface remove {
 		key: UUID;
@@ -21,9 +26,13 @@ export namespace UserRepoInterfaces {
 }
 
 export abstract class UserRepo {
-	abstract find(input: UserRepoInterfaces.search): Promise<User | undefined>;
+	abstract find(
+		input: UserRepoInterfaces.search,
+	): Promise<UserRepoInterfaces.searchReturnableData | undefined>;
 
-	abstract find(input: UserRepoInterfaces.safeSearch): Promise<User>;
+	abstract find(
+		input: UserRepoInterfaces.safeSearch,
+	): Promise<UserRepoInterfaces.searchReturnableData>;
 
 	abstract delete(input: UserRepoInterfaces.remove): Promise<void>;
 

@@ -5,8 +5,10 @@ import { TypeOrmUserEntity } from './entities/user.entity';
 import { TypeOrmCondominiumEntity } from './entities/condominium.entity';
 import { TypeOrmInviteEntity } from './entities/invite.entity';
 import { TypeOrmCondominiumMemberEntity } from './entities/condominiumMember.entity';
-import { TypeOrmEnterpriseMemberEntity } from './entities/enterpriseMember.entity';
-import { Migrations1709706321663 } from './migrations/1709706321663-migrations';
+import { TypeOrmCommunityInfosEntity } from './entities/communityInfos.entity';
+import { TypeOrmUniqueRegistryEntity } from './entities/uniqueRegistry.entity';
+import { FirstMigration1709706321663 } from './migrations/1709706321663-firstMigration';
+import { AddUniqueRegistries1710480251681 } from './migrations/1710480251681-addUniqueRegistries';
 
 export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
 	new TypeORMService({
@@ -29,13 +31,17 @@ export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
 			TypeOrmUserEntity,
 			TypeOrmCondominiumEntity,
 			TypeOrmCondominiumMemberEntity,
-			TypeOrmEnterpriseMemberEntity,
+			TypeOrmCommunityInfosEntity,
 			TypeOrmInviteEntity,
+			TypeOrmUniqueRegistryEntity,
 		],
 		synchronize: false,
 		migrationsRun: false,
 		migrationsTableName: 'migration_typeorm',
-		migrations: [Migrations1709706321663],
+		migrations: [
+			FirstMigration1709706321663,
+			AddUniqueRegistries1710480251681,
+		],
 	}).initialize();
 
 export const databaseProviders = [

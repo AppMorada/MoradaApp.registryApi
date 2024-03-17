@@ -15,6 +15,7 @@ import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
+import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Jwt guard test', () => {
 	let jwtService: JwtService;
@@ -66,10 +67,12 @@ describe('Jwt guard test', () => {
 	});
 
 	it('should be able to validate jwt guard', async () => {
-		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		userRepo.uniqueRegistries.push(uniqueRegistry);
 		userRepo.users.push(user);
 
-		const tokens = await createTokenService.exec({ user });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			headers: {
@@ -83,8 +86,9 @@ describe('Jwt guard test', () => {
 	});
 
 	it('should throw one error - user doesn\'t exists', async () => {
-		const user = userFactory();
-		const tokens = await createTokenService.exec({ user });
+		const uniqueRegistry = uniqueRegistryFactory();
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			headers: {

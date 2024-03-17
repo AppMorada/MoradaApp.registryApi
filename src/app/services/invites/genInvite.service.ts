@@ -1,7 +1,6 @@
 import { Email } from '@app/entities/VO';
 import { Injectable } from '@nestjs/common';
 import { Invite } from '@app/entities/invite';
-import { InviteRepo } from '@app/repositories/invite';
 import { IService } from '../_IService';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
@@ -9,7 +8,7 @@ import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { generateRandomNums } from '@utils/generateRandomNums';
 
-interface IProps {
+export interface IGenInviteProps {
 	recipient: string;
 	condominiumId: string;
 	memberId: string;
@@ -19,7 +18,6 @@ interface IProps {
 @Injectable()
 export class GenInviteService implements IService {
 	constructor(
-		private readonly inviteRepo: InviteRepo,
 		private readonly eventEmitter: EventEmitter2,
 		private readonly cryptAdapter: CryptAdapter,
 		private readonly getEnv: GetEnvService,
@@ -40,7 +38,7 @@ export class GenInviteService implements IService {
 		this.eventEmitter.emit(EVENT_ID.EMAIL.SEND, payload);
 	}
 
-	async exec(input: IProps) {
+	async exec(input: IGenInviteProps) {
 		const { env: INVITE_COMPLEXITY_CODE } = await this.getEnv.exec({
 			env: EnvEnum.INVITE_COMPLEXITY_CODE,
 		});
@@ -56,7 +54,10 @@ export class GenInviteService implements IService {
 			memberId: input.memberId,
 		});
 
-		await this.inviteRepo.create({ invite });
-		this.sendEmail(invite.recipient, randomNums);
+		return {
+			invite,
+			sendInviteOnEmail: async () =>
+				await this.sendEmail(invite.recipient, randomNums),
+		};
 	}
 }

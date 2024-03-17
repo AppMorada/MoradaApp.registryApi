@@ -5,7 +5,6 @@ import { TInviteInObject } from '@app/mapper/invite';
 export class TypeOrmInviteMapper {
 	static toTypeOrm(input: Invite): TypeOrmInviteEntity {
 		const invite = new TypeOrmInviteEntity();
-		invite.id = input.id.value;
 		invite.recipient = input.recipient.value;
 		invite.code = input.code;
 		invite.createdAt = input.createdAt;
@@ -16,26 +15,22 @@ export class TypeOrmInviteMapper {
 	}
 
 	static toClass(input: TypeOrmInviteEntity): Invite {
-		return new Invite(
-			{
-				condominiumId: input.condominium as string,
-				memberId: input.member as string,
-				recipient: input.recipient,
-				code: input.code,
-				createdAt: input.createdAt,
-			},
-			input.id,
-		);
+		return new Invite({
+			condominiumId: input.condominium,
+			memberId: input.member,
+			recipient: input.recipient,
+			code: input.code,
+			createdAt: input.createdAt,
+		});
 	}
 
 	static toObject(input: TypeOrmInviteEntity): TInviteInObject {
 		return {
-			id: input.id,
 			recipient: input.recipient,
 			code: input.code,
 			createdAt: input.createdAt,
-			condominiumId: input.condominium as string,
-			memberId: input.member as string,
+			condominiumId: input.condominium,
+			memberId: input.member,
 		};
 	}
 }

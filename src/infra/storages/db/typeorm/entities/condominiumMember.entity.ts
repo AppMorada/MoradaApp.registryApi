@@ -12,15 +12,44 @@ import {
 } from 'typeorm';
 import { TypeOrmCondominiumEntity } from './condominium.entity';
 import { TypeOrmUserEntity } from './user.entity';
+import { TypeOrmCommunityInfosEntity } from './communityInfos.entity';
 import { TypeOrmInviteEntity } from './invite.entity';
+import { TypeOrmUniqueRegistryEntity } from './uniqueRegistry.entity';
 
-@Unique(['user', 'condominium'])
-@Unique(['c_email', 'condominium'])
-@Unique(['CPF', 'condominium'])
+@Unique('UQ_condominium_members_user_id_condominium_id', [
+	'user',
+	'condominium',
+])
 @Entity({ name: 'condominium_members' })
 export class TypeOrmCondominiumMemberEntity {
-	@PrimaryGeneratedColumn('uuid')
+	@PrimaryGeneratedColumn('uuid', {
+		primaryKeyConstraintName: 'PK_condominium_members_id',
+	})
 		id: string;
+
+	@Column({ type: 'smallint', default: 0 })
+		role: number;
+
+	@CreateDateColumn({ name: 'created_at' })
+		createdAt: Date;
+
+	@UpdateDateColumn({ name: 'updated_at' })
+		updatedAt: Date;
+
+	@ManyToOne(
+		() => TypeOrmUniqueRegistryEntity,
+		(registry) => registry.member,
+		{
+			nullable: false,
+			onDelete: 'CASCADE',
+		},
+	)
+	@JoinColumn({
+		name: 'unique_registry_id',
+		referencedColumnName: 'id',
+		foreignKeyConstraintName: 'FK_condominium_members_unique_registry_id',
+	})
+		uniqueRegistry: string | Relation<TypeOrmUniqueRegistryEntity>;
 
 	@ManyToOne(
 		() => TypeOrmCondominiumEntity,
@@ -33,8 +62,9 @@ export class TypeOrmCondominiumMemberEntity {
 	@JoinColumn({
 		name: 'condominium_id',
 		referencedColumnName: 'id',
+		foreignKeyConstraintName: 'FK_condominium_members_condominium_id',
 	})
-		condominium: Relation<TypeOrmCondominiumEntity> | string;
+		condominium: string;
 
 	@ManyToOne(() => TypeOrmUserEntity, (user) => user.condominiumMember, {
 		nullable: true,
@@ -43,30 +73,13 @@ export class TypeOrmCondominiumMemberEntity {
 	@JoinColumn({
 		name: 'user_id',
 		referencedColumnName: 'id',
+		foreignKeyConstraintName: 'FK_condominium_members_user_id',
 	})
-		user: Relation<TypeOrmUserEntity> | string | null;
+		user: string | Relation<TypeOrmUserEntity> | null;
 
-	@OneToOne(() => TypeOrmInviteEntity, (invite) => invite.member)
+	@OneToOne(() => TypeOrmCommunityInfosEntity, (infos) => infos.member)
+		communityInfos: Relation<TypeOrmCommunityInfosEntity>;
+
+	@OneToOne(() => TypeOrmInviteEntity, (infos) => infos.member)
 		invite: Relation<TypeOrmInviteEntity>;
-
-	@Column({ type: 'bigint', name: 'cpf' })
-		CPF: string;
-
-	@Column({ length: 320, type: 'varchar' })
-		c_email: string;
-
-	@Column({ type: 'int', name: 'apartment_number', nullable: true })
-		apartmentNumber: number | null;
-
-	@Column({ length: 6, type: 'varchar', nullable: true })
-		block: string | null;
-
-	@Column({ type: 'smallint', default: 0, name: 'auto_edit' })
-		autoEdit: number;
-
-	@CreateDateColumn({ name: 'created_at' })
-		createdAt: Date;
-
-	@UpdateDateColumn({ name: 'updated_at' })
-		updatedAt: Date;
 }

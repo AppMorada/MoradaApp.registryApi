@@ -4,7 +4,7 @@ import { CondominiumMemberMapper } from '@app/mapper/condominiumMember';
 
 describe('TypeORM Condominium member entity mapper', () => {
 	it('should be able to validate the mapper', () => {
-		const sut = condominiumMemberFactory();
+		const sut = condominiumMemberFactory({ userId: null });
 		const memberAsTypeOrm = TypeOrmCondominiumMemberMapper.toTypeOrm(sut);
 		const memberAsClass =
 			TypeOrmCondominiumMemberMapper.toClass(memberAsTypeOrm);
