@@ -6,7 +6,7 @@ import {
 	ExceptionFilter,
 } from '@nestjs/common';
 import { isArray, isNumber, isString } from 'class-validator';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 
 interface IBodyProps {
 	message: Array<string>;
@@ -32,12 +32,11 @@ export class ClassValidatorErrorFilter implements ExceptionFilter {
 	catch(exception: BadRequestException, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
-		const request = context.getRequest<Request>();
 
 		const body = exception.getResponse() as IBodyProps;
 		if (!this.validateBody(body)) {
 			this.logger.error({
-				name: `SessionId(${request.sessionId}): Erro interno do servidor`,
+				name: 'Erro interno do servidor',
 				layer: LayersEnum.dto,
 				description: 'Retorno inválido para respostas com status 400',
 				stack: exception.stack,
@@ -50,7 +49,7 @@ export class ClassValidatorErrorFilter implements ExceptionFilter {
 		}
 
 		this.logger.error({
-			name: `SessionId(${request.sessionId}): Requisição ruim`,
+			name: 'Requisição ruim',
 			layer: LayersEnum.dto,
 			description: JSON.stringify(body.message),
 			stack: exception.stack,

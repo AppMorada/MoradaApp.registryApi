@@ -35,19 +35,17 @@ export class GetCommunityMemberByIdService implements IService {
 		private readonly userRepo: UserRepo,
 	) {}
 
-	private async getUserData(userId: string, pruneSensitive?: boolean) {
+	private async getUserData(userId: string) {
 		const { user } = await this.userRepo.find({
 			key: new UUID(userId),
 			safeSearch: true,
 		});
 		const userRef = UserMapper.toObject(user) as any;
 
-		if (pruneSensitive) {
-			delete userRef.password;
-			delete userRef.tfa;
-		}
+		delete userRef.password;
+		delete userRef.tfa;
 
-		return user;
+		return userRef;
 	}
 	private async getMemberData(memberId: UUID, pruneSensitiveData?: boolean) {
 		const searchedData = await this.memberRepo.getById({ id: memberId });
@@ -67,9 +65,7 @@ export class GetCommunityMemberByIdService implements IService {
 			communityInfo: CommunityInfoMapper.toObject(
 				searchedData.communityInfos,
 			),
-			uniqueRegistry: UniqueRegistryMapper.toObject(
-				searchedData.uniqueRegistry,
-			),
+			uniqueRegistry,
 		};
 	}
 
