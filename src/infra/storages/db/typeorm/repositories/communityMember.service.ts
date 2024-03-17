@@ -200,7 +200,7 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 			})
 			.andWhere('condominium_member.role = 0')
 			.loadAllRelationIds({
-				relations: ['condominium'],
+				relations: ['condominium', 'user'],
 			})
 			.getMany();
 
@@ -257,9 +257,6 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 					uniqueRegistry: {
 						id: member.uniqueRegistry as string,
 					},
-				},
-				lock: {
-					mode: 'pessimistic_read',
 				},
 			});
 			if (!userExists)
