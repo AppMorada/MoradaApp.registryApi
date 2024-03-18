@@ -62,7 +62,7 @@ export class GetCommunityMemberByIdService implements IService {
 
 		return {
 			memberAsObject,
-			communityInfo: CommunityInfoMapper.toObject(
+			communityInfos: CommunityInfoMapper.toObject(
 				searchedData.communityInfos,
 			),
 			uniqueRegistry: UniqueRegistryMapper.toObject(
@@ -82,9 +82,10 @@ export class GetCommunityMemberByIdService implements IService {
 			? await this.getUserData(searchedMemberData.memberAsObject.userId)
 			: null;
 
+		searchedMemberData.memberAsObject.userId = user?.id ?? null;
 		return {
 			member: searchedMemberData?.memberAsObject,
-			communityInfo: searchedMemberData?.communityInfo,
+			communityInfos: searchedMemberData?.communityInfos,
 			userData: user,
 			uniqueRegistry: searchedMemberData?.uniqueRegistry,
 		};
@@ -96,6 +97,6 @@ export class GetCommunityMemberByIdService implements IService {
 			memberId,
 			input?.pruneSensitiveData,
 		);
-		return { content };
+		return { ...content };
 	}
 }

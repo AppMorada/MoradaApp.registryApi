@@ -9,8 +9,8 @@ export function condominiumFactory(input: TOverride = {}, id?: string) {
 		{
 			ownerId: UUID.genV4().value,
 			name: 'My condominium',
-			CEP: '97507-040',
-			CNPJ: '95.185.265/0001-18',
+			CEP: '97507040',
+			CNPJ: '95185265000118',
 			num: 32768,
 			seedKey: randomBytes(30).toString('hex'),
 			...input,

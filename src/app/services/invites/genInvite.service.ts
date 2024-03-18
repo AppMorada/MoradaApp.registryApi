@@ -56,6 +56,7 @@ export class GenInviteService implements IService {
 
 		return {
 			invite,
+			unhashedCode: randomNums,
 			sendInviteOnEmail: async () =>
 				await this.sendEmail(invite.recipient, randomNums),
 		};

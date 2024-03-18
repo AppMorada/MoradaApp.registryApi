@@ -10,7 +10,7 @@ export class RemoveCommunityMemberController {
 	) {}
 
 	@UseGuards(AdminJwt)
-	@Delete(':condominiumId/as-employee/comunity-member/:memberId')
+	@Delete(':condominiumId/as-employee/community-member/:memberId')
 	@HttpCode(204)
 	async getOne(@Param('memberId') id: string) {
 		return await this.removeCondominiumMember.exec({ id });

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ILoggerDefaultProps, LoggerAdapter, TErrProps } from '../logger';
-import winston from 'winston';
+import * as winston from 'winston';
 
 @Injectable()
 export class WinstonLoggerAdapter implements LoggerAdapter {

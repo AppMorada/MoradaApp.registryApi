@@ -25,26 +25,28 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 
 	async create(input: CommunityMemberRepoInterfaces.create): Promise<void> {
 		await this.dataSource.transaction(async (t) => {
-			const uniqueRegistryExists = await t
+			let typeOrmUniqueRegistry = await t
 				.getRepository(TypeOrmUniqueRegistryEntity)
-				.exist({
+				.findOne({
 					where: { email: input.rawUniqueRegistry.email.value },
 				});
 
-			if (!uniqueRegistryExists) {
+			if (!typeOrmUniqueRegistry) {
 				const uniqueRegistry = new UniqueRegistry({
 					email: input.rawUniqueRegistry.email.value,
 					CPF: input.rawUniqueRegistry.CPF.value,
 				});
-				await t.insert(
-					'unique_registries',
-					TypeOrmUniqueRegistryMapper.toTypeOrm(uniqueRegistry),
-				);
+				typeOrmUniqueRegistry =
+					TypeOrmUniqueRegistryMapper.toTypeOrm(uniqueRegistry);
+
+				await t.insert('unique_registries', typeOrmUniqueRegistry);
 			}
 
 			const member = TypeOrmCondominiumMemberMapper.toTypeOrm(
 				input.member,
 			);
+			member.uniqueRegistry = typeOrmUniqueRegistry.id;
+
 			const communityInfo = TypeOrmCommunityInfoMapper.toTypeOrm(
 				input.communityInfos,
 			);
@@ -76,6 +78,7 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 					});
 					typeOrmUniqueRegistry =
 						TypeOrmUniqueRegistryMapper.toTypeOrm(uniqueRegistry);
+
 					await t.insert('unique_registries', typeOrmUniqueRegistry);
 				}
 
@@ -83,6 +86,7 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 					input.members[i].content,
 				);
 				member.uniqueRegistry = typeOrmUniqueRegistry.id;
+
 				const communityInfo = TypeOrmCommunityInfoMapper.toTypeOrm(
 					input.members[i].communityInfos,
 				);
@@ -145,6 +149,8 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 			const communityInfos = TypeOrmCommunityInfoMapper.toObject(
 				item.communityInfos,
 			);
+			communityInfos.memberId = member.id;
+
 			return { member, communityInfos };
 		});
 	}
@@ -176,6 +182,8 @@ export class TypeOrmCommunityMemberRepo implements CommunityMemberRepo {
 		raw.uniqueRegistry = uniqueRegistry.id.value;
 
 		const member = TypeOrmCondominiumMemberMapper.toClass(raw);
+		raw.communityInfos.member = member.id.value;
+
 		const communityInfos = TypeOrmCommunityInfoMapper.toClass(
 			raw.communityInfos,
 		);

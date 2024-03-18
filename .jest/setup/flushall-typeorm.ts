@@ -6,8 +6,8 @@ global.afterEach(async () => {
 		const condominium_members = dataSource.getRepository('condominium_members')
 		await condominium_members.query('DELETE FROM "condominium_members"')
 
-		const enterprise_members = dataSource.getRepository('enterprise_members')
-		await enterprise_members.query('DELETE FROM "enterprise_members"')
+		const uniqueRegistries = dataSource.getRepository('unique_registries')
+		await uniqueRegistries.query('DELETE FROM "unique_registries"')
 
 		const invites = dataSource.getRepository('invites')
 		await invites.query('DELETE FROM "invites"')
