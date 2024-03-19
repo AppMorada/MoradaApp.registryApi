@@ -49,7 +49,7 @@
 	"dependencies": {
 		"@google-cloud/error-reporting": "^3.0.5",
 		"@nestjs/axios": "^3.0.1",
-		"@nestjs/cache-manager": "^2.2.0",
+		"@nestjs/cache-manager": "^2.2.1",
 		"@nestjs/common": "^10.2.10",
 		"@nestjs/core": "^10.2.10",
 		"@nestjs/event-emitter": "^2.0.3",
