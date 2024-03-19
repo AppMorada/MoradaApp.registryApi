@@ -1,6 +1,7 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
+import { ReportAdapter } from '@app/adapters/reports';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 interface IUntrackableErrors {
 	name: string;
@@ -11,7 +12,10 @@ interface IUntrackableErrors {
 
 @Catch()
 export class GenericErrorFilter implements ExceptionFilter {
-	constructor(private readonly logger: LoggerAdapter) {}
+	constructor(
+		private readonly logger: LoggerAdapter,
+		private readonly report: ReportAdapter,
+	) {}
 
 	private readonly untrackableErrors: IUntrackableErrors[] = [
 		{
@@ -25,6 +29,7 @@ export class GenericErrorFilter implements ExceptionFilter {
 	catch(exception: Error, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
+		const request = context.getResponse<Request>();
 
 		const error = this.untrackableErrors.find((item) => {
 			return exception?.message?.includes(item.key);
@@ -49,6 +54,13 @@ export class GenericErrorFilter implements ExceptionFilter {
 			layer: LayersEnum.unknown,
 			description: exception?.message ?? 'Causa desconhecida',
 			stack: exception?.stack ?? 'Causa desconhecida',
+		});
+		this.report.error({
+			err: exception,
+			statusCode: 500,
+			url: request.url,
+			method: request.method,
+			userAgent: request.headers['user-agent'],
 		});
 
 		return response.status(500).json({

@@ -47,6 +47,7 @@
 		"schema": "./src/infra/storages/db/prisma/schema.prisma"
 	},
 	"dependencies": {
+		"@google-cloud/error-reporting": "^3.0.5",
 		"@nestjs/axios": "^3.0.1",
 		"@nestjs/cache-manager": "^2.2.0",
 		"@nestjs/common": "^10.2.10",

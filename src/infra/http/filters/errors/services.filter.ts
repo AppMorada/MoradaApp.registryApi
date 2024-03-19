@@ -1,7 +1,8 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
+import { ReportAdapter } from '@app/adapters/reports';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 interface IServiceErrors {
 	name: string;
@@ -12,7 +13,10 @@ interface IServiceErrors {
 
 @Catch(ServiceErrors)
 export class ServiceErrorFilter implements ExceptionFilter {
-	constructor(private readonly logger: LoggerAdapter) {}
+	constructor(
+		private readonly logger: LoggerAdapter,
+		private readonly report: ReportAdapter,
+	) {}
 
 	private possibleErrors: IServiceErrors[] = [
 		{
@@ -39,6 +43,7 @@ export class ServiceErrorFilter implements ExceptionFilter {
 	catch(exception: ServiceErrors, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
+		const request = context.getRequest<Request>();
 
 		const error = this.possibleErrors.find((item) => {
 			return item.tag === exception.tag;
@@ -63,6 +68,13 @@ export class ServiceErrorFilter implements ExceptionFilter {
 			layer: LayersEnum.services,
 			description: exception.message,
 			stack: exception.stack,
+		});
+		this.report.error({
+			err: exception,
+			statusCode: 500,
+			url: request.url,
+			method: request.method,
+			userAgent: request.headers['user-agent'],
 		});
 
 		return response.status(500).json({

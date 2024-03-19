@@ -1,7 +1,8 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
+import { ReportAdapter } from '@app/adapters/reports';
 import { GatewayErrors, GatewaysErrorsTags } from '@infra/gateways/errors';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 interface IGatewayError {
 	name: string;
@@ -12,7 +13,10 @@ interface IGatewayError {
 
 @Catch(GatewayErrors)
 export class GatewayErrorFilter implements ExceptionFilter {
-	constructor(private readonly logger: LoggerAdapter) {}
+	constructor(
+		private readonly logger: LoggerAdapter,
+		private readonly report: ReportAdapter,
+	) {}
 
 	private possibleErrors: IGatewayError[] = [
 		{
@@ -33,6 +37,7 @@ export class GatewayErrorFilter implements ExceptionFilter {
 	catch(exception: GatewayErrors, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
+		const request = context.getResponse<Request>();
 
 		const error = this.possibleErrors.find((item) => {
 			return item.tag === exception.tag;
@@ -61,6 +66,13 @@ export class GatewayErrorFilter implements ExceptionFilter {
 			layer: LayersEnum.gateway,
 			description: exception.message,
 			stack: exception.stack,
+		});
+		this.report.error({
+			err: exception,
+			statusCode: 500,
+			url: request.url,
+			method: request.method,
+			userAgent: request.headers['user-agent'],
 		});
 
 		return response.status(500).json({

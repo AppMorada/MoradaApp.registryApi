@@ -3,7 +3,7 @@ import { ILoggerDefaultProps, LoggerAdapter, TErrProps } from '../logger';
 import winston from 'winston';
 
 @Injectable()
-export class PinoLoggerAdapter implements LoggerAdapter {
+export class WinstonLoggerAdapter implements LoggerAdapter {
 	private readonly logger: winston.Logger;
 
 	constructor() {

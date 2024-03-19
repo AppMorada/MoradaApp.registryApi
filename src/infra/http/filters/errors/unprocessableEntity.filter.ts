@@ -11,14 +11,14 @@ import { Response } from 'express';
 export class UnprocessableEntityFilter implements ExceptionFilter {
 	constructor(private readonly logger: LoggerAdapter) {}
 
-	catch(err: UnprocessableEntityException, host: ArgumentsHost) {
+	catch(exception: UnprocessableEntityException, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
 
 		this.logger.error({
 			name: 'Não foi possível processar as entidades envolvidas',
 			layer: LayersEnum.controller,
-			description: err.message,
+			description: exception.message,
 		});
 
 		return response.status(422).json({
