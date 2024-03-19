@@ -23,10 +23,12 @@ import { TypeORMErrorFilter } from '@infra/http/filters/errors/typeorm.filter';
 import { UnprocessableEntityFilter } from '@infra/http/filters/errors/unprocessableEntity.filter';
 import oas from '../docs/openapi/openapi.json';
 import * as swaggerUi from 'swagger-ui-express';
+import { ReportAdapter } from '@app/adapters/reports';
 
 export class RegistryAPIBootstrap {
 	app: NestExpressApplication;
 	logger: LoggerAdapter;
+	report: ReportAdapter;
 	envManager: GetEnvService;
 
 	private async build() {
@@ -42,6 +44,7 @@ export class RegistryAPIBootstrap {
 
 		this.logger = this.app.get(LoggerAdapter);
 		this.envManager = this.app.get(GetEnvService);
+		this.report = this.app.get(ReportAdapter);
 
 		const { env: COOKIE_KEY } = await this.envManager.exec({
 			env: EnvEnum.COOKIE_KEY,
@@ -77,18 +80,38 @@ export class RegistryAPIBootstrap {
 	}
 
 	private setGlobalFilters() {
-		this.app.useGlobalFilters(new GenericErrorFilter(this.logger));
-		this.app.useGlobalFilters(new HealthCheckErrorFilter());
-		this.app.useGlobalFilters(new AxiosCheckErrorFilter(this.logger));
-		this.app.useGlobalFilters(new TypeORMErrorFilter(this.logger));
-		this.app.useGlobalFilters(new FirestoreCustomErrorFilter(this.logger));
-		this.app.useGlobalFilters(new DatabaseCustomErrorFilter(this.logger));
-		this.app.useGlobalFilters(new ServiceErrorFilter(this.logger));
-		this.app.useGlobalFilters(new EntitieErrorFilter(this.logger));
-		this.app.useGlobalFilters(new GatewayErrorFilter(this.logger));
+		this.app.useGlobalFilters(
+			new GenericErrorFilter(this.logger, this.report),
+		);
+		this.app.useGlobalFilters(new HealthCheckErrorFilter(this.report));
+		this.app.useGlobalFilters(
+			new AxiosCheckErrorFilter(this.logger, this.report),
+		);
+		this.app.useGlobalFilters(
+			new TypeORMErrorFilter(this.logger, this.report),
+		);
+		this.app.useGlobalFilters(
+			new FirestoreCustomErrorFilter(this.logger, this.report),
+		);
+		this.app.useGlobalFilters(
+			new DatabaseCustomErrorFilter(this.logger, this.report),
+		);
+		this.app.useGlobalFilters(
+			new ServiceErrorFilter(this.logger, this.report),
+		);
+		this.app.useGlobalFilters(
+			new EntitieErrorFilter(this.logger, this.report),
+		);
+		this.app.useGlobalFilters(
+			new GatewayErrorFilter(this.logger, this.report),
+		);
 		this.app.useGlobalFilters(new GuardErrorFilter(this.logger));
-		this.app.useGlobalFilters(new AdapterErrorFilter(this.logger));
-		this.app.useGlobalFilters(new ClassValidatorErrorFilter(this.logger));
+		this.app.useGlobalFilters(
+			new AdapterErrorFilter(this.logger, this.report),
+		);
+		this.app.useGlobalFilters(
+			new ClassValidatorErrorFilter(this.logger, this.report),
+		);
 		this.app.useGlobalFilters(new ThrottlerErrorFilter(this.logger));
 		this.app.useGlobalFilters(new NotFoundFilter(this.logger));
 		this.app.useGlobalFilters(new UnprocessableEntityFilter(this.logger));

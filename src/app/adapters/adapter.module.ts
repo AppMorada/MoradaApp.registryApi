@@ -8,7 +8,9 @@ import { FetchAdapter } from './fetch/fetchAdapter';
 import { LoggerAdapter } from './logger';
 import { CookieAdapter } from './cookie';
 import { CookieParserAdapter } from './cookie-parser/cookieParserAdapter';
-import { PinoLoggerAdapter } from './pino';
+import { WinstonLoggerAdapter } from './winston';
+import { ReportAdapter } from './reports';
+import { ErrorReportingHandler } from './errorReporting';
 
 @Global()
 @Module({
@@ -27,11 +29,15 @@ import { PinoLoggerAdapter } from './pino';
 		},
 		{
 			provide: LoggerAdapter,
-			useClass: PinoLoggerAdapter,
+			useClass: WinstonLoggerAdapter,
 		},
 		{
 			provide: CookieAdapter,
 			useClass: CookieParserAdapter,
+		},
+		{
+			provide: ReportAdapter,
+			useClass: ErrorReportingHandler,
 		},
 	],
 	exports: [
@@ -40,6 +46,7 @@ import { PinoLoggerAdapter } from './pino';
 		HttpAdapter,
 		LoggerAdapter,
 		CookieAdapter,
+		ReportAdapter,
 	],
 })
 export class AdaptersModule {}

@@ -6,6 +6,18 @@ export interface IEnvMetadata {
 type TEnv = Record<string, IEnvMetadata>;
 
 export const environmentVariablesMetadata: TEnv = {
+	SERVICE_NAME: {
+		name: 'SERVICE_NAME',
+		isOptional: false,
+	},
+	SERVICE_VERSION: {
+		name: 'SERVICE_VERSION',
+		isOptional: false,
+	},
+	ERROR_REPORTING_CLIENT: {
+		name: 'ERROR_REPORTING_CLIENT',
+		isOptional: false,
+	},
 	INVITE_COMPLEXITY_CODE: {
 		name: 'INVITE_COMPLEXITY_CODE',
 		isOptional: false,

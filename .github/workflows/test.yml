@@ -1,6 +1,9 @@
 name: CI - Tests & Lint & Deploy
 
 env:
+  ERROR_REPORTING_CLIENT: ${{secrets.ERROR_REPORTING_CLIENT}}
+  SERVICE_NAME: ${{secrets.SERVICE_NAME}}
+  SERVICE_VERSION: ${{secrets.SERVICE_VERSION}}
   INVITE_COMPLEXITY_CODE: ${{secrets.INVITE_COMPLEXITY_CODE}}
   SIGNATURE_TYPE: ${{secrets.SIGNATURE_TYPE}}
   PORT: ${{secrets.PORT}}

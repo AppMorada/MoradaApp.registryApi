@@ -1,99 +1,11 @@
 name: CI - Tests & Lint & Deploy
 
-env:
-  INVITE_COMPLEXITY_CODE: ${{secrets.INVITE_COMPLEXITY_CODE}}
-  SIGNATURE_TYPE: ${{secrets.SIGNATURE_TYPE}}
-  PORT: ${{secrets.PORT}}
-  NODE_ENV: ${{secrets.NODE_ENV}}
-  PROJECT_NAME: ${{secrets.PROJECT_NAME}}
-  DATABASE_URL: ${{secrets.DATABASE_URL}}
-  REDIS_URL: ${{secrets.REDIS_URL}}
-  FRONT_END_INVITE_URL: ${{secrets.FRONT_END_INVITE_URL}}
-  FRONT_END_AUTH_URL: ${{secrets.FRONT_END_AUTH_URL}}
-  COOKIE_KEY: ${{secrets.COOKIE_KEY}}
-  HOST_SENDER: ${{secrets.HOST_SENDER}}
-  HOST_PORT_SENDER: ${{secrets.HOST_PORT_SENDER}}
-  NAME_SENDER: ${{secrets.NAME_SENDER}}
-  NOT_SEND_EMAILS: ${{secrets.NOT_SEND_EMAILS}}
-  EMAIL_SENDER: ${{secrets.EMAIL_SENDER}}
-  PASS_SENDER: ${{secrets.PASS_SENDER}}
-  GCP_PROJECT: ${{secrets.GCP_PROJECT}}
-  FIRESTORE_EMULATOR_HOST: ${{secrets.FIRESTORE_EMULATOR_HOST}}
-  MAX_MEMORY_HEAP: ${{secrets.MAX_MEMORY_HEAP}}
-  MAX_MEMORY_RSS: ${{secrets.MAX_MEMORY_RSS}}
-  CREATE_KEY_FUNC_URL: ${{secrets.CREATE_KEY_FUNC_URL}}
-  UPDATE_KEY_FUNC_URL: ${{secrets.UPDATE_KEY_FUNC_URL}}
-  DELETE_KEY_FUNC_URL: ${{secrets.DELETE_KEY_FUNC_URL}}
-
 on:
   push:
     branches: ["main"]
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ windows-latest, macos-latest, ubuntu-latest ]
-        node: [ 16, 18, 20 ]
-    steps:
-      - uses: actions/checkout@v4
-        id: git-clone
-        name: Cloning repository
-
-      - uses: pnpm/action-setup@v3
-        id: install-pnpm
-        name: Installing PNPM
-        with:
-          version: 8
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        id: set-nodejs
-        with:
-          node-version: ${{ matrix.node }}
-          cache: "pnpm"
-
-      - name: Install dependencies
-        id: set-deps
-        run: pnpm install --frozen-lockfile
-
-      - name: Run unit tests
-        id: unit-tests
-        run: pnpm run test
-
-  eslint:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ macos-latest, ubuntu-latest ]
-    steps:
-      - uses: actions/checkout@v3
-        id: git-clone
-        name: Cloning repository
-
-      - uses: pnpm/action-setup@v2
-        id: install-pnpm
-        name: Installing PNPM
-        with:
-          version: 8
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        id: set-nodejs
-        with:
-          node-version: 20.x
-          cache: "pnpm"
-
-      - name: Install dependencies
-        id: set-deps
-        run: pnpm install --frozen-lockfile
-
-      - name: Run Eslint
-        id: eslint
-        run: pnpm run lint
-
-  deploy:
+  dockerhub:
     needs: [eslint, test]
     runs-on: ubuntu-latest
     steps:

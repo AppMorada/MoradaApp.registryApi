@@ -1,10 +1,11 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import {
 	DatabaseCustomError,
 	DatabaseCustomErrorsTags,
 } from '@infra/storages/db/error';
+import { ReportAdapter } from '@app/adapters/reports';
 
 interface IFirestoreErrors {
 	name: string;
@@ -15,7 +16,10 @@ interface IFirestoreErrors {
 
 @Catch(DatabaseCustomError)
 export class DatabaseCustomErrorFilter implements ExceptionFilter {
-	constructor(private readonly logger: LoggerAdapter) {}
+	constructor(
+		private readonly logger: LoggerAdapter,
+		private readonly report: ReportAdapter,
+	) {}
 
 	private readonly possibleErrors: IFirestoreErrors[] = [
 		{
@@ -65,6 +69,7 @@ export class DatabaseCustomErrorFilter implements ExceptionFilter {
 	catch(exception: DatabaseCustomError, host: ArgumentsHost) {
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
+		const request = context.getRequest<Request>();
 
 		const error = this.possibleErrors.find((item) => {
 			return item.tag === exception.tag;
@@ -89,6 +94,13 @@ export class DatabaseCustomErrorFilter implements ExceptionFilter {
 			layer: LayersEnum.database,
 			description: exception.message,
 			stack: exception.stack,
+		});
+		this.report.error({
+			err: exception,
+			statusCode: 500,
+			url: request.url,
+			method: request.method,
+			userAgent: request.headers['user-agent'],
 		});
 
 		return response.status(500).json({
