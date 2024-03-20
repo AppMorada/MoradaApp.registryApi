@@ -25,7 +25,7 @@ export class GetEnterpriseMemberController {
 	async getOne(@Param('userId') id: string) {
 		const member = await this.getMemberByUserId.exec({ id });
 		return {
-			userData: member.content?.user,
+			userData: member.content?.user ?? null,
 			uniqueRegistry: member.content?.uniqueRegistry ?? null,
 			worksOn: member.content?.worksOn ?? null,
 		};

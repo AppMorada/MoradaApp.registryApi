@@ -1,9 +1,9 @@
 import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
 import { CONDOMINIUM_PREFIX } from '../consts';
 import { User } from '@app/entities/user';
-import { AdminJwt } from '@app/auth/guards/admin-jwt.guard';
 import { CreateEmployeeUserService } from '@app/services/members/employee/create.service';
 import { CreateEmployeeMemberDTO } from '@infra/http/DTO/members/employee/create.DTO';
+import { SuperAdminJwt } from '@app/auth/guards/super-admin-jwt.guard';
 
 @Controller(CONDOMINIUM_PREFIX)
 export class CreateEnterpriseMemberController {
@@ -11,7 +11,7 @@ export class CreateEnterpriseMemberController {
 		private readonly createEnterpriseMember: CreateEmployeeUserService,
 	) {}
 
-	@UseGuards(AdminJwt)
+	@UseGuards(SuperAdminJwt)
 	@Post(':condominiumId/as-owner/enterprise-user')
 	async create(
 		@Body() body: CreateEmployeeMemberDTO,

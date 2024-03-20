@@ -2,7 +2,9 @@ name: Update openapi bucket
 
 on:
   push:
-    branches: ["main", "release/**"]
+    branches: 
+      - "main"
+      - "release/**"
     paths:
       - "docs/openapi/openapi.json"
 
