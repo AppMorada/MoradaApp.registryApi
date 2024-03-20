@@ -7,7 +7,7 @@ export class ErrorReportingHandler implements ReportAdapter {
 		this.handler = new ErrorReporting({
 			projectId: process.env.GCP_PROJECT,
 			logLevel: 2,
-			reportMode: 'always',
+			reportMode: 'production',
 			credentials: JSON.parse(
 				process.env.ERROR_REPORTING_CLIENT as string,
 			),

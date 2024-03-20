@@ -28,7 +28,7 @@ export class FirestoreCustomErrorFilter implements ExceptionFilter {
 			statusCode: 500,
 			url: request.url,
 			method: request.method,
-			userAgent: request.headers['user-agent'],
+			userAgent: request.headers?.['user-agent'],
 		});
 
 		fatalErrorHandler();

@@ -3,7 +3,7 @@ export interface IReportError {
 	url?: string;
 	method?: string;
 	statusCode?: number;
-	userAgent?: string | undefined;
+	userAgent?: string;
 }
 
 export abstract class ReportAdapter {

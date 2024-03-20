@@ -32,13 +32,14 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 		const response = context.getResponse<Response>();
 		const request = context.getRequest<Request>();
 
+		const driverError = exception.driverError as any;
 		const error = this.possibleErrors.find((item) => {
-			return item.code === exception.driverError?.code;
+			return item.code === driverError?.code;
 		});
 
 		if (error) {
 			this.logger.error({
-				name: `${error.name} - ${exception.driverError.code}`,
+				name: `${error.name} - ${driverError.code}`,
 				layer: LayersEnum.database,
 				description: error.message,
 				stack: exception.stack,
@@ -61,7 +62,7 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 			statusCode: 500,
 			url: request.url,
 			method: request.method,
-			userAgent: request.headers['user-agent'],
+			userAgent: request.headers?.['user-agent'],
 		});
 
 		return response.status(500).json({

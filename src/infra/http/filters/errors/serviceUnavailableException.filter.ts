@@ -31,7 +31,7 @@ export class AxiosCheckErrorFilter implements ExceptionFilter {
 			statusCode: 500,
 			url: request.url,
 			method: request.method,
-			userAgent: request.headers['user-agent'],
+			userAgent: request.headers?.['user-agent'],
 		});
 
 		return response.status(500).json({
