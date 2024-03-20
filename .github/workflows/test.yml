@@ -92,7 +92,7 @@ jobs:
           version: 8
 
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         id: set-nodejs
         with:
           node-version: 20.x
