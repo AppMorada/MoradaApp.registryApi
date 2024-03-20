@@ -27,7 +27,7 @@
 		"lint:fix": "eslint --fix",
 		"format": "prettier --write",
 		"test": "dotenv -e .env.test -- jest -c jest.unit.config.ts",
-		"test:e2e": "dotenv -e .env.prod -- jest -c jest.e2e.config.ts",
+		"test:e2e": "dotenv -e .env.prod -- jest -c jest.e2e.config.ts --detectOpenHandles",
 		"set-hooks": "husky install",
 		"pre-commit": "lint-staged --allow-empty",
 		"gen-docs": "sh -c \"./tools/docs.sh\""

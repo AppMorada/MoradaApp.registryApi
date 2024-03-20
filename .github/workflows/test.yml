@@ -43,13 +43,42 @@ on:
       - "dependabot/**"
 
 jobs:
-  test:
+  unit-test:
     runs-on: ${{ matrix.os }}
-    container: node:latest
     strategy:
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
         node: [ 16, 18, 20 ]
+    steps:
+      - uses: actions/checkout@v4
+        id: git-clone
+        name: Cloning repository
+
+      - uses: pnpm/action-setup@v3
+        id: install-pnpm
+        name: Installing PNPM
+        with:
+          version: 8
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        id: set-nodejs
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        id: set-deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        id: unit-tests
+        run: pnpm run test
+
+
+  e2e-test:
+    runs-on: ubuntu-latest
+    container: ubuntu:latest
     services:
       db:
         image: postgres
@@ -79,20 +108,21 @@ jobs:
         uses: actions/setup-node@v4
         id: set-nodejs
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 20.x
           cache: "pnpm"
 
       - name: Install dependencies
         id: set-deps
         run: pnpm install --frozen-lockfile
 
-      - name: Run unit tests
-        id: unit-tests
-        run: pnpm run test
+      - name: Run migrations
+        id: migrations
+        run: pnpm run migrate:run
 
       - name: Run E2E tests
         id: e2e-tests
-        run: pnpm run test:e2e
+        run: |
+          sh -c "export NODE_ENV=production && pnpm run test:e2e"
 
   eslint:
     runs-on: ${{ matrix.os }}
