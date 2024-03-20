@@ -1,4 +1,4 @@
-name: CI - Tests & Lint & Deploy
+name: CI - Tests & Lint 
 
 env:
   ERROR_REPORTING_CLIENT: ${{secrets.ERROR_REPORTING_CLIENT}}

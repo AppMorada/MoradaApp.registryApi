@@ -1,0 +1,36 @@
+name: Update openapi bucket
+
+on:
+  push:
+    branches: ["main", "release/**"]
+    paths:
+      - "docs/openapi/openapi.json"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        id: git-clone
+        name: Cloning repository
+
+      - name: Google auth
+        uses: google-github-actions/auth@v2
+        id: gcp-auth
+        with:
+          credentials_json: '${{ secrets.STORAGE_CLIENT }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        id: set-gcloud
+        with:
+           project_id: '${{ secrets.GOOGLE_PROJECT_ID }}'
+
+      - name: Remove openapi file
+        id: remove-file
+        run: gcloud storage rm ${{ secrets.OPENAPI_FILE_PATH }}
+
+      - name: Create openapi file
+        id: create-file
+        run: gcloud storage cp ./docs/openapi/openapi.json ${{ secrets.OPENAPI_FOLDER_PATH }}
+
