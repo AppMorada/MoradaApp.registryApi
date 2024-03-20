@@ -36,7 +36,6 @@ COPY --from=prod_deps /usr/node/app/node_modules ./node_modules
 COPY --from=builder /usr/node/app/dist ./dist
 
 VOLUME ["/usr/node/app/node_modules"]
-
 CMD [ "pnpm", "start" ]
 
 EXPOSE 8080
