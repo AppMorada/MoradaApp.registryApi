@@ -8,11 +8,13 @@ import { FirestoreCustomError, FirestoreCustomErrorTag } from '../error';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { DocumentData, DocumentSnapshot } from 'firebase-admin/firestore';
 import { FirestoreListeners } from './listeners';
+import { ReportAdapter } from '@app/adapters/reports';
 
 @Injectable()
 export class FirestoreKey implements KeyRepo, OnModuleInit {
 	constructor(
 		private readonly listeners: FirestoreListeners,
+		private readonly report: ReportAdapter,
 		private readonly firestore: FirestoreService,
 		private readonly loggerAdapter: LoggerAdapter,
 		private readonly keyRepoAsCache: KeyCache,
@@ -38,6 +40,7 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 			layer: LayersEnum.database,
 			description: `${err.message} - ${err.cause}`,
 		});
+		this.report.error({ err });
 
 		return err;
 	}
