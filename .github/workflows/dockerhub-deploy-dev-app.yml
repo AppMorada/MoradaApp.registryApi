@@ -1,8 +1,11 @@
-name: CI - Deploy on Dockerhub
+name: CD - Deploy application in development stage on Dockerhub
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "release/**"]
+    paths:
+      - "./Dockerhub"
+      - "./.github/workflows/dockerhub-deploy-dev-app.yml"
 
 jobs:
   dockerhub:
@@ -27,12 +30,3 @@ jobs:
           file: Dockerfile.prod
           push: true
           tags: ${{secrets.DOCKER_APP_IMAGE_TAG}}-alpha
-
-      - uses: docker/build-push-action@v5
-        name: Build and push SQL image
-        id: build-and-push-sql
-        with:
-          context: "{{defaultContext}}:example"
-          file: ./pg.Dockerfile
-          push: true
-          tags: ${{secrets.DOCKER_SQL_IMAGE_TAG}}-alpha

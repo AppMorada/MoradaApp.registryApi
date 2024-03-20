@@ -1,0 +1,32 @@
+name: CD - Lint application image in development stage 
+
+on:
+  push:
+    branches:
+      - "feature/**"
+      - "perf/**"
+      - "refactor/**"
+      - "bugfix/**"
+      - "ci/**"
+      - "chore/**"
+      - "release/**"
+      - "hotfix/**"
+      - "support/**"
+      - "dependabot/**"
+    paths:
+      - "./Dockerhub.prod"
+      - "./.github/workflows/lint-prod-app-image.yml"
+
+jobs:
+  dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        id: git-clone
+        name: Cloning repository
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        id: hadolint
+        name: Installing and executing hadolint
+        with:
+          dockerfile: Dockerfile.prod

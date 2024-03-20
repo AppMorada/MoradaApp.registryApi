@@ -1,15 +1,20 @@
-FROM node:latest
+FROM node:iron-bookworm-slim
+
+LABEL maintainer="Nícolas Basilio"
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
 WORKDIR /home/node/app
 
-RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install -y openssl default-jre musl-dev curl gpg jq
-RUN ln -s /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
-
-RUN npm i pnpm firebase-tools -g
+RUN apt-get update -y && apt-get upgrade -y && \
+	apt-get install -y \
+		default-jre=2:1.17-74 \
+		musl-dev=1.2.3-1 \
+		--no-install-recommends && \
+	ln -s /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1 && \
+	npm i pnpm@8.15.5 firebase-tools@13.5.2 -g && \
+	apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY ./package.json .
 COPY ./pnpm-lock.yaml .
