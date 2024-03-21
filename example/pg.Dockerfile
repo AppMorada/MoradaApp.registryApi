@@ -7,9 +7,8 @@ ENV PGDATA=/data
 
 COPY ./init.sql /docker-entrypoint-initdb.d/
 
-RUN ["sed", "-i", "s/exec \"$@\"/echo \"skipping...\"/", "/usr/local/bin/docker-entrypoint.sh"]
-
-RUN ["/usr/local/bin/docker-entrypoint.sh", "postgres"]
+RUN sed -i "s/exec \"\$@\"/echo \"skipping...\"/" "/usr/local/bin/docker-entrypoint.sh" && \
+    /usr/local/bin/docker-entrypoint.sh postgres
 
 FROM postgres:11-alpine
 
