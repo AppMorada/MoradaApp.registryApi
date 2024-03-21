@@ -109,9 +109,7 @@ export class RegistryAPIBootstrap {
 		this.app.useGlobalFilters(
 			new AdapterErrorFilter(this.logger, this.report),
 		);
-		this.app.useGlobalFilters(
-			new ClassValidatorErrorFilter(this.logger, this.report),
-		);
+		this.app.useGlobalFilters(new ClassValidatorErrorFilter(this.logger));
 		this.app.useGlobalFilters(new ThrottlerErrorFilter(this.logger));
 		this.app.useGlobalFilters(new NotFoundFilter(this.logger));
 		this.app.useGlobalFilters(new UnprocessableEntityFilter(this.logger));
