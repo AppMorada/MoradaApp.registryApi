@@ -45,8 +45,7 @@ services:
   ###################################################################
 
   app:
-    build:
-      dockerfile: ./Dockerfile
+    image: moradaapp/registry-api-devtool 
     hostname: app
     restart: always
     volumes:

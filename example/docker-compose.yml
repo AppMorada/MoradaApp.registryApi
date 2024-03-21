@@ -15,8 +15,3 @@ services:
     restart: always
     ports:
       - "7941:8080"
-
-volumes:
-  cache:
-    driver: local
-
