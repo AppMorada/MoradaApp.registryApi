@@ -1,5 +1,4 @@
 FROM alpine:3.19.1 AS base
-
 LABEL maintainer="Nícolas Basilio"
 
 RUN mkdir -p /usr/node/app
