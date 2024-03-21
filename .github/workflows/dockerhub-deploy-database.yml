@@ -6,9 +6,9 @@ on:
       - "main" 
       - "release/**"
     paths:
-      - "./example/init.sql"
-      - "./example/pg.Dockerfile"
-      - "./.github/workflows/dockerhub-deploy-database.yml"
+      - "example/init.sql"
+      - "example/pg.Dockerfile"
+      - ".github/workflows/dockerhub-deploy-database.yml"
 
 jobs:
   dockerhub:

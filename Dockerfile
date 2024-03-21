@@ -1,5 +1,4 @@
 FROM node:iron-bookworm-slim
-
 LABEL maintainer="Nícolas Basilio"
 
 ENV PNPM_HOME="/pnpm"

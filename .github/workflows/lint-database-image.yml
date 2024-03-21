@@ -1,4 +1,4 @@
-name: CD - Lint application image in development stage 
+name: CD - Lint database image in development stage 
 
 on:
   push:
@@ -14,8 +14,9 @@ on:
       - "support/**"
       - "dependabot/**"
     paths:
-      - "Dockerfile"
-      - ".github/workflows/lint-dev-app-image.yml"
+      - "example/pg.Dockerfile"
+      - "example/init.sql"
+      - ".github/workflows/lint-database-image.yml"
 
 jobs:
   dockerhub:
@@ -29,4 +30,4 @@ jobs:
         id: hadolint
         name: Installing and executing hadolint
         with:
-          dockerfile: Dockerfile
+          dockerfile: example/pg.Dockerfile
