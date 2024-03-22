@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import { FirestoreCustomError, FirestoreCustomErrorTag } from '../error';
-import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 
-export function firestoreKeyDTO(body: any, logger?: LoggerAdapter) {
+export function firestoreKeyDTO(
+	body: any,
+	callbackErr?: (err: FirestoreCustomError) => void,
+) {
 	const schema = z
 		.object({
 			prev_Content: z.string().length(200).or(z.undefined()),
@@ -18,16 +20,13 @@ export function firestoreKeyDTO(body: any, logger?: LoggerAdapter) {
 		const output = schema.parse(body);
 		return output;
 	} catch (err) {
-		logger?.fatal({
-			name: err.name,
-			description: err.message,
-			layer: LayersEnum.database,
-		});
-
-		throw new FirestoreCustomError({
+		const parsedErr = new FirestoreCustomError({
 			message: 'Malformed internal entitiy',
 			tag: FirestoreCustomErrorTag.malformedEntity,
 			cause: err.message,
 		});
+
+		if (!callbackErr) throw parsedErr;
+		return callbackErr(parsedErr);
 	}
 }
