@@ -9,10 +9,12 @@ export class WinstonLoggerAdapter implements LoggerAdapter {
 	constructor() {
 		this.logger = winston.createLogger({
 			levels: {
-				error: 0,
-				warn: 1,
-				info: 2,
-				debug: 3,
+				emergency: 0,
+				error: 1,
+				warn: 2,
+				info: 3,
+				debug: 4,
+				log: 5,
 			},
 			format: winston.format.printf((info) => {
 				return `${JSON.stringify({
@@ -26,7 +28,7 @@ export class WinstonLoggerAdapter implements LoggerAdapter {
 	}
 
 	async log(input: ILoggerDefaultProps) {
-		this.logger.debug(input);
+		this.logger.log('log', input);
 	}
 
 	async info(input: ILoggerDefaultProps) {
@@ -46,6 +48,6 @@ export class WinstonLoggerAdapter implements LoggerAdapter {
 	}
 
 	async fatal(input: TErrProps): Promise<void> {
-		this.logger.error(input);
+		this.logger.log('emergency', { message: input });
 	}
 }
