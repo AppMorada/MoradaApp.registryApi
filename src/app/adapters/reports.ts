@@ -4,6 +4,7 @@ export interface IReportError {
 	method?: string;
 	statusCode?: number;
 	userAgent?: string;
+	callback?: () => void;
 }
 
 export abstract class ReportAdapter {

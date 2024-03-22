@@ -14,8 +14,8 @@ import { ReportAdapter } from '@app/adapters/reports';
 export class FirestoreKey implements KeyRepo, OnModuleInit {
 	constructor(
 		private readonly listeners: FirestoreListeners,
-		private readonly report: ReportAdapter,
 		private readonly firestore: FirestoreService,
+		private readonly report: ReportAdapter,
 		private readonly loggerAdapter: LoggerAdapter,
 		private readonly keyRepoAsCache: KeyCache,
 	) {}
@@ -29,27 +29,38 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 		KeysEnum.TFA_TOKEN_KEY,
 	];
 
-	private buildErr(name: string) {
+	private async execAsFatalError(err: FirestoreCustomError) {
+		await new Promise((resolve) => {
+			this.loggerAdapter.fatal({
+				name: err.name,
+				layer: LayersEnum.database,
+				description: `${err.message} - ${err.cause}`,
+			});
+
+			this.report.error({
+				err,
+				callback: () => {
+					process.kill(process.pid, 'SIGTERM');
+					resolve(undefined);
+				},
+			});
+		});
+	}
+
+	async getAndCache(name: string, item: DocumentSnapshot<DocumentData>) {
 		const err = new FirestoreCustomError({
 			tag: FirestoreCustomErrorTag.entityDoesntExist,
 			cause: `A chave com o nome "${name}" não foi encontrada`,
 			message: `"${name}" não foi encontrado`,
 		});
-		this.loggerAdapter.fatal({
-			name: err.name,
-			layer: LayersEnum.database,
-			description: `${err.message} - ${err.cause}`,
-		});
-		this.report.error({ err });
-
-		return err;
-	}
-
-	async getAndCache(name: string, item: DocumentSnapshot<DocumentData>) {
-		if (!item.exists) throw this.buildErr(name);
+		if (!item.exists) return await this.execAsFatalError(err);
 
 		const rawData = item.data();
-		const incompleteKey = firestoreKeyDTO(rawData, this.loggerAdapter);
+		const incompleteKey = firestoreKeyDTO(
+			rawData,
+			async (err) => await this.execAsFatalError(err),
+		);
+
 		const flatKey = {
 			name: item.id,
 			...incompleteKey,
@@ -81,22 +92,19 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 	}
 
 	async getSignature(name: KeysEnum): Promise<Key> {
-		const key = await this.keyRepoAsCache.get(name);
-		if (key) return key;
+		return await new Promise(async (resolve, reject) => {
+			const key = await this.keyRepoAsCache.get(name);
+			if (key) return resolve(key);
 
-		const err = new FirestoreCustomError({
-			tag: FirestoreCustomErrorTag.entityDoesntExist,
-			cause: `A chave com o nome "${name}" não foi encontrada`,
-			message: `"${name}" não foi encontrado`,
+			const err = new FirestoreCustomError({
+				tag: FirestoreCustomErrorTag.entityDoesntExist,
+				cause: `A chave com o nome "${name}" não foi encontrada`,
+				message: `"${name}" não foi encontrado`,
+			});
+			await this.execAsFatalError(err);
+
+			return reject(err);
 		});
-
-		this.loggerAdapter.fatal({
-			name: err.name,
-			layer: LayersEnum.database,
-			description: `${err.message} - ${err.cause}`,
-		});
-
-		throw err;
 	}
 
 	async onModuleInit() {

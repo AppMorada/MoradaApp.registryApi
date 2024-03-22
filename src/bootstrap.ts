@@ -90,9 +90,7 @@ export class RegistryAPIBootstrap {
 		this.app.useGlobalFilters(
 			new TypeORMErrorFilter(this.logger, this.report),
 		);
-		this.app.useGlobalFilters(
-			new FirestoreCustomErrorFilter(this.logger, this.report),
-		);
+		this.app.useGlobalFilters(new FirestoreCustomErrorFilter());
 		this.app.useGlobalFilters(
 			new DatabaseCustomErrorFilter(this.logger, this.report),
 		);

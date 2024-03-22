@@ -16,7 +16,7 @@ export const environmentVariablesMetadata: TEnv = {
 	},
 	ERROR_REPORTING_CLIENT: {
 		name: 'ERROR_REPORTING_CLIENT',
-		isOptional: false,
+		isOptional: true,
 	},
 	INVITE_COMPLEXITY_CODE: {
 		name: 'INVITE_COMPLEXITY_CODE',
