@@ -28,7 +28,7 @@ export class TraceHandler {
 					url: process.env.ZIPKIN_TRACE_URL,
 				})
 				: new TraceExporter({
-					projectId: process.env.GCP_PROJECT,
+					projectId: process.env.LOGGING_PROJECT,
 					credentials: JSON.parse(
 							process.env.OBSERVER_AGENT as string,
 					),

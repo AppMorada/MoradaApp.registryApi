@@ -6,7 +6,7 @@ export class ErrorReportingHandler implements ReportAdapter {
 	constructor() {
 		if (process.env.OBSERVER_AGENT)
 			this.handler = new ErrorReporting({
-				projectId: process.env.GCP_PROJECT,
+				projectId: process.env.LOGGING_PROJECT,
 				logLevel: 2,
 				reportMode: 'production',
 				credentials: JSON.parse(process.env.OBSERVER_AGENT as string),

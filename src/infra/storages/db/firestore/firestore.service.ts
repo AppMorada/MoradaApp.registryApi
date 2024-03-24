@@ -24,10 +24,10 @@ implements OnModuleDestroy, OnApplicationShutdown
 
 	async connect() {
 		await this.getEnv
-			.exec({ env: EnvEnum.GCP_PROJECT })
-			.then(({ env: GCP_PROJECT }) => {
+			.exec({ env: EnvEnum.FIRESTORE_GCP_PROJECT })
+			.then(({ env: FIRESTORE_GCP_PROJECT }) => {
 				initializeApp({
-					projectId: GCP_PROJECT,
+					projectId: FIRESTORE_GCP_PROJECT,
 				});
 
 				this._instance = admin.firestore();
