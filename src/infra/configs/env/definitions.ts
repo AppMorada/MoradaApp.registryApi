@@ -86,8 +86,12 @@ export const environmentVariablesMetadata: TEnv = {
 		name: 'PASS_SENDER',
 		isOptional: false,
 	},
-	GCP_PROJECT: {
-		name: 'GCP_PROJECT',
+	LOGGING_PROJECT: {
+		name: 'LOGGING_PROJECT',
+		isOptional: false,
+	},
+	FIRESTORE_GCP_PROJECT: {
+		name: 'FIRESTORE_GCP_PROJECT',
 		isOptional: false,
 	},
 	FIRESTORE_EMULATOR_HOST: {
