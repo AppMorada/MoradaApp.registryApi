@@ -1,6 +1,6 @@
 import { createTransport } from 'nodemailer';
 import { EmailAdapter, ISendMailContent } from '../email';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

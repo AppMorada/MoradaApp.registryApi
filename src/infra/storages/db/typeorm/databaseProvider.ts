@@ -1,4 +1,4 @@
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { typeORMConsts } from './consts';
 import { TypeORMService } from './typeORM.service';
 import { TypeOrmUserEntity } from './entities/user.entity';

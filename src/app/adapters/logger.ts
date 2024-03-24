@@ -25,7 +25,6 @@ export interface ILoggerDefaultProps {
 export type TErrProps = ILoggerDefaultProps & { stack?: string };
 
 export abstract class LoggerAdapter {
-	abstract log(input: ILoggerDefaultProps): Promise<void>;
 	abstract info(input: ILoggerDefaultProps): Promise<void>;
 	abstract debug(input: ILoggerDefaultProps): Promise<void>;
 	abstract warn(input: ILoggerDefaultProps): Promise<void>;

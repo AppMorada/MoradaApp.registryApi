@@ -14,7 +14,6 @@ export class WinstonLoggerAdapter implements LoggerAdapter {
 				warn: 2,
 				info: 3,
 				debug: 4,
-				log: 5,
 			},
 			format: winston.format.printf((info) => {
 				return `${JSON.stringify({
@@ -25,10 +24,6 @@ export class WinstonLoggerAdapter implements LoggerAdapter {
 			}),
 			transports: [new winston.transports.Console()],
 		});
-	}
-
-	async log(input: ILoggerDefaultProps) {
-		this.logger.log('log', input);
 	}
 
 	async info(input: ILoggerDefaultProps) {

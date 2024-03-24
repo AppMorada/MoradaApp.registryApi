@@ -8,7 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
 import { GetKeyService } from '../key/getKey.service';
 import { KeysEnum } from '@app/repositories/key';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 
 interface IProps {
 	email: Email;

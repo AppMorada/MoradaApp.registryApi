@@ -11,7 +11,7 @@ import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
 import { LoggerAdapter } from '@app/adapters/logger';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
-import { GetEnvService } from '@infra/configs/getEnv.service';
+import { GetEnvService } from '@infra/configs/env/getEnv.service';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { CryptSpy } from '@tests/adapters/cryptSpy';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';

@@ -4,7 +4,7 @@ import { InviteRepo } from '@app/repositories/invite';
 import { IService } from '../_IService';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 
 interface IProps {
 	recipient: string;

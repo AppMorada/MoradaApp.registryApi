@@ -6,7 +6,7 @@ import {
 import { initializeApp } from 'firebase-admin/app';
 import { Firestore } from 'firebase-admin/firestore';
 import admin from 'firebase-admin';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { FirestoreListeners } from './repositories/listeners';
 
 @Injectable()

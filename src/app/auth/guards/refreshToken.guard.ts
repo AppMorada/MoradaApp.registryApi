@@ -7,7 +7,7 @@ import { UserRepo } from '@app/repositories/user';
 import { Email } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {

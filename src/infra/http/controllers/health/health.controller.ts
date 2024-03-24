@@ -7,7 +7,7 @@ import {
 	MemoryHealthIndicator,
 	TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { DataSource } from 'typeorm';
 import { typeORMConsts } from '@infra/storages/db/typeorm/consts';
 

@@ -4,7 +4,7 @@ import { User } from '@app/entities/user';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 import { Request, Response } from 'express';
 import { USER_PREFIX } from '../consts';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { JwtGuard } from '@app/auth/guards/jwt.guard';
 import { UpdateUserService } from '@app/services/user/update.service';
 import { UpdateUserDTO } from '@infra/http/DTO/user/update.DTO';

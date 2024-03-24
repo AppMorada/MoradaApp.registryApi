@@ -5,7 +5,7 @@ import { User } from '@app/entities/user';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 import { Request, Response } from 'express';
 import { REFRESH_TOKEN_PREFIX } from '../consts';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(REFRESH_TOKEN_PREFIX)
