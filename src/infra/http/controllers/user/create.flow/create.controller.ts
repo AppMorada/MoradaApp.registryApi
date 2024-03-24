@@ -7,7 +7,7 @@ import { CreateUserService } from '@app/services/user/create.service';
 import { CreateUserDTO } from '@infra/http/DTO/user/create.DTO';
 import { Request, Response } from 'express';
 import { USER_PREFIX } from '../consts';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { Invite } from '@app/entities/invite';
 import { InviteGuard } from '@app/auth/guards/invite.guard';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';

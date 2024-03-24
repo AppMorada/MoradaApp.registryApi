@@ -10,7 +10,7 @@ import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
 import { LoggerAdapter } from '@app/adapters/logger';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { ReloadInviteService } from '@app/services/invites/reloadInvite.service';
 import { inviteFactory } from '@tests/factories/invite';
 import { condominiumFactory } from '@tests/factories/condominium';

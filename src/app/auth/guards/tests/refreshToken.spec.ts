@@ -17,7 +17,7 @@ import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
-import { GetEnvService } from '@infra/configs/getEnv.service';
+import { GetEnvService } from '@infra/configs/env/getEnv.service';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Refresh token guard test', () => {

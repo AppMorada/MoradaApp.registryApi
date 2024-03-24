@@ -1,11 +1,15 @@
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
-import { ConfigError } from './error';
-import { environmentVariablesMetadata } from './envDefinitions';
+import { ConfigError } from '../error';
+import { environmentVariablesMetadata } from './definitions';
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { fatalErrorHandler } from '@utils/fatalErrorHandler';
 
 export enum EnvEnum {
+	ZIPKIN_TRACE_URL = 'ZIPKIN_TRACE_URL',
+	SERVICE_NAME = 'SERVICE_NAME',
+	SERVICE_VERSION = 'SERVICE_VERSION',
+	OBSERVER_AGENT = 'OBSERVER_AGENT',
 	INVITE_COMPLEXITY_CODE = 'INVITE_COMPLEXITY_CODE',
 	LOG_TYPE = 'LOG_TYPE',
 	SIGNATURE_TYPE = 'SIGNATURE_TYPE',

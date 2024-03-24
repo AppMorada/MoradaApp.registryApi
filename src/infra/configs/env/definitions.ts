@@ -6,6 +6,10 @@ export interface IEnvMetadata {
 type TEnv = Record<string, IEnvMetadata>;
 
 export const environmentVariablesMetadata: TEnv = {
+	ZIPKIN_TRACE_URL: {
+		name: 'ZIPKIN_TRACE_URL',
+		isOptional: true,
+	},
 	SERVICE_NAME: {
 		name: 'SERVICE_NAME',
 		isOptional: false,
@@ -14,8 +18,8 @@ export const environmentVariablesMetadata: TEnv = {
 		name: 'SERVICE_VERSION',
 		isOptional: false,
 	},
-	ERROR_REPORTING_CLIENT: {
-		name: 'ERROR_REPORTING_CLIENT',
+	OBSERVER_AGENT: {
+		name: 'OBSERVER_AGENT',
 		isOptional: true,
 	},
 	INVITE_COMPLEXITY_CODE: {

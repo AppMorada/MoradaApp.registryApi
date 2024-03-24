@@ -15,7 +15,7 @@ import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
 import { LoggerAdapter } from '@app/adapters/logger';
 import { LoggerSpy } from '@tests/adapters/logger.spy';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Gen TFA Service', () => {

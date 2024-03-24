@@ -2,7 +2,7 @@ import { Body, Controller, Post, Res } from '@nestjs/common';
 import { CreateCondominiumService } from '@app/services/condominium/create.service';
 import { CreateCondominiumDTO } from '@infra/http/DTO/condominium/create.DTO';
 import { CONDOMINIUM_PREFIX } from '../consts';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 import { User } from '@app/entities/user';
 import { Response } from 'express';

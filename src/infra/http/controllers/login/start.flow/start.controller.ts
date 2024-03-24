@@ -6,7 +6,7 @@ import { CreateTokenService } from '@app/services/login/createToken.service';
 import { GenTFAService } from '@app/services/login/genTFA.service';
 import { Request, Response } from 'express';
 import { StartLoginDTO } from '@infra/http/DTO/login/login.DTO';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { LOGIN_PREFIX } from '../consts';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 

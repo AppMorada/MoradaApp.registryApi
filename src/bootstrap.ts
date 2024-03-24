@@ -18,20 +18,27 @@ import { DatabaseCustomErrorFilter } from '@infra/http/filters/errors/databaseCu
 import { HealthCheckErrorFilter } from '@infra/http/filters/errors/healthCheckError.filter';
 import { AxiosCheckErrorFilter } from '@infra/http/filters/errors/serviceUnavailableException.filter';
 import { FirestoreCustomErrorFilter } from '@infra/http/filters/errors/firestoreCustomError.filter';
-import { EnvEnum, GetEnvService } from '@infra/configs/getEnv.service';
+import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { TypeORMErrorFilter } from '@infra/http/filters/errors/typeorm.filter';
 import { UnprocessableEntityFilter } from '@infra/http/filters/errors/unprocessableEntity.filter';
 import oas from '../docs/openapi/openapi.json';
 import * as swaggerUi from 'swagger-ui-express';
 import { ReportAdapter } from '@app/adapters/reports';
+import { TraceHandler } from '@infra/configs/tracing';
 
 export class RegistryAPIBootstrap {
 	app: NestExpressApplication;
 	logger: LoggerAdapter;
 	report: ReportAdapter;
 	envManager: GetEnvService;
+	trace: TraceHandler;
+
+	constructor() {
+		this.trace = new TraceHandler();
+	}
 
 	private async build() {
+		this.trace.start();
 		this.app = await NestFactory.create<NestExpressApplication>(AppModule, {
 			bufferLogs: true,
 		});
