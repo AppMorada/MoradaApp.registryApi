@@ -3,9 +3,6 @@
 	"main": "dist/index.js",
 	"author": "MoradaAPP",
 	"license": "MIT",
-	"engines": {
-		"node": "20"
-	},
 	"scripts": {
 		"build": "nest build",
 		"build:watch": "nest build -w",
