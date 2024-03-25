@@ -1,5 +1,5 @@
-import { condominiumRelUserDTORules } from '@app/entities/condominiumRelUser';
-import { userDTORules } from '@app/entities/user';
+import { condominiumRelUserRules } from '@app/entities/_rules/condominiumRelUser';
+import { userRules } from '@app/entities/_rules/user';
 import { Type } from 'class-transformer';
 import {
 	IsArray,
@@ -23,8 +23,8 @@ class MembersDTO {
 			message: 'O email precisa ser um email válido',
 		},
 	)
-	@MaxLength(userDTORules.email.maxLength, {
-		message: `O email precisa conter no máximo ${userDTORules.email.maxLength} caracteres`,
+	@MaxLength(userRules.email.maxLength, {
+		message: `O email precisa conter no máximo ${userRules.email.maxLength} caracteres`,
 	})
 		email: string;
 
@@ -34,30 +34,30 @@ class MembersDTO {
 			message: 'O número do apartamento precisa ser um número',
 		},
 	)
-	@Max(condominiumRelUserDTORules.apartmentNumber.maxLength, {
-		message: `O número do apartamento precisa ser menor ou igual a ${condominiumRelUserDTORules.apartmentNumber.maxLength}`,
+	@Max(condominiumRelUserRules.apartmentNumber.maxLength, {
+		message: `O número do apartamento precisa ser menor ou igual a ${condominiumRelUserRules.apartmentNumber.maxLength}`,
 	})
-	@Min(condominiumRelUserDTORules.apartmentNumber.minLength, {
-		message: `O número do apartamento precisa ser maior ou igual a ${condominiumRelUserDTORules.apartmentNumber.minLength}`,
+	@Min(condominiumRelUserRules.apartmentNumber.minLength, {
+		message: `O número do apartamento precisa ser maior ou igual a ${condominiumRelUserRules.apartmentNumber.minLength}`,
 	})
 		apartmentNumber: number;
 
 	@IsString({
 		message: 'O bloco do condomínio precisa conter caracteres válidos',
 	})
-	@MaxLength(condominiumRelUserDTORules.block.maxLength, {
-		message: `O bloco do condomínio precisa conter no máximo ${condominiumRelUserDTORules.block.maxLength} caracteres`,
+	@MaxLength(condominiumRelUserRules.block.maxLength, {
+		message: `O bloco do condomínio precisa conter no máximo ${condominiumRelUserRules.block.maxLength} caracteres`,
 	})
 		block: string;
 
 	@IsString({
 		message: 'O CPF precisa conter caracteres válidos',
 	})
-	@MinLength(userDTORules.CPF.minLength, {
-		message: `O CPF precisa conter no mínimo ${userDTORules.CPF.minLength} caracteres`,
+	@MinLength(userRules.CPF.minLength, {
+		message: `O CPF precisa conter no mínimo ${userRules.CPF.minLength} caracteres`,
 	})
-	@MaxLength(userDTORules.CPF.maxLength, {
-		message: `O CPF precisa conter no máximo ${userDTORules.CPF.maxLength} caracteres`,
+	@MaxLength(userRules.CPF.maxLength, {
+		message: `O CPF precisa conter no máximo ${userRules.CPF.maxLength} caracteres`,
 	})
 		CPF: string;
 }

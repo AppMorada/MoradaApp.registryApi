@@ -1,4 +1,4 @@
-import { userDTORules } from '@app/entities/user';
+import { userRules } from '@app/entities/_rules/user';
 import { IsEmail, IsString, MaxLength } from 'class-validator';
 
 export class ReloadInviteUserDTO {
@@ -11,8 +11,8 @@ export class ReloadInviteUserDTO {
 			message: 'O email precisa ser um email válido',
 		},
 	)
-	@MaxLength(userDTORules.email.maxLength, {
-		message: `O email precisa conter no máximo ${userDTORules.email.maxLength} caracteres`,
+	@MaxLength(userRules.email.maxLength, {
+		message: `O email precisa conter no máximo ${userRules.email.maxLength} caracteres`,
 	})
 		email: string;
 }

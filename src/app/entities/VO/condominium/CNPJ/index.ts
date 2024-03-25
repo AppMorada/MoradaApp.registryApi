@@ -1,13 +1,13 @@
 import { EntitieError } from '@app/errors/entities';
 import { EntitiesEnum, ValueObject } from '@app/entities/entities';
-import { condominiumDTORules } from '@app/entities/condominium';
+import { condominiumRules } from '@app/entities/_rules/condominium';
 
 export class CNPJ implements ValueObject<CNPJ, string> {
 	constructor(private readonly _value: string) {
 		this._value = this._value.replaceAll(/[./-]/g, '');
 
 		if (
-			this._value.length !== condominiumDTORules.CNPJ.minLength ||
+			this._value.length !== condominiumRules.CNPJ.minLength ||
 			isNaN(Number(this._value))
 		)
 			throw new EntitieError({
@@ -22,9 +22,9 @@ export class CNPJ implements ValueObject<CNPJ, string> {
 
 	static toString(input: number): string {
 		const raw = String(input);
-		if (raw.length < condominiumDTORules.CNPJ.minLength) {
+		if (raw.length < condominiumRules.CNPJ.minLength) {
 			const newPaddingValue =
-				condominiumDTORules.CNPJ.minLength - raw.length;
+				condominiumRules.CNPJ.minLength - raw.length;
 			return raw.padStart(
 				raw.length + newPaddingValue,
 				'0'.repeat(newPaddingValue),

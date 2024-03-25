@@ -1,13 +1,13 @@
 import { EntitieError } from '@app/errors/entities';
 import { EntitiesEnum, ValueObject } from '@app/entities/entities';
-import { condominiumDTORules } from '@app/entities/condominium';
+import { condominiumRules } from '@app/entities/_rules/condominium';
 
 export class CEP implements ValueObject<CEP, string> {
 	constructor(private readonly _value: string) {
 		this._value = this._value.replace(/[-]/g, '');
 
 		if (
-			this._value.length !== condominiumDTORules.CEP.minLength ||
+			this._value.length !== condominiumRules.CEP.minLength ||
 			isNaN(Number(this._value))
 		)
 			throw new EntitieError({
@@ -22,9 +22,8 @@ export class CEP implements ValueObject<CEP, string> {
 
 	static toString(input: number): string {
 		const raw = String(input);
-		if (raw.length < condominiumDTORules.CEP.minLength) {
-			const newPaddingValue =
-				condominiumDTORules.CEP.minLength - raw.length;
+		if (raw.length < condominiumRules.CEP.minLength) {
+			const newPaddingValue = condominiumRules.CEP.minLength - raw.length;
 			return raw.padStart(
 				raw.length + newPaddingValue,
 				'0'.repeat(newPaddingValue),

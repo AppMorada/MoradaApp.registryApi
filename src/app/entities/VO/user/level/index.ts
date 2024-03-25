@@ -1,12 +1,12 @@
 import { EntitieError } from '@app/errors/entities';
 import { EntitiesEnum, ValueObject } from '@app/entities/entities';
-import { condominiumRelUserDTORules } from '@app/entities/condominiumRelUser';
+import { condominiumRelUserRules } from '@app/entities/_rules/condominiumRelUser';
 
 export class Level implements ValueObject<Level, number> {
 	constructor(private readonly _value: number) {
 		if (
-			_value > condominiumRelUserDTORules.level.maxLength ||
-			_value < condominiumRelUserDTORules.level.minLength
+			_value > condominiumRelUserRules.level.maxLength ||
+			_value < condominiumRelUserRules.level.minLength
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,

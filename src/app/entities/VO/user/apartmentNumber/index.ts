@@ -1,16 +1,16 @@
 import { EntitieError } from '@app/errors/entities';
 import { EntitiesEnum, ValueObject } from '@app/entities/entities';
-import { condominiumRelUserDTORules } from '@app/entities/condominiumRelUser';
+import { condominiumRelUserRules } from '@app/entities/_rules/condominiumRelUser';
 
 export class ApartmentNumber implements ValueObject<ApartmentNumber, number> {
 	constructor(private readonly _value: number) {
 		if (
-			_value > condominiumRelUserDTORules.apartmentNumber.maxLength ||
-			_value < condominiumRelUserDTORules.apartmentNumber.minLength
+			_value > condominiumRelUserRules.apartmentNumber.maxLength ||
+			_value < condominiumRelUserRules.apartmentNumber.minLength
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: `O número do apartamento deve ser menor que ${condominiumRelUserDTORules.apartmentNumber.maxLength} e maior que ${condominiumRelUserDTORules.apartmentNumber.minLength}`,
+				message: `O número do apartamento deve ser menor que ${condominiumRelUserRules.apartmentNumber.maxLength} e maior que ${condominiumRelUserRules.apartmentNumber.minLength}`,
 			});
 	}
 
