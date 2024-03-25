@@ -111,7 +111,7 @@
 		"eslint": "^8.55.0",
 		"eslint-config-standard-with-typescript": "^39.1.1",
 		"eslint-plugin-import": "^2.29.1",
-		"eslint-plugin-n": "^16.4.0",
+		"eslint-plugin-n": "^16.6.2",
 		"eslint-plugin-promise": "^6.1.1",
 		"firebase-functions-test": "^3.1.0",
 		"husky": "^8.0.3",
