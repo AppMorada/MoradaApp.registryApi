@@ -1,16 +1,16 @@
 import { EntitieError } from '@app/errors/entities';
 import { EntitiesEnum, ValueObject } from '@app/entities/entities';
-import { userDTORules } from '@app/entities/user';
+import { userRules } from '@app/entities/_rules/user';
 
 export class Password implements ValueObject<Password, string> {
 	constructor(private readonly _value: string) {
 		if (
-			_value.length > userDTORules.password.maxLength ||
-			_value.length < userDTORules.password.minLength
+			_value.length > userRules.password.maxLength ||
+			_value.length < userRules.password.minLength
 		)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: `A quantidade de caracteres da senha deve ser menor que ${userDTORules.password.maxLength} e maior que ${userDTORules.password.minLength}`,
+				message: `A quantidade de caracteres da senha deve ser menor que ${userRules.password.maxLength} e maior que ${userRules.password.minLength}`,
 			});
 	}
 

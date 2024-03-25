@@ -23,35 +23,6 @@ export type TInputPropsCondominium = {
 	updatedAt?: Date;
 };
 
-export const condominiumDTORules = {
-	name: {
-		minLength: 2,
-		maxLength: 120,
-		type: 'string',
-	},
-	CEP: {
-		minLength: 8,
-		maxLength: 9,
-		type: 'string',
-	},
-	num: {
-		minLength: 0,
-		maxLength: 2147483647,
-		type: 'number',
-	},
-	CNPJ: {
-		minLength: 14,
-		maxLength: 18,
-		type: 'string',
-	},
-	createdAt: {
-		type: Date,
-	},
-	updatedAy: {
-		type: Date,
-	},
-};
-
 export class Condominium implements Entity {
 	private readonly _id: UUID;
 	private props: IPropsCondominium;

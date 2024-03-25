@@ -1,4 +1,5 @@
-import { condominiumDTORules } from '@app/entities/condominium';
+import { condominiumRules } from '@app/entities/_rules/condominium';
+import { globalRules } from '@app/entities/_rules/global';
 import {
 	IsOptional,
 	IsNumber,
@@ -14,11 +15,11 @@ export class UpdateCondominiumDTO {
 		message: 'O nome precisa conter caracteres válidos',
 	})
 	@IsOptional()
-	@MaxLength(condominiumDTORules.name.maxLength, {
-		message: `O nome precisa conter no máximo ${condominiumDTORules.name.maxLength} caracteres`,
+	@MaxLength(globalRules.name.maxLength, {
+		message: `O nome precisa conter no máximo ${globalRules.name.maxLength} caracteres`,
 	})
-	@MinLength(condominiumDTORules.name.minLength, {
-		message: `O nome precisa conter no mínimo ${condominiumDTORules.name.minLength} caracteres`,
+	@MinLength(globalRules.name.minLength, {
+		message: `O nome precisa conter no mínimo ${globalRules.name.minLength} caracteres`,
 	})
 		name?: string;
 
@@ -26,11 +27,11 @@ export class UpdateCondominiumDTO {
 		message: 'O nome precisa conter caracteres válidos',
 	})
 	@IsOptional()
-	@MinLength(condominiumDTORules.CEP.minLength, {
-		message: `O nome precisa conter no mínimo ${condominiumDTORules.CEP.minLength} caracteres`,
+	@MinLength(condominiumRules.CEP.minLength, {
+		message: `O nome precisa conter no mínimo ${condominiumRules.CEP.minLength} caracteres`,
 	})
-	@MaxLength(condominiumDTORules.CEP.maxLength, {
-		message: `O nome precisa conter no máximo ${condominiumDTORules.CEP.maxLength} caracteres`,
+	@MaxLength(condominiumRules.CEP.maxLength, {
+		message: `O nome precisa conter no máximo ${condominiumRules.CEP.maxLength} caracteres`,
 	})
 		CEP?: string;
 
@@ -41,11 +42,11 @@ export class UpdateCondominiumDTO {
 		},
 	)
 	@IsOptional()
-	@Max(condominiumDTORules.num.maxLength, {
-		message: `O número da rua precisa ser menor ou igual a ${condominiumDTORules.num.maxLength}`,
+	@Max(condominiumRules.num.maxLength, {
+		message: `O número da rua precisa ser menor ou igual a ${condominiumRules.num.maxLength}`,
 	})
-	@Min(condominiumDTORules.num.minLength, {
-		message: `O número da rua precisa ser maior ou igual a ${condominiumDTORules.num.minLength}`,
+	@Min(condominiumRules.num.minLength, {
+		message: `O número da rua precisa ser maior ou igual a ${condominiumRules.num.minLength}`,
 	})
 		num?: number;
 }

@@ -1,15 +1,15 @@
-import { userDTORules } from '@app/entities/user';
+import { userRules } from '@app/entities/_rules/user';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class InviteUserDTO {
 	@IsString({
 		message: 'O CPF precisa conter caracteres válidos',
 	})
-	@MinLength(userDTORules.CPF.minLength, {
-		message: `O CPF precisa conter no mínimo ${userDTORules.CPF.minLength} caracteres`,
+	@MinLength(userRules.CPF.minLength, {
+		message: `O CPF precisa conter no mínimo ${userRules.CPF.minLength} caracteres`,
 	})
-	@MaxLength(userDTORules.CPF.maxLength, {
-		message: `O CPF precisa conter no máximo ${userDTORules.CPF.maxLength} caracteres`,
+	@MaxLength(userRules.CPF.maxLength, {
+		message: `O CPF precisa conter no máximo ${userRules.CPF.maxLength} caracteres`,
 	})
 		CPF: string;
 
@@ -22,8 +22,8 @@ export class InviteUserDTO {
 			message: 'O email precisa ser um email válido',
 		},
 	)
-	@MaxLength(userDTORules.email.maxLength, {
-		message: `O email precisa conter no máximo ${userDTORules.email.maxLength} caracteres`,
+	@MaxLength(userRules.email.maxLength, {
+		message: `O email precisa conter no máximo ${userRules.email.maxLength} caracteres`,
 	})
 		email: string;
 }

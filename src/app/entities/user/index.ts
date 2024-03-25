@@ -21,39 +21,6 @@ export type TInputPropsUser = {
 	updatedAt?: Date;
 };
 
-export const userDTORules = {
-	name: {
-		minLength: 2,
-		maxLength: 120,
-		type: 'string',
-	},
-	email: {
-		maxLength: 320,
-		type: 'string',
-	},
-	password: {
-		maxLength: 64,
-		minLength: 8,
-		type: 'string',
-	},
-	CPF: {
-		maxLength: 14,
-		minLength: 11,
-		type: 'string',
-	},
-	phoneNumber: {
-		maxLength: 20,
-		minLength: 10,
-		type: 'string',
-	},
-	createdAt: {
-		type: Date,
-	},
-	updatedAt: {
-		type: Date,
-	},
-};
-
 export class User implements Entity {
 	private props: IPropsUser;
 	private readonly _id: UUID;
