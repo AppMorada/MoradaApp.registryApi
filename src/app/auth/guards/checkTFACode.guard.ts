@@ -1,15 +1,15 @@
 import { Email } from '@app/entities/VO';
 import { GuardErrors } from '@app/errors/guard';
-import { UserRepo } from '@app/repositories/user';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTFAService } from '@app/services/login/validateTFA.service';
+import { UserRepoReadOps } from '@app/repositories/user/read';
 
 @Injectable()
 export class CheckTFACodeGuard implements CanActivate {
 	constructor(
-		private readonly userRepo: UserRepo,
+		private readonly userRepo: UserRepoReadOps,
 		private readonly validateTFA: ValidateTFAService,
 	) {}
 

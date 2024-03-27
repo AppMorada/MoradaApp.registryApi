@@ -3,20 +3,25 @@ import { communityInfosFactory } from '@tests/factories/communityInfos';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { inviteFactory } from '@tests/factories/invite';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
-import { InMemoryCommunityMembers } from '@tests/inMemoryDatabase/communityMember';
+import { InMemoryCommunityMembersReadOps } from '@tests/inMemoryDatabase/communityMember/read';
+import { InMemoryCommunityMembersWriteOps } from '@tests/inMemoryDatabase/communityMember/write';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 
 describe('Get community member by user id', () => {
 	let container: InMemoryContainer;
-	let memberRepo: InMemoryCommunityMembers;
+	let memberRepoReadOps: InMemoryCommunityMembersReadOps;
+	let memberRepoWriteOps: InMemoryCommunityMembersWriteOps;
 
 	let sut: GetCommunityMemberGroupByCondominiumIdService;
 
 	beforeEach(() => {
 		container = new InMemoryContainer();
-		memberRepo = new InMemoryCommunityMembers(container);
+		memberRepoReadOps = new InMemoryCommunityMembersReadOps(container);
+		memberRepoWriteOps = new InMemoryCommunityMembersWriteOps(container);
 
-		sut = new GetCommunityMemberGroupByCondominiumIdService(memberRepo);
+		sut = new GetCommunityMemberGroupByCondominiumIdService(
+			memberRepoReadOps,
+		);
 	});
 
 	it('should be able to get a member', async () => {
@@ -29,7 +34,7 @@ describe('Get community member by user id', () => {
 			memberId: member.id.value,
 			recipient: uniqueRegistry.email.value,
 		});
-		await memberRepo.create({
+		await memberRepoWriteOps.create({
 			member,
 			invite,
 			communityInfos,
@@ -40,6 +45,8 @@ describe('Get community member by user id', () => {
 		});
 
 		await sut.exec({ id: member.id.value });
-		expect(memberRepo.calls.getGroupCondominiumId === 1).toEqual(true);
+		expect(memberRepoReadOps.calls.getGroupCondominiumId === 1).toEqual(
+			true,
+		);
 	});
 });

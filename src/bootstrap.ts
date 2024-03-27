@@ -31,11 +31,8 @@ export class RegistryAPIBootstrap {
 	logger: LoggerAdapter;
 	report: ReportAdapter;
 	envManager: GetEnvService;
-	trace: TraceHandler;
 
-	constructor() {
-		this.trace = new TraceHandler();
-	}
+	constructor(private readonly trace: TraceHandler) {}
 
 	private async build() {
 		this.trace.start();
@@ -95,7 +92,7 @@ export class RegistryAPIBootstrap {
 			new AxiosCheckErrorFilter(this.logger, this.report),
 		);
 		this.app.useGlobalFilters(
-			new TypeORMErrorFilter(this.logger, this.report),
+			new TypeORMErrorFilter(this.logger, this.report, this.trace),
 		);
 		this.app.useGlobalFilters(new FirestoreCustomErrorFilter());
 		this.app.useGlobalFilters(

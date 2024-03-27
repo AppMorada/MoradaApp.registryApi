@@ -3,18 +3,18 @@ import { GuardErrors } from '@app/errors/guard';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { IRefreshTokenBody, TokenType } from '../tokenTypes';
-import { UserRepo } from '@app/repositories/user';
 import { Email } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
+import { UserRepoReadOps } from '@app/repositories/user/read';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
 	constructor(
 		private readonly cookieAdapter: CookieAdapter,
 		private readonly validateToken: ValidateTokenService,
-		private readonly userRepo: UserRepo,
+		private readonly userRepo: UserRepoReadOps,
 		private readonly getEnv: GetEnvService,
 	) {}
 

@@ -14,7 +14,11 @@ import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
 import { NestInstrumentation } from '@opentelemetry/instrumentation-nestjs-core';
+import { Injectable } from '@nestjs/common';
 
+export const TRACE_ID = '__TRACE_ID__';
+
+@Injectable()
 export class TraceHandler {
 	private readonly exporter: TraceExporter | ZipkinExporter;
 	private readonly spanProcessor: SimpleSpanProcessor | BatchSpanProcessor;
@@ -67,3 +71,5 @@ export class TraceHandler {
 		});
 	}
 }
+
+export const trace = new TraceHandler();

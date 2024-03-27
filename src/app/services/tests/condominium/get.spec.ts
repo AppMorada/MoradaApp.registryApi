@@ -1,22 +1,29 @@
 import { condominiumFactory } from '@tests/factories/condominium';
-import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
+import { InMemoryCondominiumReadOps } from '@tests/inMemoryDatabase/condominium/read';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { userFactory } from '@tests/factories/user';
 import { GetCondominiumService } from '@app/services/condominium/get.service';
 import { CondominiumMapper } from '@app/mapper/condominium';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
+import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
 
 describe('Get condominium service test', () => {
 	let sut: GetCondominiumService;
 
 	let inMemoryContainer: InMemoryContainer;
-	let condominiumRepo: InMemoryCondominium;
+	let condominiumRepoReadOps: InMemoryCondominiumReadOps;
+	let condominiumRepoWriteOps: InMemoryCondominiumWriteOps;
 
 	beforeEach(() => {
 		inMemoryContainer = new InMemoryContainer();
-		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
+		condominiumRepoReadOps = new InMemoryCondominiumReadOps(
+			inMemoryContainer,
+		);
+		condominiumRepoWriteOps = new InMemoryCondominiumWriteOps(
+			inMemoryContainer,
+		);
 
-		sut = new GetCondominiumService(condominiumRepo);
+		sut = new GetCondominiumService(condominiumRepoReadOps);
 	});
 
 	it('should be able to get a condominium', async () => {
@@ -24,7 +31,11 @@ describe('Get condominium service test', () => {
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
-		await condominiumRepo.create({ user, condominium, uniqueRegistry });
+		await condominiumRepoWriteOps.create({
+			user,
+			condominium,
+			uniqueRegistry,
+		});
 		const { data: searchedCondominium } = await sut.exec({
 			id: condominium.id,
 		});
@@ -36,6 +47,6 @@ describe('Get condominium service test', () => {
 			seedKey: condominium.seedKey,
 		});
 		expect(parsedCondominium.equalTo(condominium)).toEqual(true);
-		expect(condominiumRepo.calls.find).toEqual(1);
+		expect(condominiumRepoReadOps.calls.find).toEqual(1);
 	});
 });

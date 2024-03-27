@@ -1,5 +1,5 @@
 import { UUID } from '@app/entities/VO';
-import { UserRepo } from '@app/repositories/user';
+import { UserRepoWriteOps } from '@app/repositories/user/write';
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
 
@@ -9,7 +9,7 @@ interface IProps {
 
 @Injectable()
 export class DeleteUserService implements IService {
-	constructor(private readonly userRepo: UserRepo) {}
+	constructor(private readonly userRepo: UserRepoWriteOps) {}
 
 	async exec({ id }: IProps) {
 		await this.userRepo.delete({ key: new UUID(id) });

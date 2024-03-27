@@ -1,5 +1,5 @@
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { CreateTokenService } from '@app/services/login/createToken.service';
@@ -16,10 +16,10 @@ import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
 import { CondominiumMemberGuard } from '../condominium-member.guard';
 import { condominiumFactory } from '@tests/factories/condominium';
-import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
+import { InMemoryCondominiumReadOps } from '@tests/inMemoryDatabase/condominium/read';
 import { UUID } from '@app/entities/VO';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
-import { InMemoryCommunityMembers } from '@tests/inMemoryDatabase/communityMember';
+import { InMemoryCommunityMembersReadOps } from '@tests/inMemoryDatabase/communityMember/read';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Condominium Member Guard test', () => {
@@ -29,19 +29,21 @@ describe('Condominium Member Guard test', () => {
 	let validateTokenService: ValidateTokenService;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUser;
-	let communityMemberRepo: InMemoryCommunityMembers;
-	let condominiumRepo: InMemoryCondominium;
+	let userRepo: InMemoryUserReadOps;
+	let communityMemberRepo: InMemoryCommunityMembersReadOps;
+	let condominiumRepo: InMemoryCondominiumReadOps;
 	let keyRepo: InMemoryKey;
 
 	let sut: CondominiumMemberGuard;
 
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
+		userRepo = new InMemoryUserReadOps(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
-		communityMemberRepo = new InMemoryCommunityMembers(inMemoryContainer);
-		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
+		communityMemberRepo = new InMemoryCommunityMembersReadOps(
+			inMemoryContainer,
+		);
+		condominiumRepo = new InMemoryCondominiumReadOps(inMemoryContainer);
 
 		jwtService = new JwtService();
 		getKeyService = new GetKeyService(keyRepo);

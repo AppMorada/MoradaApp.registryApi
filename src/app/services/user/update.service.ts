@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
-import { UserRepo } from '@app/repositories/user';
+import { UserRepoWriteOps } from '@app/repositories/user/write';
 import { Name, PhoneNumber, UUID } from '@app/entities/VO';
 
 interface IProps {
@@ -11,7 +11,7 @@ interface IProps {
 
 @Injectable()
 export class UpdateUserService implements IService {
-	constructor(private readonly userRepo: UserRepo) {}
+	constructor(private readonly userRepo: UserRepoWriteOps) {}
 
 	async exec(input: IProps) {
 		const name = input.name ? new Name(input.name) : undefined;

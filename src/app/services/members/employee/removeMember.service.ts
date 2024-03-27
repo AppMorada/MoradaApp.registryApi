@@ -1,5 +1,5 @@
 import { UUID } from '@app/entities/VO';
-import { EmployeeMemberRepo } from '@app/repositories/employeeMember';
+import { EmployeeMemberRepoWriteOps } from '@app/repositories/employeeMember/write';
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
 
@@ -10,7 +10,7 @@ interface IProps {
 
 @Injectable()
 export class RemoveEmployeeMemberService implements IService {
-	constructor(private readonly memberRepo: EmployeeMemberRepo) {}
+	constructor(private readonly memberRepo: EmployeeMemberRepoWriteOps) {}
 
 	async exec(input: IProps) {
 		await this.memberRepo.remove({

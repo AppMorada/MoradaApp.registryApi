@@ -1,4 +1,4 @@
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserWriteOps } from '@tests/inMemoryDatabase/user/write';
 import { userFactory } from '@tests/factories/user';
 import { DeleteUserService } from '../../user/delete.service';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
@@ -8,11 +8,11 @@ describe('Delete user test', () => {
 	let sut: DeleteUserService;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUser;
+	let userRepo: InMemoryUserWriteOps;
 
 	beforeEach(() => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
+		userRepo = new InMemoryUserWriteOps(inMemoryContainer);
 		sut = new DeleteUserService(userRepo);
 	});
 

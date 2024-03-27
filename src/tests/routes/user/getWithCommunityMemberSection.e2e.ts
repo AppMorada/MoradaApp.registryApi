@@ -5,7 +5,7 @@ import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import { GenInviteService } from '@app/services/invites/genInvite.service';
-import { CommunityMemberRepo } from '@app/repositories/communityMember';
+import { CommunityMemberWriteOpsRepo } from '@app/repositories/communityMember/write';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { communityInfosFactory } from '@tests/factories/communityInfos';
 
@@ -18,12 +18,12 @@ describe('Get user with enterprise member section E2E', () => {
 
 	let condominiumInfos: any;
 	let genInvite: GenInviteService;
-	let memberRepo: CommunityMemberRepo;
+	let memberRepo: CommunityMemberWriteOpsRepo;
 
 	beforeAll(async () => {
 		app = await startApplication();
 		genInvite = app.get(GenInviteService);
-		memberRepo = app.get(CommunityMemberRepo);
+		memberRepo = app.get(CommunityMemberWriteOpsRepo);
 	});
 
 	beforeEach(async () => {

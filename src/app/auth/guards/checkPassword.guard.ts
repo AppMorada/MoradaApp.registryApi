@@ -1,7 +1,7 @@
 import { CryptAdapter } from '@app/adapters/crypt';
 import { Email, Password } from '@app/entities/VO';
 import { GuardErrors } from '@app/errors/guard';
-import { UserRepo } from '@app/repositories/user';
+import { UserRepoReadOps } from '@app/repositories/user/read';
 import { StartLoginDTO } from '@infra/http/DTO/login/login.DTO';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { checkClassValidatorErrors } from '@utils/convertValidatorErr';
@@ -12,7 +12,7 @@ import { Request } from 'express';
 export class CheckPasswordGuard implements CanActivate {
 	constructor(
 		private readonly crypt: CryptAdapter,
-		private readonly userRepo: UserRepo,
+		private readonly userRepo: UserRepoReadOps,
 	) {}
 
 	private async validate(password: Password, hash: string) {

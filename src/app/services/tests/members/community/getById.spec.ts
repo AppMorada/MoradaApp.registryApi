@@ -1,20 +1,20 @@
 import { GetCommunityMemberByIdService } from '@app/services/members/community/getById.service';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
-import { InMemoryCommunityMembers } from '@tests/inMemoryDatabase/communityMember';
+import { InMemoryCommunityMembersReadOps } from '@tests/inMemoryDatabase/communityMember/read';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
 
 describe('Get community member by id', () => {
 	let container: InMemoryContainer;
-	let memberRepo: InMemoryCommunityMembers;
-	let userRepo: InMemoryUser;
+	let memberRepo: InMemoryCommunityMembersReadOps;
+	let userRepo: InMemoryUserReadOps;
 
 	let sut: GetCommunityMemberByIdService;
 
 	beforeEach(() => {
 		container = new InMemoryContainer();
-		memberRepo = new InMemoryCommunityMembers(container);
-		userRepo = new InMemoryUser(container);
+		memberRepo = new InMemoryCommunityMembersReadOps(container);
+		userRepo = new InMemoryUserReadOps(container);
 
 		sut = new GetCommunityMemberByIdService(memberRepo, userRepo);
 	});
