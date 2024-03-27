@@ -4,18 +4,18 @@ import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { inviteFactory } from '@tests/factories/invite';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryCommunityMembers } from '@tests/inMemoryDatabase/communityMember';
+import { InMemoryCommunityMembersWriteOps } from '@tests/inMemoryDatabase/communityMember/write';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 
 describe('Update community member by user id', () => {
 	let container: InMemoryContainer;
-	let memberRepo: InMemoryCommunityMembers;
+	let memberRepo: InMemoryCommunityMembersWriteOps;
 
 	let sut: UpdateCommunityMemberService;
 
 	beforeEach(() => {
 		container = new InMemoryContainer();
-		memberRepo = new InMemoryCommunityMembers(container);
+		memberRepo = new InMemoryCommunityMembersWriteOps(container);
 
 		sut = new UpdateCommunityMemberService(memberRepo);
 	});

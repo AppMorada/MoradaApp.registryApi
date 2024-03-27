@@ -3,9 +3,9 @@ import { IService } from '../../_IService';
 import { CondominiumMember } from '@app/entities/condominiumMember';
 import { GenInviteService } from '../../invites/genInvite.service';
 import {
-	CommunityMemberRepo,
-	CommunityMemberRepoInterfaces,
-} from '@app/repositories/communityMember';
+	CommunityMemberWriteOpsRepo,
+	CommunityMemberRepoWriteOpsInterfaces,
+} from '@app/repositories/communityMember/write';
 import { Condominium } from '@app/entities/condominium';
 import { User } from '@app/entities/user';
 import { CommunityInfos } from '@app/entities/communityInfos';
@@ -33,7 +33,7 @@ interface IProps {
 @Injectable()
 export class UploadCollectionOfMembersService implements IService {
 	constructor(
-		private readonly condominiumMemberRepo: CommunityMemberRepo,
+		private readonly condominiumMemberRepo: CommunityMemberWriteOpsRepo,
 		private readonly genInvite: GenInviteService,
 	) {}
 
@@ -68,7 +68,7 @@ export class UploadCollectionOfMembersService implements IService {
 	}
 
 	async exec(input: IProps): Promise<void> {
-		const membersInfo: CommunityMemberRepoInterfaces.createMany = {
+		const membersInfo: CommunityMemberRepoWriteOpsInterfaces.createMany = {
 			members: [],
 		};
 		const sendEmailForMember: Array<() => Promise<void>> = [];

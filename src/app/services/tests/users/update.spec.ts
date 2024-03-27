@@ -1,4 +1,4 @@
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserWriteOps } from '@tests/inMemoryDatabase/user/write';
 import { userFactory } from '@tests/factories/user';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { UpdateUserService } from '@app/services/user/update.service';
@@ -7,11 +7,11 @@ describe('Update user test', () => {
 	let sut: UpdateUserService;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUser;
+	let userRepo: InMemoryUserWriteOps;
 
 	beforeEach(() => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
+		userRepo = new InMemoryUserWriteOps(inMemoryContainer);
 		sut = new UpdateUserService(userRepo);
 	});
 

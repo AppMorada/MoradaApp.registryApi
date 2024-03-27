@@ -1,6 +1,8 @@
 import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { ReportAdapter } from '@app/adapters/reports';
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { TRACE_ID, TraceHandler } from '@infra/configs/tracing';
+import { typeORMConsts } from '@infra/storages/db/typeorm/consts';
+import { ArgumentsHost, Catch, ExceptionFilter, Inject } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { QueryFailedError } from 'typeorm';
 
@@ -16,6 +18,8 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 	constructor(
 		private readonly logger: LoggerAdapter,
 		private readonly report: ReportAdapter,
+		@Inject(TRACE_ID)
+		private readonly trace: TraceHandler,
 	) {}
 
 	private possibleErrors: ITypeORMError[] = [
@@ -28,6 +32,9 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 	];
 
 	catch(exception: QueryFailedError, host: ArgumentsHost) {
+		const tracer = this.trace.getTracer(typeORMConsts.trace.name);
+		const span = tracer.startSpan(typeORMConsts.trace.err);
+
 		const context = host.switchToHttp();
 		const response = context.getResponse<Response>();
 		const request = context.getRequest<Request>();
@@ -44,6 +51,13 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 				description: error.message,
 				stack: exception.stack,
 			});
+			span.recordException({
+				name: error.name,
+				message: error.message,
+				code: error.code,
+				stack: exception.stack,
+			});
+			span.end();
 
 			return response.status(error.httpCode).json({
 				statusCode: error.httpCode,
@@ -64,6 +78,13 @@ export class TypeORMErrorFilter implements ExceptionFilter {
 			method: request.method,
 			userAgent: request.headers?.['user-agent'],
 		});
+		span.recordException({
+			name: exception.name,
+			message: exception.message,
+			code: 500,
+			stack: exception.stack,
+		});
+		span.end();
 
 		return response.status(500).json({
 			statusCode: 500,

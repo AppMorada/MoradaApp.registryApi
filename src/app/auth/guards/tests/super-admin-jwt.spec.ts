@@ -1,5 +1,5 @@
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { CreateTokenService } from '@app/services/login/createToken.service';
@@ -17,7 +17,7 @@ import { Key } from '@app/entities/key';
 import { KeysEnum } from '@app/repositories/key';
 import { randomBytes } from 'crypto';
 import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
-import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
+import { InMemoryCondominiumReadOps } from '@tests/inMemoryDatabase/condominium/read';
 import { condominiumFactory } from '@tests/factories/condominium';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
@@ -29,15 +29,15 @@ describe('Super Admin Jwt guard test', () => {
 	let adminJwtGuard: SuperAdminJwt;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUser;
-	let condominiumRepo: InMemoryCondominium;
+	let userRepo: InMemoryUserReadOps;
+	let condominiumRepo: InMemoryCondominiumReadOps;
 	let keyRepo: InMemoryKey;
 
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
+		userRepo = new InMemoryUserReadOps(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
-		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
+		condominiumRepo = new InMemoryCondominiumReadOps(inMemoryContainer);
 
 		jwtService = new JwtService();
 		getKeyService = new GetKeyService(keyRepo);

@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserWriteOps } from '@tests/inMemoryDatabase/user/write';
 import { CreateTokenService } from '../../login/createToken.service';
 import { userFactory } from '@tests/factories/user';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
@@ -17,11 +17,11 @@ describe('Create token test', () => {
 
 	let inMemoryContainer: InMemoryContainer;
 	let keyRepo: InMemoryKey;
-	let userRepo: InMemoryUser;
+	let userRepo: InMemoryUserWriteOps;
 
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
+		userRepo = new InMemoryUserWriteOps(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
 		tokenService = new JwtService();
 

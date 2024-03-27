@@ -1,5 +1,5 @@
 import { CepGateway } from '@app/gateways/CEP.gateway';
-import { CondominiumRepo } from '@app/repositories/condominium';
+import { CondominiumRepoWriteOps } from '@app/repositories/condominium/write';
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
 import { Condominium } from '@app/entities/condominium';
@@ -27,7 +27,7 @@ interface IProps {
 @Injectable()
 export class CreateCondominiumService implements IService {
 	constructor(
-		private readonly condominiumRepo: CondominiumRepo,
+		private readonly condominiumRepo: CondominiumRepoWriteOps,
 		private readonly cepGate: CepGateway,
 		private readonly cryptAdapter: CryptAdapter,
 	) {}

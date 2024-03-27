@@ -3,20 +3,23 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryEmployeeMembers } from '@tests/inMemoryDatabase/employeeMember';
+import { InMemoryEmployeeMembersReadOps } from '@tests/inMemoryDatabase/employeeMember/read';
+import { InMemoryEmployeeMembersWriteOps } from '@tests/inMemoryDatabase/employeeMember/write';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 
 describe('Get employee member by user id', () => {
 	let container: InMemoryContainer;
-	let memberRepo: InMemoryEmployeeMembers;
+	let memberRepoReadOps: InMemoryEmployeeMembersReadOps;
+	let memberRepoWriteOps: InMemoryEmployeeMembersWriteOps;
 
 	let sut: GetEmployeeMemberByUserIdService;
 
 	beforeEach(() => {
 		container = new InMemoryContainer();
-		memberRepo = new InMemoryEmployeeMembers(container);
+		memberRepoReadOps = new InMemoryEmployeeMembersReadOps(container);
+		memberRepoWriteOps = new InMemoryEmployeeMembersWriteOps(container);
 
-		sut = new GetEmployeeMemberByUserIdService(memberRepo);
+		sut = new GetEmployeeMemberByUserIdService(memberRepoReadOps);
 	});
 
 	it('should be able to get a member', async () => {
@@ -30,7 +33,7 @@ describe('Get employee member by user id', () => {
 			userId: user.id.value,
 			condominiumId: condominium.id.value,
 		});
-		memberRepo.create({
+		memberRepoWriteOps.create({
 			user,
 			member,
 			rawUniqueRegistry: {
@@ -40,6 +43,6 @@ describe('Get employee member by user id', () => {
 		});
 
 		await sut.exec({ id: member.id.value });
-		expect(memberRepo.calls.getByUserId === 1).toEqual(true);
+		expect(memberRepoReadOps.calls.getByUserId === 1).toEqual(true);
 	});
 });

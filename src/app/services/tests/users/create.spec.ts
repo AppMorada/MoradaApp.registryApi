@@ -6,21 +6,21 @@ import { inviteFactory } from '@tests/factories/invite';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { communityInfosFactory } from '@tests/factories/communityInfos';
-import { InMemoryCommunityMembers } from '@tests/inMemoryDatabase/communityMember';
+import { InMemoryCommunityMembersWriteOps } from '@tests/inMemoryDatabase/communityMember/write';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Create user test', () => {
 	let sut: CreateUserService;
 	let inMemoryContainer: InMemoryContainer;
 	let inviteRepo: InMemoryInvite;
-	let memberRepo: InMemoryCommunityMembers;
+	let memberRepo: InMemoryCommunityMembersWriteOps;
 	let crypt: CryptSpy;
 
 	beforeEach(() => {
 		crypt = new CryptSpy();
 		inMemoryContainer = new InMemoryContainer();
 		inviteRepo = new InMemoryInvite(inMemoryContainer);
-		memberRepo = new InMemoryCommunityMembers(inMemoryContainer);
+		memberRepo = new InMemoryCommunityMembersWriteOps(inMemoryContainer);
 		sut = new CreateUserService(inviteRepo, crypt);
 	});
 

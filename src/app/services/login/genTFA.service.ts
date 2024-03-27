@@ -1,7 +1,7 @@
 import { CryptAdapter } from '@app/adapters/crypt';
 import { Email, UUID } from '@app/entities/VO';
 import { Injectable } from '@nestjs/common';
-import { UserRepo } from '@app/repositories/user';
+import { UserRepoReadOps } from '@app/repositories/user/read';
 import { generateStringCodeContentBasedOnUser } from '@utils/generateStringCodeContent';
 import { IService } from '../_IService';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -18,7 +18,7 @@ interface IProps {
 @Injectable()
 export class GenTFAService implements IService {
 	constructor(
-		private readonly userRepo: UserRepo,
+		private readonly userRepo: UserRepoReadOps,
 		private readonly crypt: CryptAdapter,
 		private readonly eventEmitter: EventEmitter2,
 		private readonly getKey: GetKeyService,

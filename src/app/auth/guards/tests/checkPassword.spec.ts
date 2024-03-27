@@ -1,5 +1,5 @@
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
 import { CryptAdapter, ICryptCompare } from '@app/adapters/crypt';
 import { BcryptAdapter } from '@app/adapters/bcrypt/bcryptAdapter';
 import { CheckPasswordGuard } from '../checkPassword.guard';
@@ -12,7 +12,7 @@ describe('Password guard test', () => {
 	let cryptAdapter: CryptAdapter;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUser;
+	let userRepo: InMemoryUserReadOps;
 
 	let checkPasswordGuard: CheckPasswordGuard;
 
@@ -20,7 +20,7 @@ describe('Password guard test', () => {
 		cryptAdapter = new BcryptAdapter();
 
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
+		userRepo = new InMemoryUserReadOps(inMemoryContainer);
 
 		checkPasswordGuard = new CheckPasswordGuard(cryptAdapter, userRepo);
 	});

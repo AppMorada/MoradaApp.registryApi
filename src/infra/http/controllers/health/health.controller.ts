@@ -32,6 +32,9 @@ export class HealthController {
 		const { env: MAX_MEMORY_RSS } = await this.getEnv.exec({
 			env: EnvEnum.MAX_MEMORY_RSS,
 		});
+		const { env: TIMEOUT } = await this.getEnv.exec({
+			env: EnvEnum.TYPEORM_TIMEOUT,
+		});
 
 		const repo = 'https://github.com/AppMorada/MoradaApp.Api';
 		const max_mem_heap = parseInt(MAX_MEMORY_HEAP as string);
@@ -44,6 +47,7 @@ export class HealthController {
 			() =>
 				this.typeOrmIndication.pingCheck('typeorm_client', {
 					connection: this.dataSource,
+					timeout: TIMEOUT ? parseInt(TIMEOUT) : undefined,
 				}),
 		]);
 	}

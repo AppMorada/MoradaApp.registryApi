@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
 import { UUID } from '@app/entities/VO';
-import { CondominiumRepo } from '@app/repositories/condominium';
+import { CondominiumRepoReadOps } from '@app/repositories/condominium/read';
 import {
 	CondominiumMapper,
 	TCondominiumInObject,
@@ -13,7 +13,7 @@ interface IProps {
 
 @Injectable()
 export class GetCondominiumService implements IService {
-	constructor(private readonly condominiumRepo: CondominiumRepo) {}
+	constructor(private readonly condominiumRepo: CondominiumRepoReadOps) {}
 
 	async exec(input: IProps) {
 		const raw = await this.condominiumRepo.find({ key: input.id });

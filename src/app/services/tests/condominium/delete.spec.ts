@@ -1,5 +1,5 @@
 import { condominiumFactory } from '@tests/factories/condominium';
-import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
+import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { userFactory } from '@tests/factories/user';
 import { DeleteCondominiumService } from '@app/services/condominium/delete.service';
@@ -9,11 +9,11 @@ describe('Delete condominium service test', () => {
 	let sut: DeleteCondominiumService;
 
 	let inMemoryContainer: InMemoryContainer;
-	let condominiumRepo: InMemoryCondominium;
+	let condominiumRepo: InMemoryCondominiumWriteOps;
 
 	beforeEach(() => {
 		inMemoryContainer = new InMemoryContainer();
-		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
+		condominiumRepo = new InMemoryCondominiumWriteOps(inMemoryContainer);
 
 		sut = new DeleteCondominiumService(condominiumRepo);
 	});

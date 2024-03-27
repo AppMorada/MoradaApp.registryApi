@@ -3,21 +3,21 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
-import { InMemoryEmployeeMembers } from '@tests/inMemoryDatabase/employeeMember';
+import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
+import { InMemoryEmployeeMembersWriteOps } from '@tests/inMemoryDatabase/employeeMember/write';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 
 describe('Get employee member by user id', () => {
 	let container: InMemoryContainer;
-	let memberRepo: InMemoryEmployeeMembers;
-	let condominiumRepo: InMemoryCondominium;
+	let memberRepo: InMemoryEmployeeMembersWriteOps;
+	let condominiumRepo: InMemoryCondominiumWriteOps;
 
 	let sut: RemoveEmployeeMemberService;
 
 	beforeEach(() => {
 		container = new InMemoryContainer();
-		memberRepo = new InMemoryEmployeeMembers(container);
-		condominiumRepo = new InMemoryCondominium(container);
+		memberRepo = new InMemoryEmployeeMembersWriteOps(container);
+		condominiumRepo = new InMemoryCondominiumWriteOps(container);
 
 		sut = new RemoveEmployeeMemberService(memberRepo);
 	});
