@@ -8,4 +8,9 @@ export const typeORMConsts = {
 		enterpriseMember: Symbol.for('enterprise_members'),
 		communityInfos: Symbol.for('community_infos'),
 	},
+	trace: {
+		name: 'TypeORM',
+		op: 'Database operation',
+		err: 'Database error',
+	},
 };

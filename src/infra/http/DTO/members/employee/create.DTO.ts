@@ -1,4 +1,5 @@
-import { userDTORules } from '@app/entities/user';
+import { globalRules } from '@app/entities/_rules/global';
+import { userRules } from '@app/entities/_rules/user';
 import {
 	IsOptional,
 	IsEmail,
@@ -11,11 +12,11 @@ export class CreateEmployeeMemberDTO {
 	@IsString({
 		message: 'O nome precisa conter caracteres válidos',
 	})
-	@MaxLength(userDTORules.name.maxLength, {
-		message: `O nome precisa conter no máximo ${userDTORules.name.maxLength} caracteres`,
+	@MaxLength(globalRules.name.maxLength, {
+		message: `O nome precisa conter no máximo ${globalRules.name.maxLength} caracteres`,
 	})
-	@MinLength(userDTORules.name.minLength, {
-		message: `O nome precisa conter no mínimo ${userDTORules.name.minLength} caracteres`,
+	@MinLength(globalRules.name.minLength, {
+		message: `O nome precisa conter no mínimo ${globalRules.name.minLength} caracteres`,
 	})
 		name: string;
 
@@ -28,41 +29,41 @@ export class CreateEmployeeMemberDTO {
 			message: 'O email precisa ser um email válido',
 		},
 	)
-	@MaxLength(userDTORules.email.maxLength, {
-		message: `O email precisa conter no máximo ${userDTORules.email.maxLength} caracteres`,
+	@MaxLength(userRules.email.maxLength, {
+		message: `O email precisa conter no máximo ${userRules.email.maxLength} caracteres`,
 	})
 		email: string;
 
 	@IsString({
 		message: 'A senha precisa conter caracteres válidos',
 	})
-	@MaxLength(userDTORules.password.maxLength, {
-		message: `A senha precisa conter no máximo ${userDTORules.password.maxLength} caracteres`,
+	@MaxLength(userRules.password.maxLength, {
+		message: `A senha precisa conter no máximo ${userRules.password.maxLength} caracteres`,
 	})
-	@MinLength(userDTORules.password.minLength, {
-		message: `A senha precisa conter no mínimo ${userDTORules.password.minLength} caracteres`,
+	@MinLength(userRules.password.minLength, {
+		message: `A senha precisa conter no mínimo ${userRules.password.minLength} caracteres`,
 	})
 		password: string;
 
 	@IsString({
 		message: 'O CPF precisa conter caracteres válidos',
 	})
-	@MinLength(userDTORules.CPF.minLength, {
-		message: `O CPF precisa conter no mínimo ${userDTORules.CPF.minLength} caracteres`,
+	@MinLength(userRules.CPF.minLength, {
+		message: `O CPF precisa conter no mínimo ${userRules.CPF.minLength} caracteres`,
 	})
-	@MaxLength(userDTORules.CPF.maxLength, {
-		message: `O CPF precisa conter no máximo ${userDTORules.CPF.maxLength} caracteres`,
+	@MaxLength(userRules.CPF.maxLength, {
+		message: `O CPF precisa conter no máximo ${userRules.CPF.maxLength} caracteres`,
 	})
 		CPF: string;
 
 	@IsString({
 		message: 'O número do telefone precisa conter caracteres válidos',
 	})
-	@MaxLength(userDTORules.phoneNumber.maxLength, {
-		message: `O número do telefone precisa conter no máximo ${userDTORules.phoneNumber.maxLength} caracteres`,
+	@MaxLength(userRules.phoneNumber.maxLength, {
+		message: `O número do telefone precisa conter no máximo ${userRules.phoneNumber.maxLength} caracteres`,
 	})
-	@MinLength(userDTORules.phoneNumber.minLength, {
-		message: `O número do telefone precisa conter no mínimo ${userDTORules.phoneNumber.minLength} caracteres`,
+	@MinLength(userRules.phoneNumber.minLength, {
+		message: `O número do telefone precisa conter no mínimo ${userRules.phoneNumber.minLength} caracteres`,
 	})
 	@IsOptional()
 		phoneNumber: string;

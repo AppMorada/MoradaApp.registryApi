@@ -6,22 +6,22 @@ import {
 	Injectable,
 } from '@nestjs/common';
 import { IAccessTokenBody } from '../tokenTypes';
-import { UserRepo } from '@app/repositories/user';
 import { GuardErrors } from '@app/errors/guard';
 import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
-import { CommunityMemberRepo } from '@app/repositories/communityMember';
-import { CondominiumRepo } from '@app/repositories/condominium';
+import { UserRepoReadOps } from '@app/repositories/user/read';
+import { CommunityMemberRepoReadOps } from '@app/repositories/communityMember/read';
+import { CondominiumRepoReadOps } from '@app/repositories/condominium/read';
 
 @Injectable()
 export class CondominiumMemberGuard implements CanActivate {
 	constructor(
 		private readonly validateToken: ValidateTokenService,
-		private readonly userRepo: UserRepo,
-		private readonly condominiumMemberRepo: CommunityMemberRepo,
-		private readonly condominiumRepo: CondominiumRepo,
+		private readonly userRepo: UserRepoReadOps,
+		private readonly condominiumMemberRepo: CommunityMemberRepoReadOps,
+		private readonly condominiumRepo: CondominiumRepoReadOps,
 	) {}
 
 	private async pushDatabaseContent(userId: string, condominiumId: string) {

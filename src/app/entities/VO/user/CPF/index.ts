@@ -1,6 +1,6 @@
 import { EntitieError } from '@app/errors/entities';
 import { ValueObject, EntitiesEnum } from '@app/entities/entities';
-import { userDTORules } from '@app/entities/user';
+import { userRules } from '@app/entities/_rules/user';
 
 export class CPF implements ValueObject<CPF, string> {
 	constructor(private readonly _value: string) {
@@ -53,7 +53,7 @@ export class CPF implements ValueObject<CPF, string> {
 				message: 'Valor incorreto de CPF',
 			});
 
-		if (this._value.length !== userDTORules.CPF.minLength)
+		if (this._value.length !== userRules.CPF.minLength)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
 				message: 'Valor incorreto de CPF',
@@ -66,8 +66,8 @@ export class CPF implements ValueObject<CPF, string> {
 
 	static toString(input: number): string {
 		const raw = String(input);
-		if (raw.length < userDTORules.CPF.minLength) {
-			const newPaddingValue = userDTORules.CPF.minLength - raw.length;
+		if (raw.length < userRules.CPF.minLength) {
+			const newPaddingValue = userRules.CPF.minLength - raw.length;
 			return raw.padStart(
 				raw.length + newPaddingValue,
 				'0'.repeat(newPaddingValue),

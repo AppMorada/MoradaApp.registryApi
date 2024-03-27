@@ -6,6 +6,10 @@ export interface IEnvMetadata {
 type TEnv = Record<string, IEnvMetadata>;
 
 export const environmentVariablesMetadata: TEnv = {
+	TYPEORM_TIMEOUT: {
+		name: 'TYPEORM_TIMEOUT',
+		isOptional: true,
+	},
 	ZIPKIN_TRACE_URL: {
 		name: 'ZIPKIN_TRACE_URL',
 		isOptional: true,

@@ -6,6 +6,7 @@ import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { fatalErrorHandler } from '@utils/fatalErrorHandler';
 
 export enum EnvEnum {
+	TYPEORM_TIMEOUT = 'TYPEORM_TIMEOUT',
 	ZIPKIN_TRACE_URL = 'ZIPKIN_TRACE_URL',
 	SERVICE_NAME = 'SERVICE_NAME',
 	SERVICE_VERSION = 'SERVICE_VERSION',

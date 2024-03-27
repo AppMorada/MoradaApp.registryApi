@@ -1,4 +1,5 @@
-import { userDTORules } from '@app/entities/user';
+import { globalRules } from '@app/entities/_rules/global';
+import { userRules } from '@app/entities/_rules/user';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateEmployeeMemberDTO {
@@ -6,11 +7,11 @@ export class UpdateEmployeeMemberDTO {
 		message: 'O nome precisa conter caracteres válidos',
 	})
 	@IsOptional()
-	@MaxLength(userDTORules.name.maxLength, {
-		message: `O nome precisa conter no máximo ${userDTORules.name.maxLength} caracteres`,
+	@MaxLength(globalRules.name.maxLength, {
+		message: `O nome precisa conter no máximo ${globalRules.name.maxLength} caracteres`,
 	})
-	@MinLength(userDTORules.name.minLength, {
-		message: `O nome precisa conter no mínimo ${userDTORules.name.minLength} caracteres`,
+	@MinLength(globalRules.name.minLength, {
+		message: `O nome precisa conter no mínimo ${globalRules.name.minLength} caracteres`,
 	})
 		name?: string;
 
@@ -18,11 +19,11 @@ export class UpdateEmployeeMemberDTO {
 		message: 'O número de telefone precisa conter caracteres válidos',
 	})
 	@IsOptional()
-	@MaxLength(userDTORules.phoneNumber.maxLength, {
-		message: `O número de telefone precisa conter no máximo ${userDTORules.phoneNumber.maxLength} caracteres`,
+	@MaxLength(userRules.phoneNumber.maxLength, {
+		message: `O número de telefone precisa conter no máximo ${userRules.phoneNumber.maxLength} caracteres`,
 	})
-	@MinLength(userDTORules.phoneNumber.minLength, {
-		message: `O número de telefone precisa conter no mínimo ${userDTORules.phoneNumber.minLength} caracteres`,
+	@MinLength(userRules.phoneNumber.minLength, {
+		message: `O número de telefone precisa conter no mínimo ${userRules.phoneNumber.minLength} caracteres`,
 	})
 	@IsOptional()
 		phoneNumber?: string;

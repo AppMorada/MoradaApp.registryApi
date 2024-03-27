@@ -1,16 +1,16 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { UserRepo } from '@app/repositories/user';
 import { IAccessTokenBody } from '../tokenTypes';
 import { GuardErrors } from '@app/errors/guard';
 import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
+import { UserRepoReadOps } from '@app/repositories/user/read';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
 	constructor(
-		private readonly userRepo: UserRepo,
+		private readonly userRepo: UserRepoReadOps,
 		private readonly validateToken: ValidateTokenService,
 	) {}
 

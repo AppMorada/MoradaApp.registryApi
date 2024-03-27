@@ -1,4 +1,4 @@
-import { condominiumRelUserDTORules } from '@app/entities/condominiumRelUser';
+import { condominiumRelUserRules } from '@app/entities/_rules/condominiumRelUser';
 import {
 	IsOptional,
 	IsNumber,
@@ -16,11 +16,11 @@ export class UpdateCommunityMemberDTO {
 		},
 	)
 	@IsOptional()
-	@Max(condominiumRelUserDTORules.apartmentNumber.maxLength, {
-		message: `O número do apartamento precisa ser menor ou igual a ${condominiumRelUserDTORules.apartmentNumber.maxLength}`,
+	@Max(condominiumRelUserRules.apartmentNumber.maxLength, {
+		message: `O número do apartamento precisa ser menor ou igual a ${condominiumRelUserRules.apartmentNumber.maxLength}`,
 	})
-	@Min(condominiumRelUserDTORules.apartmentNumber.minLength, {
-		message: `O número do apartamento precisa ser maior ou igual a ${condominiumRelUserDTORules.apartmentNumber.minLength}`,
+	@Min(condominiumRelUserRules.apartmentNumber.minLength, {
+		message: `O número do apartamento precisa ser maior ou igual a ${condominiumRelUserRules.apartmentNumber.minLength}`,
 	})
 		apartmentNumber?: number;
 
@@ -28,8 +28,8 @@ export class UpdateCommunityMemberDTO {
 		message: 'O bloco do condomínio precisa conter caracteres válidos',
 	})
 	@IsOptional()
-	@MaxLength(condominiumRelUserDTORules.block.maxLength, {
-		message: `O bloco do condomínio precisa conter no máximo ${condominiumRelUserDTORules.block.maxLength} caracteres`,
+	@MaxLength(condominiumRelUserRules.block.maxLength, {
+		message: `O bloco do condomínio precisa conter no máximo ${condominiumRelUserRules.block.maxLength} caracteres`,
 	})
 		block?: string;
 }

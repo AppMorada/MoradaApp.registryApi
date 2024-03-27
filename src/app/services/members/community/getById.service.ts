@@ -6,8 +6,8 @@ import {
 } from '@app/mapper/condominiumMember';
 import { UniqueRegistryMapper } from '@app/mapper/uniqueRegistry';
 import { UserMapper } from '@app/mapper/user';
-import { CommunityMemberRepo } from '@app/repositories/communityMember';
-import { UserRepo } from '@app/repositories/user';
+import { CommunityMemberRepoReadOps } from '@app/repositories/communityMember/read';
+import { UserRepoReadOps } from '@app/repositories/user/read';
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
 
@@ -31,8 +31,8 @@ interface IProps {
 @Injectable()
 export class GetCommunityMemberByIdService implements IService {
 	constructor(
-		private readonly memberRepo: CommunityMemberRepo,
-		private readonly userRepo: UserRepo,
+		private readonly memberRepo: CommunityMemberRepoReadOps,
+		private readonly userRepo: UserRepoReadOps,
 	) {}
 
 	private async getUserData(userId: string) {

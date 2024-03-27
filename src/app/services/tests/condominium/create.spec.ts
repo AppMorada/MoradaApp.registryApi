@@ -1,6 +1,6 @@
 import { CreateCondominiumService } from '../../condominium/create.service';
 import { condominiumFactory } from '@tests/factories/condominium';
-import { InMemoryCondominium } from '@tests/inMemoryDatabase/condominium';
+import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
 import { CepGatewaySpy } from '@tests/gateways/CEP.gateway';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { userFactory } from '@tests/factories/user';
@@ -11,13 +11,13 @@ describe('Create condominium service test', () => {
 	let sut: CreateCondominiumService;
 
 	let inMemoryContainer: InMemoryContainer;
-	let condominiumRepo: InMemoryCondominium;
+	let condominiumRepo: InMemoryCondominiumWriteOps;
 	let cepGateway: CepGatewaySpy;
 	let cryptAdapter: CryptSpy;
 
 	beforeEach(() => {
 		inMemoryContainer = new InMemoryContainer();
-		condominiumRepo = new InMemoryCondominium(inMemoryContainer);
+		condominiumRepo = new InMemoryCondominiumWriteOps(inMemoryContainer);
 		cepGateway = new CepGatewaySpy();
 		cryptAdapter = new CryptSpy();
 

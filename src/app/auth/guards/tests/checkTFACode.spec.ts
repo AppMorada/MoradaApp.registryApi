@@ -1,7 +1,7 @@
 import { BcryptAdapter } from '@app/adapters/bcrypt/bcryptAdapter';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
 import { CheckTFACodeGuard } from '../checkTFACode.guard';
 import { userFactory } from '@tests/factories/user';
 import { generateStringCodeContentBasedOnUser } from '@utils/generateStringCodeContent';
@@ -21,7 +21,7 @@ jest.mock('nodemailer');
 
 describe('Check TFA Code guard test', () => {
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUser;
+	let userRepo: InMemoryUserReadOps;
 	let keyRepo: InMemoryKey;
 	let getKeyService: GetKeyService;
 	let cryptAdapter: CryptAdapter;
@@ -59,7 +59,7 @@ describe('Check TFA Code guard test', () => {
 
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
+		userRepo = new InMemoryUserReadOps(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
 
 		getKeyService = new GetKeyService(keyRepo);
@@ -119,7 +119,6 @@ describe('Check TFA Code guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.create).toEqual(0);
 		expect(userRepo.calls.find).toEqual(0);
 	});
 

@@ -2,12 +2,12 @@ import { UUID } from '@app/entities/VO';
 import { CreateEmployeeUserService } from '@app/services/members/employee/create.service';
 import { CryptSpy } from '@tests/adapters/cryptSpy';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryEmployeeMembers } from '@tests/inMemoryDatabase/employeeMember';
+import { InMemoryEmployeeMembersWriteOps } from '@tests/inMemoryDatabase/employeeMember/write';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 
 describe('Get employee member by user id', () => {
 	let container: InMemoryContainer;
-	let memberRepo: InMemoryEmployeeMembers;
+	let memberRepo: InMemoryEmployeeMembersWriteOps;
 
 	let crypyAdapter: CryptSpy;
 
@@ -15,7 +15,7 @@ describe('Get employee member by user id', () => {
 
 	beforeEach(() => {
 		container = new InMemoryContainer();
-		memberRepo = new InMemoryEmployeeMembers(container);
+		memberRepo = new InMemoryEmployeeMembersWriteOps(container);
 		crypyAdapter = new CryptSpy();
 
 		sut = new CreateEmployeeUserService(crypyAdapter, memberRepo);

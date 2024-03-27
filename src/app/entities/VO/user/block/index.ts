@@ -1,13 +1,13 @@
 import { EntitieError } from '@app/errors/entities';
 import { ValueObject, EntitiesEnum } from '@app/entities/entities';
-import { condominiumRelUserDTORules } from '@app/entities/condominiumRelUser';
+import { condominiumRelUserRules } from '@app/entities/_rules/condominiumRelUser';
 
 export class Block implements ValueObject<Block, string> {
 	constructor(private readonly _value: string) {
-		if (_value.length > condominiumRelUserDTORules.block.maxLength)
+		if (_value.length > condominiumRelUserRules.block.maxLength)
 			throw new EntitieError({
 				entity: EntitiesEnum.vo,
-				message: `O número de caracteres do bloco do apartamento deve ser menor que ${condominiumRelUserDTORules.block.maxLength}`,
+				message: `O número de caracteres do bloco do apartamento deve ser menor que ${condominiumRelUserRules.block.maxLength}`,
 			});
 	}
 

@@ -1,5 +1,5 @@
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { CreateTokenService } from '@app/services/login/createToken.service';
@@ -33,7 +33,7 @@ describe('Refresh token guard test', () => {
 	let cookieAdapter: CookieAdapter;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUser;
+	let userRepo: InMemoryUserReadOps;
 	let keyRepo: InMemoryKey;
 
 	beforeEach(async () => {
@@ -41,7 +41,7 @@ describe('Refresh token guard test', () => {
 		loggerAdapter = new LoggerSpy();
 
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUser(inMemoryContainer);
+		userRepo = new InMemoryUserReadOps(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
 
 		jwtService = new JwtService();

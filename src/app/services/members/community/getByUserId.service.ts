@@ -1,5 +1,5 @@
 import { UUID } from '@app/entities/VO';
-import { CommunityMemberRepo } from '@app/repositories/communityMember';
+import { CommunityMemberRepoReadOps } from '@app/repositories/communityMember/read';
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
 
@@ -9,7 +9,7 @@ interface IProps {
 
 @Injectable()
 export class GetCommunityMemberByUserIdService implements IService {
-	constructor(private readonly memberRepo: CommunityMemberRepo) {}
+	constructor(private readonly memberRepo: CommunityMemberRepoReadOps) {}
 
 	async exec(input: IProps) {
 		const searchedMember = await this.memberRepo.getByUserId({

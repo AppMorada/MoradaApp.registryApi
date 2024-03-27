@@ -2,20 +2,20 @@ import { GenInviteService } from '@app/services/invites/genInvite.service';
 import { UploadCollectionOfMembersService } from '@app/services/members/community/uploadCollectionOfUsers';
 import { condominiumFactory } from '@tests/factories/condominium';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryCommunityMembers } from '@tests/inMemoryDatabase/communityMember';
+import { InMemoryCommunityMembersWriteOps } from '@tests/inMemoryDatabase/communityMember/write';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { GenInviteServiceSpy } from '@tests/services/genInviteService';
 
 describe('Upload collection of users', () => {
 	let container: InMemoryContainer;
-	let memberRepo: InMemoryCommunityMembers;
+	let memberRepo: InMemoryCommunityMembersWriteOps;
 	let genInvite: GenInviteService;
 
 	let sut: UploadCollectionOfMembersService;
 
 	beforeEach(() => {
 		container = new InMemoryContainer();
-		memberRepo = new InMemoryCommunityMembers(container);
+		memberRepo = new InMemoryCommunityMembersWriteOps(container);
 		genInvite = new GenInviteServiceSpy() as unknown as GenInviteService;
 
 		sut = new UploadCollectionOfMembersService(memberRepo, genInvite);

@@ -7,7 +7,7 @@ import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import { communityInfosFactory } from '@tests/factories/communityInfos';
 import { GenInviteService } from '@app/services/invites/genInvite.service';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
-import { CommunityMemberRepo } from '@app/repositories/communityMember';
+import { CommunityMemberWriteOpsRepo } from '@app/repositories/communityMember/write';
 
 describe('Create a user E2E', () => {
 	let app: INestApplication;
@@ -15,12 +15,12 @@ describe('Create a user E2E', () => {
 
 	let condominiumInfos: any;
 	let genInvite: GenInviteService;
-	let memberRepo: CommunityMemberRepo;
+	let memberRepo: CommunityMemberWriteOpsRepo;
 
 	beforeAll(async () => {
 		app = await startApplication();
 		genInvite = app.get(GenInviteService);
-		memberRepo = app.get(CommunityMemberRepo);
+		memberRepo = app.get(CommunityMemberWriteOpsRepo);
 	});
 
 	beforeEach(async () => {

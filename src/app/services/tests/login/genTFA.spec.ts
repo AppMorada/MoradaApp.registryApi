@@ -1,10 +1,10 @@
 import { CryptSpy } from '@tests/adapters/cryptSpy';
 import { GenTFAService } from '../../login/genTFA.service';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryUser } from '@tests/inMemoryDatabase/user';
+import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserRepo } from '@app/repositories/user';
+import { UserRepoReadOps } from '@app/repositories/user/read';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { EVENT_ID, EventsTypes } from '@infra/events/ids';
@@ -22,7 +22,7 @@ describe('Gen TFA Service', () => {
 	let sut: GenTFAService;
 	let app: TestingModule;
 	let cryptAdapter: CryptSpy;
-	let userRepo: InMemoryUser;
+	let userRepo: InMemoryUserReadOps;
 	let eventEmitter: EventEmitter2;
 	let getEnv: GetEnvService;
 
@@ -51,8 +51,8 @@ describe('Gen TFA Service', () => {
 					useValue: new LoggerSpy(),
 				},
 				{
-					provide: UserRepo,
-					useValue: new InMemoryUser(container),
+					provide: UserRepoReadOps,
+					useValue: new InMemoryUserReadOps(container),
 				},
 				{
 					provide: KeyRepo,
@@ -69,7 +69,7 @@ describe('Gen TFA Service', () => {
 		}).compile();
 
 		cryptAdapter = app.get(CryptAdapter);
-		userRepo = app.get(UserRepo);
+		userRepo = app.get(UserRepoReadOps);
 		sut = app.get(GenTFAService);
 		eventEmitter = app.get(EventEmitter2);
 

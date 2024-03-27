@@ -6,5 +6,7 @@
 - [ ] Atualização da documentação
 - [ ] Atualização dos testes
 - [ ] Modificações relacionadas a CI/CD
+- [ ] Refatoração do código 
+- [ ] Outro:
 
 ## Este PR gera alguma breaking change? Se sim, onde?
