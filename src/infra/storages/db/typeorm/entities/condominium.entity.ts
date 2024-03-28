@@ -13,16 +13,21 @@ import {
 import { TypeOrmInviteEntity } from './invite.entity';
 import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
 import { TypeOrmUserEntity } from './user.entity';
+import { TypeOrmCondominiumRequestEntity } from './condominiumRequest.entity';
 
 @Unique('UQ_condominiums_name', ['name'])
 @Unique('UQ_condominiums_cnpj', ['CNPJ'])
 @Unique('UQ_condominiums_cep', ['CEP'])
+@Unique('UQ_human_readable_id', ['humanReadableId'])
 @Entity({ name: 'condominiums' })
 export class TypeOrmCondominiumEntity {
 	@PrimaryGeneratedColumn('uuid', {
 		primaryKeyConstraintName: 'PK_condominiums_id',
 	})
 		id: string;
+
+	@Column({ type: 'char', length: 8, name: 'human_readable_id' })
+		humanReadableId: string;
 
 	@Column({ length: 120, type: 'varchar' })
 		name: string;
@@ -47,6 +52,12 @@ export class TypeOrmCondominiumEntity {
 
 	@OneToMany(() => TypeOrmInviteEntity, (invite) => invite.condominium)
 		invite: Relation<TypeOrmInviteEntity>[];
+
+	@OneToOne(
+		() => TypeOrmCondominiumRequestEntity,
+		(request) => request.condominium,
+	)
+		condominiumRequest: Relation<TypeOrmCondominiumRequestEntity>;
 
 	@OneToMany(
 		() => TypeOrmCondominiumMemberEntity,

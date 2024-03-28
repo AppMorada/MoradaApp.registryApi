@@ -4,16 +4,6 @@ import { CondominiumMember } from '@app/entities/condominiumMember';
 import { Invite } from '@app/entities/invite';
 
 export namespace CommunityMemberRepoWriteOpsInterfaces {
-	export interface create {
-		member: CondominiumMember;
-		communityInfos: CommunityInfos;
-		invite: Invite;
-		rawUniqueRegistry: {
-			email: Email;
-			CPF: CPF;
-		};
-	}
-
 	export interface createMany {
 		members: {
 			content: CondominiumMember;
@@ -24,6 +14,10 @@ export namespace CommunityMemberRepoWriteOpsInterfaces {
 				CPF: CPF;
 			};
 		}[];
+	}
+
+	export interface accept {
+		userId: UUID;
 	}
 
 	export interface remove {
@@ -38,16 +32,16 @@ export namespace CommunityMemberRepoWriteOpsInterfaces {
 }
 
 export abstract class CommunityMemberWriteOpsRepo {
-	abstract create(
-		input: CommunityMemberRepoWriteOpsInterfaces.create,
-	): Promise<void>;
-
 	abstract createMany(
 		input: CommunityMemberRepoWriteOpsInterfaces.createMany,
 	): Promise<void>;
 
 	abstract update(
 		input: CommunityMemberRepoWriteOpsInterfaces.update,
+	): Promise<void>;
+
+	abstract acceptRequest(
+		input: CommunityMemberRepoWriteOpsInterfaces.accept,
 	): Promise<void>;
 
 	abstract remove(

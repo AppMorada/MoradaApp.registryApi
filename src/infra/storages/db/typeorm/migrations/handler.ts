@@ -6,8 +6,8 @@ import { TypeORMService } from '../typeORM.service';
 import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.entity';
 import { TypeOrmCommunityInfosEntity } from '../entities/communityInfos.entity';
 import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
-import { FirstMigration1709706321663 } from './1709706321663-firstMigration';
-import { AddUniqueRegistries1710480251681 } from './1710480251681-addUniqueRegistries';
+import { TypeOrmCondominiumRequestEntity } from '../entities/condominiumRequest.entity';
+import { FirstMigration1711591103941 } from './1711591103941-firstMigration';
 
 const config: PostgresConnectionOptions = {
 	type: 'postgres',
@@ -19,11 +19,12 @@ const config: PostgresConnectionOptions = {
 		TypeOrmCommunityInfosEntity,
 		TypeOrmInviteEntity,
 		TypeOrmUniqueRegistryEntity,
+		TypeOrmCondominiumRequestEntity,
 	],
 	synchronize: false,
 	migrationsRun: false,
 	migrationsTableName: 'migration_typeorm',
-	migrations: [FirstMigration1709706321663, AddUniqueRegistries1710480251681],
+	migrations: [FirstMigration1711591103941],
 };
 
 const dataSource = new TypeORMService({ ...config });

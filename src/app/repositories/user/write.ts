@@ -1,4 +1,6 @@
 import { UUID, Name, PhoneNumber } from '@app/entities/VO';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
+import { User } from '@app/entities/user';
 
 export namespace UserRepoWriteOpsInterfaces {
 	export interface remove {
@@ -9,9 +11,14 @@ export namespace UserRepoWriteOpsInterfaces {
 		name?: Name;
 		phoneNumber?: PhoneNumber;
 	}
+	export interface create {
+		user: User;
+		uniqueRegistry: UniqueRegistry;
+	}
 }
 
 export abstract class UserRepoWriteOps {
+	abstract create(input: UserRepoWriteOpsInterfaces.create): Promise<void>;
 	abstract delete(input: UserRepoWriteOpsInterfaces.remove): Promise<void>;
 	abstract update(input: UserRepoWriteOpsInterfaces.update): Promise<void>;
 }

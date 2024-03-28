@@ -68,14 +68,18 @@ describe('Get user with enterprise member section E2E', () => {
 			condominiumId: condominiumInfos.id,
 		});
 
-		await memberRepo.create({
-			invite,
-			member,
-			communityInfos,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
+		await memberRepo.createMany({
+			members: [
+				{
+					invite,
+					content: member,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
 		});
 
 		const createUserResponse = await request(app.getHttpServer())

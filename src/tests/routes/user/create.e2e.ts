@@ -65,14 +65,18 @@ describe('Create a user E2E', () => {
 			condominiumId: condominiumInfos.id,
 		});
 
-		await memberRepo.create({
-			invite,
-			member,
-			communityInfos,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
+		await memberRepo.createMany({
+			members: [
+				{
+					invite,
+					content: member,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
 		});
 
 		const response = await request(app.getHttpServer())
@@ -114,14 +118,18 @@ describe('Create a user E2E', () => {
 			condominiumId: condominiumInfos.id,
 		});
 
-		await memberRepo.create({
-			invite,
-			member,
-			communityInfos,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
+		await memberRepo.createMany({
+			members: [
+				{
+					invite,
+					content: member,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
 		});
 
 		const response = await request(app.getHttpServer())

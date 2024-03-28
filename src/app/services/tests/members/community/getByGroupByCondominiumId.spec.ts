@@ -34,14 +34,18 @@ describe('Get community member by user id', () => {
 			memberId: member.id.value,
 			recipient: uniqueRegistry.email.value,
 		});
-		await memberRepoWriteOps.create({
-			member,
-			invite,
-			communityInfos,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
+		await memberRepoWriteOps.createMany({
+			members: [
+				{
+					content: member,
+					invite,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
 		});
 
 		await sut.exec({ id: member.id.value });

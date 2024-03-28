@@ -1,7 +1,9 @@
+import { generateRandomChars } from '@utils/generateRandomChars';
 import { CEP, Name, Num, CNPJ, UUID } from '../VO';
 import { Entity, ValueObject } from '../entities';
 
 interface IPropsCondominium {
+	humanReadableId: string;
 	ownerId: UUID;
 	name: Name;
 	CEP: CEP;
@@ -13,6 +15,7 @@ interface IPropsCondominium {
 }
 
 export type TInputPropsCondominium = {
+	humanReadableId?: string;
 	ownerId: string;
 	name: string;
 	CEP: string;
@@ -29,6 +32,7 @@ export class Condominium implements Entity {
 
 	constructor(content: TInputPropsCondominium, id?: string) {
 		this.props = {
+			humanReadableId: content.humanReadableId ?? generateRandomChars(8),
 			ownerId: new UUID(content.ownerId),
 			name: new Name(content.name),
 			CEP: new CEP(content.CEP),
@@ -44,6 +48,7 @@ export class Condominium implements Entity {
 	public dereference(): Condominium {
 		return new Condominium(
 			{
+				humanReadableId: this.humanReadableId,
 				ownerId: this.ownerId.value,
 				name: this.name.value,
 				CEP: this.CEP.value,
@@ -66,6 +71,7 @@ export class Condominium implements Entity {
 			ValueObject.compare(this.CEP, input.CEP) &&
 			ValueObject.compare(this.num, input.num) &&
 			ValueObject.compare(this.CNPJ, input.CNPJ) &&
+			this.humanReadableId === input.humanReadableId &&
 			this.seedKey === input.seedKey &&
 			this.props.createdAt === input.createdAt &&
 			this.props.updatedAt === input.updatedAt
@@ -80,6 +86,11 @@ export class Condominium implements Entity {
 	// OwnerID
 	get ownerId(): UUID {
 		return this.props.ownerId;
+	}
+
+	// HumanReadableId
+	get humanReadableId(): string {
+		return this.props.humanReadableId;
 	}
 
 	// SeedKey

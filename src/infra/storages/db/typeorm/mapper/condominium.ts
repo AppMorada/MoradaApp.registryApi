@@ -10,6 +10,8 @@ export class TypeOrmCondominiumMapper {
 		condominium.id = input.id.value;
 		condominium.name = input.name.value;
 		condominium.CEP = CEP.toInt(input.CEP);
+		condominium.user = input.ownerId.value;
+		condominium.humanReadableId = input.humanReadableId;
 		condominium.num = input.num.value;
 		condominium.CNPJ = input.CNPJ.value;
 		condominium.createdAt = input.createdAt;
@@ -23,6 +25,7 @@ export class TypeOrmCondominiumMapper {
 		return new Condominium(
 			{
 				ownerId: input.user as string,
+				humanReadableId: input.humanReadableId,
 				name: input.name,
 				CNPJ: CNPJ.toString(parseInt(input.CNPJ)),
 				CEP: CEP.toString(input.CEP),
@@ -38,6 +41,7 @@ export class TypeOrmCondominiumMapper {
 	static toObject(input: TypeOrmCondominiumEntity): TCondominiumInObject {
 		return {
 			id: input.id,
+			humanReadableId: input.humanReadableId,
 			ownerId: input.user as string,
 			name: input.name,
 			CNPJ: CNPJ.toString(parseInt(input.CNPJ)),

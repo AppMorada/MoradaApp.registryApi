@@ -103,6 +103,9 @@ implements EmployeeMemberRepoWriteOps
 			const user = await t.getRepository(TypeOrmUserEntity).findOne({
 				where: { id: input.userId.value },
 				loadRelationIds: true,
+				lock: {
+					mode: 'pessimistic_read',
+				},
 			});
 
 			if (!user)

@@ -32,6 +32,30 @@ export class InMemoryUserWriteOps implements UserRepoWriteOps {
 		this.condominiumMembers = container.props.condominiumMemberArr;
 	}
 
+	async create(input: UserRepoWriteOpsInterfaces.create): Promise<void> {
+		++this.calls.create;
+
+		const existentUserIndex = this.users.findIndex((item) =>
+			item.id.equalTo(input.user.id),
+		);
+		if (existentUserIndex >= 0)
+			throw new InMemoryError({
+				entity: EntitiesEnum.user,
+				message: 'User already exist',
+			});
+
+		const existentUniqueRegistryIndex = this.uniqueRegistries.findIndex(
+			(item) =>
+				ValueObject.compare(
+					item.id,
+					this.users[existentUserIndex]?.uniqueRegistryId,
+				) || item.email.equalTo(input.uniqueRegistry.email),
+		);
+		if (existentUniqueRegistryIndex < 0)
+			this.uniqueRegistries.push(input.uniqueRegistry);
+		this.users.push(input.user);
+	}
+
 	async delete(input: UserRepoWriteOpsInterfaces.remove): Promise<void> {
 		++this.calls.delete;
 

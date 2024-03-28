@@ -15,7 +15,9 @@ describe('InMemoryData test: Community Member createMany method', () => {
 	});
 
 	it('should be able to create one user', async () => {
-		const uniqueRegistry1 = uniqueRegistryFactory();
+		const uniqueRegistry1 = uniqueRegistryFactory({
+			email: 'johndoe@email.com',
+		});
 		const newMember1 = condominiumMemberFactory({
 			uniqueRegistryId: uniqueRegistry1.id.value,
 		});
@@ -29,6 +31,7 @@ describe('InMemoryData test: Community Member createMany method', () => {
 
 		const uniqueRegistry2 = uniqueRegistryFactory({
 			CPF: '344.538.175-50',
+			email: 'dianadoe@email.com',
 		});
 		const newMember2 = condominiumMemberFactory({
 			uniqueRegistryId: uniqueRegistry2.id.value,
@@ -66,6 +69,5 @@ describe('InMemoryData test: Community Member createMany method', () => {
 			}),
 		).resolves;
 		expect(sut.calls.createMany).toEqual(1);
-		expect(sut.calls.create).toEqual(2);
 	});
 });

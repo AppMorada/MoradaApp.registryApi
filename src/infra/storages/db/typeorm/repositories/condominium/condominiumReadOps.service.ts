@@ -95,4 +95,26 @@ export class TypeOrmCondominiumRepoReadOps implements CondominiumRepoReadOps {
 		const condominium = TypeOrmCondominiumMapper.toClass(rawData);
 		return condominium;
 	}
+
+	async getByHumanReadableId(
+		input: CondominiumReadOpsInterfaces.getByHumanReadableId,
+	): Promise<Condominium | undefined> {
+		const tracer = this.trace.getTracer(typeORMConsts.trace.name);
+		const span = tracer.startSpan(typeORMConsts.trace.op);
+		span.setAttribute('op.mode', 'read');
+		span.setAttribute(
+			'op.description',
+			'Get condominium based human readable id',
+		);
+
+		const raw = await this.condominiumRepo.findOne({
+			where: {
+				humanReadableId: input.id,
+			},
+		});
+
+		span.end();
+
+		return raw ? TypeOrmCondominiumMapper.toClass(raw) : undefined;
+	}
 }

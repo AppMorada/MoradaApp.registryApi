@@ -33,14 +33,18 @@ describe('Update community member by user id', () => {
 			memberId: member.id.value,
 			recipient: uniqueRegistry.email.value,
 		});
-		memberRepo.create({
-			member,
-			communityInfos,
-			invite,
-			rawUniqueRegistry: {
-				CPF: uniqueRegistry.CPF!,
-				email: uniqueRegistry.email,
-			},
+		await memberRepo.createMany({
+			members: [
+				{
+					invite,
+					content: member,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
 		});
 
 		await sut.exec({

@@ -41,6 +41,6 @@ describe('Upload collection of users', () => {
 		];
 
 		await sut.exec({ condominium, user: author, members });
-		expect(memberRepo.calls.create === 2).toEqual(true);
+		expect(memberRepo.calls.createMany === 1).toEqual(true);
 	});
 });

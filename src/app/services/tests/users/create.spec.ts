@@ -36,14 +36,18 @@ describe('Create user test', () => {
 			memberId: member.id.value,
 			recipient: uniqueRegistry.email.value,
 		});
-		await memberRepo.create({
-			member,
-			communityInfos,
-			invite,
-			rawUniqueRegistry: {
-				CPF: uniqueRegistry.CPF!,
-				email: uniqueRegistry.email,
-			},
+		await memberRepo.createMany({
+			members: [
+				{
+					invite,
+					content: member,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
 		});
 
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });

@@ -43,6 +43,15 @@ export class InMemoryCondominiumReadOps implements CondominiumRepoReadOps {
 		return searchedData.map((item) => CondominiumMapper.toObject(item));
 	}
 
+	async getByHumanReadableId(
+		input: CondominiumReadOpsInterfaces.getByHumanReadableId,
+	): Promise<Condominium | undefined> {
+		++this.calls.getCondominiumsByOwnerId;
+		return this.condominiums.find(
+			(item) => item.humanReadableId === input.id,
+		);
+	}
+
 	async find(
 		input: CondominiumReadOpsInterfaces.safeSearch,
 	): Promise<Condominium>;

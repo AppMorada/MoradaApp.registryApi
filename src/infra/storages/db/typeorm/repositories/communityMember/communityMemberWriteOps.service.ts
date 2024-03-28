@@ -28,46 +28,16 @@ implements CommunityMemberWriteOpsRepo
 		private readonly trace: TraceHandler,
 	) {}
 
-	async create(
-		input: CommunityMemberRepoWriteOpsInterfaces.create,
-	): Promise<void> {
+	async acceptRequest(): Promise<void> {
 		const tracer = this.trace.getTracer(typeORMConsts.trace.name);
 		const span = tracer.startSpan(typeORMConsts.trace.op);
 		span.setAttribute('op.mode', 'write');
-		span.setAttribute('op.description', 'Create new community member');
+		span.setAttribute(
+			'op.description',
+			'Accept condominium request and create new condominium member',
+		);
 
-		await this.dataSource.transaction(async (t) => {
-			let typeOrmUniqueRegistry = await t
-				.getRepository(TypeOrmUniqueRegistryEntity)
-				.findOne({
-					where: { email: input.rawUniqueRegistry.email.value },
-				});
-
-			if (!typeOrmUniqueRegistry) {
-				const uniqueRegistry = new UniqueRegistry({
-					email: input.rawUniqueRegistry.email.value,
-					CPF: input.rawUniqueRegistry.CPF.value,
-				});
-				typeOrmUniqueRegistry =
-					TypeOrmUniqueRegistryMapper.toTypeOrm(uniqueRegistry);
-
-				await t.insert('unique_registries', typeOrmUniqueRegistry);
-			}
-
-			const member = TypeOrmCondominiumMemberMapper.toTypeOrm(
-				input.member,
-			);
-			member.uniqueRegistry = typeOrmUniqueRegistry.id;
-
-			const communityInfo = TypeOrmCommunityInfoMapper.toTypeOrm(
-				input.communityInfos,
-			);
-			const invite = TypeOrmInviteMapper.toTypeOrm(input.invite);
-
-			await t.insert('condominium_members', member);
-			await t.insert('community_infos', communityInfo);
-			await t.insert('invites', invite);
-		});
+		// EXECUTAR TRANSACTION AQUI
 
 		span.end();
 	}
@@ -90,6 +60,9 @@ implements CommunityMemberWriteOpsRepo
 					.findOne({
 						where: {
 							email: rawUniqueRegistry.email.value,
+						},
+						lock: {
+							mode: 'pessimistic_read',
 						},
 					});
 
@@ -171,6 +144,9 @@ implements CommunityMemberWriteOpsRepo
 						id: input.id.value,
 					},
 					loadRelationIds: true,
+					lock: {
+						mode: 'pessimistic_read',
+					},
 				});
 			if (!member) return;
 
