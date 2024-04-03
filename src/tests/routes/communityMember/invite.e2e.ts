@@ -58,8 +58,8 @@ describe('Create a community member E2E', () => {
 					{
 						email: uniqueRegistry.email.value,
 						CPF: uniqueRegistry?.CPF?.value,
-						apartmentNumber: communityInfo.apartmentNumber.value,
-						block: communityInfo.block.value,
+						apartmentNumber: communityInfo?.apartmentNumber?.value,
+						block: communityInfo?.block?.value,
 					},
 				],
 			});
@@ -84,8 +84,8 @@ describe('Create a community member E2E', () => {
 							email: uniqueRegistry.email.value,
 							CPF: uniqueRegistry?.CPF?.value,
 							apartmentNumber:
-								communityInfo.apartmentNumber.value,
-							block: communityInfo.block.value,
+								communityInfo?.apartmentNumber?.value,
+							block: communityInfo?.block?.value,
 						},
 					],
 				});

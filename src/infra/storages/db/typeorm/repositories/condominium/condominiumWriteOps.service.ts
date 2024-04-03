@@ -12,6 +12,10 @@ import { TypeOrmUserMapper } from '../../mapper/user';
 import { TypeOrmUniqueRegistryEntity } from '../../entities/uniqueRegistry.entity';
 import { TypeOrmUserEntity } from '../../entities/user.entity';
 import { TRACE_ID, TraceHandler } from '@infra/configs/tracing';
+import { CEP } from '@app/entities/VO';
+import { TypeOrmCondominiumMemberEntity } from '../../entities/condominiumMember.entity';
+import { CondominiumMember } from '@app/entities/condominiumMember';
+import { TypeOrmCondominiumMemberMapper } from '../../mapper/condominiumMember';
 
 @Injectable()
 export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
@@ -38,10 +42,20 @@ export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 			const condominium = TypeOrmCondominiumMapper.toTypeOrm(
 				input.condominium,
 			);
+			const condominiumMember = new CondominiumMember({
+				role: 2,
+				userId: user.id,
+				condominiumId: condominium.id,
+				uniqueRegistryId: uniqueRegistry.id,
+			});
 
 			await t.insert(TypeOrmUniqueRegistryEntity, uniqueRegistry);
 			await t.insert(TypeOrmUserEntity, user);
 			await t.insert(TypeOrmCondominiumEntity, condominium);
+			await t.insert(
+				TypeOrmCondominiumMemberEntity,
+				TypeOrmCondominiumMemberMapper.toTypeOrm(condominiumMember),
+			);
 		});
 		span.end();
 	}
@@ -65,7 +79,7 @@ export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 
 		const modifications = {
 			name: input.name?.value,
-			CEP: input.CEP?.value,
+			CEP: input.CEP ? CEP.toInt(input.CEP) : undefined,
 			num: input.num?.value,
 		};
 
@@ -74,12 +88,10 @@ export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 			if (!modifications[key]) delete modifications[key];
 		}
 
-		await this.dataSource
-			.createQueryBuilder()
-			.update('condominiums')
-			.set(modifications)
-			.where('id = :id', { id: input.id.value })
-			.execute();
+		await this.condominiumRepo.update(
+			{ id: input.id.value },
+			modifications,
+		);
 
 		span.end();
 	}

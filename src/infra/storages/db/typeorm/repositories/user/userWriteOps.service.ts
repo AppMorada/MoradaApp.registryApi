@@ -3,24 +3,29 @@ import {
 	UserRepoWriteOpsInterfaces,
 } from '@app/repositories/user/write';
 import { Inject, Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { TypeOrmUserEntity } from '../../entities/user.entity';
 import { typeORMConsts } from '../../consts';
 import { TRACE_ID, TraceHandler } from '@infra/configs/tracing';
 import { TypeOrmUserMapper } from '../../mapper/user';
 import { TypeOrmUniqueRegistryEntity } from '../../entities/uniqueRegistry.entity';
 import { TypeOrmUniqueRegistryMapper } from '../../mapper/uniqueRegistry';
+import { TypeOrmCondominiumMemberEntity } from '../../entities/condominiumMember.entity';
 
 @Injectable()
 export class TypeOrmUserRepoWriteOps implements UserRepoWriteOps {
 	constructor(
 		@Inject(typeORMConsts.databaseProviders)
 		private readonly dataSource: DataSource,
+		@Inject(typeORMConsts.entity.user)
+		private readonly userRepo: Repository<TypeOrmUserEntity>,
 		@Inject(TRACE_ID)
 		private readonly trace: TraceHandler,
 	) {}
 
-	async create(input: UserRepoWriteOpsInterfaces.create): Promise<void> {
+	async create(
+		input: UserRepoWriteOpsInterfaces.create,
+	): Promise<UserRepoWriteOpsInterfaces.createReturn> {
 		const tracer = this.trace.getTracer(typeORMConsts.trace.name);
 		const span = tracer.startSpan(typeORMConsts.trace.op);
 		span.setAttribute('op.mode', 'write');
@@ -31,21 +36,44 @@ export class TypeOrmUserRepoWriteOps implements UserRepoWriteOps {
 			input.uniqueRegistry,
 		);
 
+		let affectedCondominiumMembers: undefined | number;
+
 		await this.dataSource.transaction(async (t) => {
 			const uniqueRegistry = await t
 				.getRepository(TypeOrmUniqueRegistryEntity)
 				.findOne({
-					where: { id: input.uniqueRegistry.id.value },
+					where: {
+						email: input.uniqueRegistry.email.value,
+						CPF: input.uniqueRegistry.CPF?.value,
+					},
 					lock: {
 						mode: 'pessimistic_read',
 					},
 				});
 			if (!uniqueRegistry)
 				await t.insert('unique_registries', parsedUniqueRegistry);
+
+			const uniqueRegistryId =
+				uniqueRegistry?.id ?? parsedUniqueRegistry.id;
+			parsedUser.uniqueRegistry = uniqueRegistryId;
 			await t.insert('users', parsedUser);
+			const result = await t
+				.getRepository(TypeOrmCondominiumMemberEntity)
+				.update(
+					{
+						uniqueRegistry: {
+							id: uniqueRegistryId,
+						},
+					},
+					{ user: parsedUser.id },
+				);
+
+			affectedCondominiumMembers = result.affected;
 		});
 
 		span.end();
+
+		return { affectedCondominiumMembers };
 	}
 
 	async delete(input: UserRepoWriteOpsInterfaces.remove): Promise<void> {
@@ -66,12 +94,9 @@ export class TypeOrmUserRepoWriteOps implements UserRepoWriteOps {
 			});
 			if (!user) return;
 
-			await t
-				.createQueryBuilder()
-				.delete()
-				.from('unique_registries')
-				.where('id = :id', { id: user.uniqueRegistry as string })
-				.execute();
+			await t.delete(TypeOrmUniqueRegistryEntity, {
+				id: user.uniqueRegistry as string,
+			});
 		});
 
 		span.end();
@@ -93,13 +118,7 @@ export class TypeOrmUserRepoWriteOps implements UserRepoWriteOps {
 			if (!modifications[key]) delete modifications[key];
 		}
 
-		await this.dataSource
-			.createQueryBuilder()
-			.update(TypeOrmUserEntity)
-			.set(modifications)
-			.where('id = :id', { id: input.id.value })
-			.execute();
-
+		await this.userRepo.update({ id: input.id.value }, modifications);
 		span.end();
 	}
 }

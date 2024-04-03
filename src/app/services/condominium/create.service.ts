@@ -65,10 +65,7 @@ export class CreateCondominiumService implements IService {
 			uniqueRegistry,
 		});
 
-		const parsedCondominium = CondominiumMapper.toObject(
-			condominium,
-		) as any;
-		delete parsedCondominium.seedKey;
+		const parsedCondominium = CondominiumMapper.toObject(condominium);
 
 		return { user, condominium: parsedCondominium, uniqueRegistry };
 	}

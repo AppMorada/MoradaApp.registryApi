@@ -43,6 +43,9 @@ describe('Create condominium E2E', () => {
 		).toEqual('string');
 
 		expect(typeof response.body?.condominium?.id).toEqual('string');
+		expect(typeof response.body?.condominium?.humanReadableId).toEqual(
+			'string',
+		);
 		expect(typeof response.body?.condominium?.ownerId).toEqual('string');
 		expect(typeof response.body?.condominium?.createdAt).toEqual('string');
 		expect(typeof response.body?.condominium?.updatedAt).toEqual('string');

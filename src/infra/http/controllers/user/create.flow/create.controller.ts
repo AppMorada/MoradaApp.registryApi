@@ -1,15 +1,13 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { User } from '@app/entities/user';
 import { UserMapper } from '@app/mapper/user';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 import { CreateUserService } from '@app/services/user/create.service';
 import { CreateUserDTO } from '@infra/http/DTO/user/create.DTO';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { USER_PREFIX } from '../consts';
 import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
-import { Invite } from '@app/entities/invite';
-import { InviteGuard } from '@app/auth/guards/invite.guard';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(USER_PREFIX)
@@ -51,34 +49,24 @@ export class CreateUserController {
 
 	@Throttle({
 		default: {
-			limit: 3,
+			limit: 5,
 			ttl: 60000,
 		},
 	})
-	@UseGuards(InviteGuard)
 	@Post()
 	async createSimpleUser(
-		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
 		@Body() body: CreateUserDTO,
 	) {
-		const invite = req.inMemoryData.invite as Invite;
-		/* eslint-disable @typescript-eslint/no-unused-vars */
-		const { CPF, code: _, ...rest } = body;
+		const { CPF, ...rest } = body;
 
 		const uniqueRegistry = new UniqueRegistry({
 			CPF,
 			email: body.email,
 		});
 		const user = UserMapper.toClass({ ...rest, tfa: false });
-		await this.createUser.exec({
-			user,
-			invite,
-			flatAndRawUniqueRegistry: {
-				email: uniqueRegistry.email.value,
-				CPF: uniqueRegistry.CPF!.value,
-			},
-		});
+		const result = await this.createUser.exec({ user, uniqueRegistry });
+		if (!result?.affectedCondominiumMembers) res.status(202);
 
 		return await this.processTokens(res, user, uniqueRegistry);
 	}

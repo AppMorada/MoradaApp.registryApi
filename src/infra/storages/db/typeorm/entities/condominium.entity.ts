@@ -10,7 +10,6 @@ import {
 	Unique,
 	UpdateDateColumn,
 } from 'typeorm';
-import { TypeOrmInviteEntity } from './invite.entity';
 import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
 import { TypeOrmUserEntity } from './user.entity';
 import { TypeOrmCondominiumRequestEntity } from './condominiumRequest.entity';
@@ -26,7 +25,7 @@ export class TypeOrmCondominiumEntity {
 	})
 		id: string;
 
-	@Column({ type: 'char', length: 8, name: 'human_readable_id' })
+	@Column({ type: 'char', length: 6, name: 'human_readable_id' })
 		humanReadableId: string;
 
 	@Column({ length: 120, type: 'varchar' })
@@ -50,14 +49,11 @@ export class TypeOrmCondominiumEntity {
 	@UpdateDateColumn({ name: 'updated_at' })
 		updatedAt: Date;
 
-	@OneToMany(() => TypeOrmInviteEntity, (invite) => invite.condominium)
-		invite: Relation<TypeOrmInviteEntity>[];
-
-	@OneToOne(
+	@OneToMany(
 		() => TypeOrmCondominiumRequestEntity,
 		(request) => request.condominium,
 	)
-		condominiumRequest: Relation<TypeOrmCondominiumRequestEntity>;
+		condominiumRequest: Relation<TypeOrmCondominiumRequestEntity[]>;
 
 	@OneToMany(
 		() => TypeOrmCondominiumMemberEntity,
@@ -74,5 +70,5 @@ export class TypeOrmCondominiumEntity {
 		referencedColumnName: 'id',
 		foreignKeyConstraintName: 'FK_condominiums_owner_id',
 	})
-		user: string;
+		user: string | Relation<TypeOrmUserEntity>;
 }

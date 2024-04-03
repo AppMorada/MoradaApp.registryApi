@@ -4,7 +4,6 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
-import { GenInviteService } from '@app/services/invites/genInvite.service';
 import { CommunityMemberWriteOpsRepo } from '@app/repositories/communityMember/write';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { communityInfosFactory } from '@tests/factories/communityInfos';
@@ -13,16 +12,14 @@ describe('Get user with enterprise member section E2E', () => {
 	let app: INestApplication;
 	const endpoints = {
 		default: '/user',
-		get: '/user/me/community-member-section',
+		get: '/user/community-member-section',
 	};
 
 	let condominiumInfos: any;
-	let genInvite: GenInviteService;
 	let memberRepo: CommunityMemberWriteOpsRepo;
 
 	beforeAll(async () => {
 		app = await startApplication();
-		genInvite = app.get(GenInviteService);
 		memberRepo = app.get(CommunityMemberWriteOpsRepo);
 	});
 
@@ -61,17 +58,9 @@ describe('Get user with enterprise member section E2E', () => {
 			memberId: member.id.value,
 		});
 
-		const { invite, unhashedCode } = await genInvite.exec({
-			memberId: member.id.value,
-			CPF: uniqueRegistry!.CPF!.value,
-			recipient: uniqueRegistry.email.value,
-			condominiumId: condominiumInfos.id,
-		});
-
 		await memberRepo.createMany({
 			members: [
 				{
-					invite,
 					content: member,
 					communityInfos,
 					rawUniqueRegistry: {
@@ -90,8 +79,10 @@ describe('Get user with enterprise member section E2E', () => {
 				email: uniqueRegistry.email.value,
 				password: '12345678',
 				CPF: uniqueRegistry.CPF?.value,
-				code: unhashedCode,
+				code: condominiumInfos?.humanReadableId,
 			});
+
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const getUserResponse = await request(app.getHttpServer())
 			.get(endpoints.get)
@@ -134,10 +125,10 @@ describe('Get user with enterprise member section E2E', () => {
 			'string',
 		);
 		expect(body?.memberInfos[0]?.communityInfo?.apartmentNumber).toEqual(
-			communityInfos.apartmentNumber.value,
+			communityInfos?.apartmentNumber?.value,
 		);
 		expect(body?.memberInfos[0]?.communityInfo?.block).toEqual(
-			communityInfos.block.value,
+			communityInfos?.block?.value,
 		);
 		expect(typeof body?.memberInfos[0]?.communityInfo?.updatedAt).toEqual(
 			'string',

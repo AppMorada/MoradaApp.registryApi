@@ -10,7 +10,6 @@ import {
 	CommunityMemberWriteOpsRepo,
 } from '@app/repositories/communityMember/write';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
-import { Invite } from '@app/entities/invite';
 
 export class InMemoryCommunityMembersWriteOps
 implements CommunityMemberWriteOpsRepo
@@ -21,7 +20,6 @@ implements CommunityMemberWriteOpsRepo
 		update: 0,
 	};
 
-	invites: Invite[];
 	users: User[];
 	condominiumMembers: CondominiumMember[];
 	condominiums: Condominium[];
@@ -29,15 +27,12 @@ implements CommunityMemberWriteOpsRepo
 	uniqueRegistries: UniqueRegistry[];
 
 	constructor(container: InMemoryContainer) {
-		this.invites = container.props.inviteArr;
 		this.users = container.props.userArr;
 		this.uniqueRegistries = container.props.uniqueRegistryArr;
 		this.condominiumMembers = container.props.condominiumMemberArr;
 		this.condominiums = container.props.condominiumArr;
 		this.communityInfos = container.props.communityInfosArr;
 	}
-
-	async acceptRequest(): Promise<void> {}
 
 	async createMany(
 		input: CommunityMemberRepoWriteOpsInterfaces.createMany,
@@ -51,16 +46,8 @@ implements CommunityMemberWriteOpsRepo
 			const communityInfos = this.communityInfos.find((item) =>
 				item.memberId.equalTo(member.content.id),
 			);
-			const searchedInvite = this.invites.find(
-				(item) =>
-					item.memberId.equalTo(member.invite.memberId) ||
-					(item.recipient.equalTo(member.rawUniqueRegistry.email) &&
-						item.condominiumId.equalTo(
-							member.content.condominiumId,
-						)),
-			);
 
-			if (searchedMember || communityInfos || searchedInvite)
+			if (searchedMember || communityInfos)
 				throw new InMemoryError({
 					entity: EntitiesEnum.condominiumMember,
 					message: 'Condominium member already exist',
@@ -68,7 +55,6 @@ implements CommunityMemberWriteOpsRepo
 
 			this.condominiumMembers.push(member.content);
 			this.communityInfos.push(member.communityInfos);
-			this.invites.push(member.invite);
 
 			const uniqueRegistry = this.uniqueRegistries.find((item) =>
 				item.email.equalTo(member.rawUniqueRegistry.email),

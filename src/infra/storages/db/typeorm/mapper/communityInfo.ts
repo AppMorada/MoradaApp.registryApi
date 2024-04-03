@@ -6,8 +6,8 @@ export class TypeOrmCommunityInfoMapper {
 	static toTypeOrm(input: CommunityInfos): TypeOrmCommunityInfosEntity {
 		const info = new TypeOrmCommunityInfosEntity();
 		info.member = input.memberId.value;
-		info.apartmentNumber = input.apartmentNumber.value;
-		info.block = input.block.value;
+		info.apartmentNumber = input.apartmentNumber?.value ?? null;
+		info.block = input.block?.value ?? null;
 		info.updatedAt = input.updatedAt;
 
 		return info;

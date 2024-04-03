@@ -15,10 +15,15 @@ export namespace UserRepoWriteOpsInterfaces {
 		user: User;
 		uniqueRegistry: UniqueRegistry;
 	}
+	export interface createReturn {
+		affectedCondominiumMembers?: number;
+	}
 }
 
 export abstract class UserRepoWriteOps {
-	abstract create(input: UserRepoWriteOpsInterfaces.create): Promise<void>;
+	abstract create(
+		input: UserRepoWriteOpsInterfaces.create,
+	): Promise<UserRepoWriteOpsInterfaces.createReturn>;
 	abstract delete(input: UserRepoWriteOpsInterfaces.remove): Promise<void>;
 	abstract update(input: UserRepoWriteOpsInterfaces.update): Promise<void>;
 }

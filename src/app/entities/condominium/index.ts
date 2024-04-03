@@ -32,7 +32,7 @@ export class Condominium implements Entity {
 
 	constructor(content: TInputPropsCondominium, id?: string) {
 		this.props = {
-			humanReadableId: content.humanReadableId ?? generateRandomChars(8),
+			humanReadableId: content.humanReadableId ?? generateRandomChars(6),
 			ownerId: new UUID(content.ownerId),
 			name: new Name(content.name),
 			CEP: new CEP(content.CEP),

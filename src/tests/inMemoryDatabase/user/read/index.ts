@@ -8,7 +8,6 @@ import { InMemoryError } from '@tests/errors/inMemoryError';
 import { InMemoryContainer } from '../../inMemoryContainer';
 
 import { CondominiumMember } from '@app/entities/condominiumMember';
-import { Invite } from '@app/entities/invite';
 import { Condominium } from '@app/entities/condominium';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { Email, UUID } from '@app/entities/VO';
@@ -18,7 +17,6 @@ export class InMemoryUserReadOps implements UserRepoReadOps {
 		find: 0,
 	};
 	users: User[];
-	invites: Invite[];
 	condominiums: Condominium[];
 	uniqueRegistries: UniqueRegistry[];
 	condominiumMembers: CondominiumMember[];
@@ -26,7 +24,6 @@ export class InMemoryUserReadOps implements UserRepoReadOps {
 	constructor(container: InMemoryContainer) {
 		this.users = container.props.userArr;
 		this.uniqueRegistries = container.props.uniqueRegistryArr;
-		this.invites = container.props.inviteArr;
 		this.condominiums = container.props.condominiumArr;
 		this.condominiumMembers = container.props.condominiumMemberArr;
 	}

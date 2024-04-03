@@ -9,15 +9,19 @@ export class TypeOrmCondominiumRequestMapper {
 		const requestEntity = new TypeOrmCondominiumRequestEntity();
 		requestEntity.createdAt = input.createdAt;
 		requestEntity.condominium = input.condominiumId.value;
+		requestEntity.message = input.message ?? null;
 		requestEntity.user = input.userId.value;
+		requestEntity.uniqueRegistry = input.uniqueRegistryId.value;
 
 		return requestEntity;
 	}
 
 	static toClass(input: TypeOrmCondominiumRequestEntity): CondominiumRequest {
 		return new CondominiumRequest({
-			condominiumId: input.condominium as string,
-			userId: input.user as string,
+			condominiumId: String(input.condominium),
+			userId: String(input.user),
+			uniqueRegistryId: String(input.uniqueRegistry),
+			message: input.message ?? null,
 			createdAt: input.createdAt,
 		});
 	}
@@ -27,8 +31,10 @@ export class TypeOrmCondominiumRequestMapper {
 	): TCondominiumRequestInObject {
 		return {
 			createdAt: input.createdAt,
-			condominiumId: input.condominium as string,
-			userId: input.user as string,
+			condominiumId: String(input.condominium),
+			uniqueRegistryId: String(input.uniqueRegistry),
+			userId: String(input.user),
+			message: input.message ?? null,
 		};
 	}
 }

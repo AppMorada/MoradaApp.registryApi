@@ -45,11 +45,28 @@ export class InMemoryCondominiumReadOps implements CondominiumRepoReadOps {
 
 	async getByHumanReadableId(
 		input: CondominiumReadOpsInterfaces.getByHumanReadableId,
+	): Promise<Condominium | undefined>;
+	async getByHumanReadableId(
+		input: CondominiumReadOpsInterfaces.getByHumanReadableIdAsSafeSearch,
+	): Promise<Condominium>;
+
+	async getByHumanReadableId(
+		input:
+			| CondominiumReadOpsInterfaces.getByHumanReadableId
+			| CondominiumReadOpsInterfaces.getByHumanReadableIdAsSafeSearch,
 	): Promise<Condominium | undefined> {
 		++this.calls.getCondominiumsByOwnerId;
-		return this.condominiums.find(
+		const existentData = this.condominiums.find(
 			(item) => item.humanReadableId === input.id,
 		);
+
+		if (!existentData && input.safeSearch)
+			throw new InMemoryError({
+				entity: EntitiesEnum.condominium,
+				message: 'Condominium not found',
+			});
+
+		return existentData;
 	}
 
 	async find(

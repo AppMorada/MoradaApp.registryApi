@@ -1,18 +1,33 @@
 import { UUID } from '@app/entities/VO';
-import { CondominiumRequest } from '@app/entities/condominiumRequest';
 import { TCondominiumRequestInObject } from '@app/mapper/condominiumRequest';
 
 export namespace CondominiumRequestRepoReadOpsInterfaces {
 	export interface search {
 		id: UUID;
 	}
+
+	export interface findByUserIdResult {
+		requests: TCondominiumRequestInObject[];
+		email: string;
+		name: string;
+	}
+
+	export interface findByCondominiumIdResult {
+		request: TCondominiumRequestInObject;
+		email: string;
+		name: string;
+	}
 }
 
 export abstract class CondominiumRequestRepoReadOps {
 	abstract findByUserId(
 		input: CondominiumRequestRepoReadOpsInterfaces.search,
-	): Promise<CondominiumRequest | undefined>;
+	): Promise<
+		CondominiumRequestRepoReadOpsInterfaces.findByUserIdResult | undefined
+	>;
 	abstract findByCondominiumId(
 		input: CondominiumRequestRepoReadOpsInterfaces.search,
-	): Promise<TCondominiumRequestInObject[]>;
+	): Promise<
+		CondominiumRequestRepoReadOpsInterfaces.findByCondominiumIdResult[]
+	>;
 }

@@ -11,7 +11,7 @@ describe('Get user with enterprise member section E2E', () => {
 		default: '/user',
 		createEmployee: (condominiumId: string) =>
 			`/condominium/${condominiumId}/as-owner/enterprise-user`,
-		get: '/user/me/enterprise-user-section',
+		get: '/user/enterprise-user-section',
 		login: '/login',
 	};
 

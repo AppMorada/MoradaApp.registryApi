@@ -9,6 +9,8 @@ export function condominiumRequestFactory(input: TOverride = {}) {
 	return new CondominiumRequest({
 		userId: UUID.genV4().value,
 		condominiumId: UUID.genV4().value,
+		uniqueRegistryId: UUID.genV4().value,
+		message: 'Simple message',
 		...input,
 	});
 }

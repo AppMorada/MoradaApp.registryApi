@@ -62,8 +62,8 @@ describe('Get a community member E2E', () => {
 					{
 						email: uniqueRegistry.email.value,
 						CPF: uniqueRegistry?.CPF?.value,
-						apartmentNumber: communityInfo.apartmentNumber.value,
-						block: communityInfo.block.value,
+						apartmentNumber: communityInfo?.apartmentNumber?.value,
+						block: communityInfo?.block?.value,
 					},
 				],
 			});
@@ -85,10 +85,10 @@ describe('Get a community member E2E', () => {
 
 		expect(typeof memberData?.communityInfos?.memberId).toEqual('string');
 		expect(memberData?.communityInfos?.apartmentNumber).toEqual(
-			communityInfo.apartmentNumber.value,
+			communityInfo?.apartmentNumber?.value,
 		);
 		expect(memberData?.communityInfos?.block).toEqual(
-			communityInfo.block.value,
+			communityInfo?.block?.value,
 		);
 
 		expect(typeof memberData?.uniqueRegistry?.id).toEqual('string');
@@ -115,8 +115,8 @@ describe('Get a community member E2E', () => {
 					{
 						email: uniqueRegistry.email.value,
 						CPF: uniqueRegistry?.CPF?.value,
-						apartmentNumber: communityInfo.apartmentNumber.value,
-						block: communityInfo.block.value,
+						apartmentNumber: communityInfo?.apartmentNumber?.value,
+						block: communityInfo?.block?.value,
 					},
 				],
 			});
@@ -144,10 +144,10 @@ describe('Get a community member E2E', () => {
 
 		expect(typeof memberData?.communityInfos?.memberId).toEqual('string');
 		expect(memberData?.communityInfos?.apartmentNumber).toEqual(
-			communityInfo.apartmentNumber.value,
+			communityInfo?.apartmentNumber?.value,
 		);
 		expect(memberData?.communityInfos?.block).toEqual(
-			communityInfo.block.value,
+			communityInfo?.block?.value,
 		);
 
 		expect(memberData?.userData).toBeNull();

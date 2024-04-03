@@ -9,7 +9,7 @@ describe('Update user E2E', () => {
 	let app: INestApplication;
 	const endpoints = {
 		default: '/user',
-		get: '/user/me/enterprise-user-section',
+		get: '/user/enterprise-user-section',
 	};
 
 	let token: any;

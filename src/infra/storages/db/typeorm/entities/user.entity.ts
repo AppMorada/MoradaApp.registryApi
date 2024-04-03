@@ -56,6 +56,6 @@ export class TypeOrmUserEntity {
 	})
 		uniqueRegistry: string | Relation<TypeOrmUniqueRegistryEntity>;
 
-	@OneToOne(() => TypeOrmCondominiumRequestEntity, (request) => request.user)
-		condominiumRequest: Relation<TypeOrmCondominiumRequestEntity>;
+	@OneToMany(() => TypeOrmCondominiumRequestEntity, (request) => request.user)
+		condominiumRequest: Relation<TypeOrmCondominiumRequestEntity[]>;
 }

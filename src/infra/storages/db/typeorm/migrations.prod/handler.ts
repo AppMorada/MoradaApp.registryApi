@@ -1,5 +1,4 @@
 import { TypeOrmCondominiumEntity } from '../entities/condominium.entity';
-import { TypeOrmInviteEntity } from '../entities/invite.entity';
 import { TypeOrmUserEntity } from '../entities/user.entity';
 import { TypeORMService } from '../typeORM.service';
 import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.entity';
@@ -19,7 +18,6 @@ const config: CockroachConnectionOptions = {
 		TypeOrmCondominiumEntity,
 		TypeOrmCondominiumMemberEntity,
 		TypeOrmCommunityInfosEntity,
-		TypeOrmInviteEntity,
 		TypeOrmUniqueRegistryEntity,
 	],
 	synchronize: false,

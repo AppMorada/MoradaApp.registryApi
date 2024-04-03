@@ -11,6 +11,7 @@ import { TypeOrmCommunityInfoMapper } from '../../mapper/communityInfo';
 import { TypeOrmUniqueRegistryEntity } from '../../entities/uniqueRegistry.entity';
 import { TypeOrmUniqueRegistryMapper } from '../../mapper/uniqueRegistry';
 import { TRACE_ID, TraceHandler } from '@infra/configs/tracing';
+import { TypeOrmCommunityInfosEntity } from '../../entities/communityInfos.entity';
 
 @Injectable()
 export class TypeOrmCommunityMemberRepoReadOps
@@ -23,9 +24,12 @@ implements CommunityMemberRepoReadOps
 		private readonly trace: TraceHandler,
 	) {}
 
-	async checkByUserAndCondominiumId(
+	async getByUserAndCondominiumId(
 		input: CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumId,
-	): Promise<number> {
+	): Promise<
+		| CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumIdReturn
+		| undefined
+	> {
 		const tracer = this.trace.getTracer(typeORMConsts.trace.name);
 		const span = tracer.startSpan(typeORMConsts.trace.op);
 		span.setAttribute('op.mode', 'read');
@@ -34,7 +38,7 @@ implements CommunityMemberRepoReadOps
 			'Checking community member based on user and condominium id',
 		);
 
-		const count = await this.dataSource
+		const raw = await this.dataSource
 			.getRepository(TypeOrmCondominiumMemberEntity)
 			.createQueryBuilder('condominium_member')
 			.innerJoinAndSelect(
@@ -49,11 +53,28 @@ implements CommunityMemberRepoReadOps
 				condominium_id: input.condominiumId.value,
 			})
 			.andWhere('condominium_member.role = 0')
-			.getCount();
+			.loadAllRelationIds({
+				relations: ['uniqueRegistry', 'user', 'condominium'],
+			})
+			.getOne();
 
 		span.end();
 
-		return count;
+		if (!raw) return undefined;
+
+		const condominiumMember = TypeOrmCondominiumMemberMapper.toClass(raw);
+
+		const typeOrmCommunityInfos =
+			raw?.communityInfos as TypeOrmCommunityInfosEntity;
+		typeOrmCommunityInfos.member = condominiumMember.id.value;
+		const communityInfos = TypeOrmCommunityInfoMapper.toClass(
+			raw.communityInfos,
+		);
+
+		return {
+			member: condominiumMember,
+			communityInfos,
+		};
 	}
 
 	async getByUserId(
