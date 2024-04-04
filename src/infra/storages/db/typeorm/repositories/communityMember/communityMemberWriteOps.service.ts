@@ -52,9 +52,6 @@ implements CommunityMemberWriteOpsRepo
 						loadRelationIds: {
 							relations: ['user'],
 						},
-						lock: {
-							mode: 'pessimistic_read',
-						},
 					});
 
 				const member =
@@ -136,9 +133,6 @@ implements CommunityMemberWriteOpsRepo
 						id: input.id.value,
 					},
 					loadRelationIds: true,
-					lock: {
-						mode: 'pessimistic_read',
-					},
 				});
 			if (!member) return;
 
