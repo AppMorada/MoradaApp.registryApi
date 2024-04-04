@@ -17,7 +17,7 @@ export class GetUserController {
 	) {}
 
 	@UseGuards(JwtGuard)
-	@Get('me/community-member-section')
+	@Get('community-member-section')
 	@HttpCode(200)
 	async getCondominiumMemberSection(@Req() req: Request) {
 		const user = req.inMemoryData.user as User;
@@ -41,7 +41,7 @@ export class GetUserController {
 	}
 
 	@UseGuards(JwtGuard)
-	@Get('me/enterprise-user-section')
+	@Get('enterprise-user-section')
 	@HttpCode(200)
 	async getEnterpriseMemberSection(@Req() req: Request) {
 		const user = req.inMemoryData.user as User;

@@ -37,8 +37,8 @@ export class DatabaseCustomErrorFilter implements ExceptionFilter {
 		{
 			name: 'Conteúdo já existe',
 			tag: DatabaseCustomErrorsTags.contentAlreadyExists,
-			message: 'O conteúdo a ser criado já existe',
-			httpCode: 401,
+			message: 'Conteúdo já existe',
+			httpCode: 409,
 		},
 		{
 			name: 'Referência perdida',

@@ -6,8 +6,7 @@ export const condominiumRelUserRules = {
 		type: 'string',
 	},
 	block: {
-		maxLength: 6,
-		option: true,
+		maxLength: 12,
 		type: 'string',
 	},
 	apartmentNumber: {

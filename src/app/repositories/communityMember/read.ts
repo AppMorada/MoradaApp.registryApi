@@ -26,6 +26,11 @@ export namespace CommunityMemberRepoReadOpsInterfaces {
 		communityInfos: ICommunityInfoAsObject;
 	}
 
+	export interface getByUserIdAndCondominiumIdReturn {
+		member: CondominiumMember;
+		communityInfos: CommunityInfos;
+	}
+
 	export interface getById {
 		id: UUID;
 	}
@@ -55,7 +60,10 @@ export abstract class CommunityMemberRepoReadOps {
 		input: CommunityMemberRepoReadOpsInterfaces.getByCondominiumId,
 	): Promise<CommunityMemberRepoReadOpsInterfaces.getByCondominiumIdReturn[]>;
 
-	abstract checkByUserAndCondominiumId(
+	abstract getByUserAndCondominiumId(
 		input: CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumId,
-	): Promise<number>;
+	): Promise<
+		| CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumIdReturn
+		| undefined
+	>;
 }

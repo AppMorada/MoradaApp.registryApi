@@ -31,11 +31,7 @@ describe('Get condominium service test', () => {
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
-		await condominiumRepoWriteOps.create({
-			user,
-			condominium,
-			uniqueRegistry,
-		});
+		await condominiumRepoWriteOps.create({ condominium });
 		const { data: searchedCondominium } = await sut.exec({
 			id: condominium.id,
 		});
@@ -44,7 +40,6 @@ describe('Get condominium service test', () => {
 
 		const parsedCondominium = CondominiumMapper.toClass({
 			...searchedCondominium!,
-			seedKey: condominium.seedKey,
 		});
 		expect(parsedCondominium.equalTo(condominium)).toEqual(true);
 		expect(condominiumRepoReadOps.calls.find).toEqual(1);

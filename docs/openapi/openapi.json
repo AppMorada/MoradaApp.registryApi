@@ -99,7 +99,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/badRequestContentAlreadyExist"
+                  "$ref": "#/components/schemas/conflictContentAlreadyExist"
                 }
               }
             }
@@ -743,7 +743,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/badRequestContentAlreadyExist"
+                  "$ref": "#/components/schemas/conflictContentAlreadyExist"
                 }
               }
             }
@@ -1003,7 +1003,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/badRequestContentAlreadyExist"
+                  "$ref": "#/components/schemas/conflictContentAlreadyExist"
                 }
               }
             }
@@ -1063,12 +1063,12 @@
               }
             }
           },
-          "401": {
-            "description": "Disparado caso o usuário não esteja autenticado no sistema",
+          "409": {
+            "description": "Disparado caso o usuário já exista",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/unauthorized"
+                  "$ref": "#/components/schemas/conflictContentAlreadyExist"
                 }
               }
             }
@@ -1445,7 +1445,7 @@
           }
         }
       },
-      "badRequestContentAlreadyExist": {
+      "conflictContentAlreadyExist": {
         "type": "object",
         "properties": {
           "statusCode": {
@@ -1470,6 +1470,10 @@
                   "type": "string",
                   "format": "UUID",
                   "description": "Número de identificação do condomínio"
+                },
+                "humanReadableId": {
+                  "type": "string",
+                  "description": "Número de identificação legível para humanos"
                 },
                 "name": {
                   "type": "string",

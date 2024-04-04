@@ -12,6 +12,16 @@ export namespace CondominiumReadOpsInterfaces {
 		key: UUID | CNPJ | CEP | Name;
 	}
 
+	export interface getByHumanReadableIdAsSafeSearch {
+		safeSearch?: true;
+		id: string;
+	}
+
+	export interface getByHumanReadableId {
+		safeSearch: undefined;
+		id: string;
+	}
+
 	export interface getCondominiumsByOwnerId {
 		id: UUID;
 	}
@@ -26,7 +36,14 @@ export abstract class CondominiumRepoReadOps {
 		input: CondominiumReadOpsInterfaces.search,
 	): Promise<Condominium | undefined>;
 
+	abstract getByHumanReadableId(
+		input: CondominiumReadOpsInterfaces.getByHumanReadableIdAsSafeSearch,
+	): Promise<Condominium>;
+	abstract getByHumanReadableId(
+		input: CondominiumReadOpsInterfaces.getByHumanReadableId,
+	): Promise<Condominium | undefined>;
+
 	abstract getCondominiumsByOwnerId(
 		input: CondominiumReadOpsInterfaces.getCondominiumsByOwnerId,
-	): Promise<Required<TCondominiumInObject>[]>;
+	): Promise<TCondominiumInObject[]>;
 }

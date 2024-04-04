@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CreateUserController } from './create.flow/create.controller';
 import { CreateUserService } from '@app/services/user/create.service';
 import { CreateTokenService } from '@app/services/login/createToken.service';
-import { GenInviteService } from '@app/services/invites/genInvite.service';
+import { SendInviteService } from '@app/services/invites/sendInvite.service';
 import { DeleteUserController } from './delete.flow/delete.controller';
 import { DeleteUserService } from '@app/services/user/delete.service';
 import { GetUserController } from './get.flow/get.controller';
@@ -24,7 +24,7 @@ import { GetCommunityMemberByUserIdService } from '@app/services/members/communi
 		JwtService,
 		CreateUserService,
 		CreateTokenService,
-		GenInviteService,
+		SendInviteService,
 		DeleteUserService,
 		GetEmployeeMemberByUserIdService,
 		GetCommunityMemberByUserIdService,
