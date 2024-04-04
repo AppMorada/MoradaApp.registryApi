@@ -14,9 +14,13 @@ export class TypeOrmCondominiumMapper {
 		condominium.humanReadableId = input.humanReadableId;
 		condominium.num = input.num.value;
 		condominium.CNPJ = input.CNPJ.value;
+		condominium.district = input.district.value;
+		condominium.city = input.city.value;
+		condominium.state = input.state.value;
+		condominium.complement = input.complement?.value ?? null;
+		condominium.reference = input.reference?.value ?? null;
 		condominium.createdAt = input.createdAt;
 		condominium.updatedAt = input.updatedAt;
-		condominium.seed_key = input.seedKey;
 
 		return condominium;
 	}
@@ -30,7 +34,11 @@ export class TypeOrmCondominiumMapper {
 				CNPJ: CNPJ.toString(parseInt(input.CNPJ)),
 				CEP: CEP.toString(input.CEP),
 				num: input.num,
-				seedKey: input.seed_key,
+				reference: input.reference ?? null,
+				complement: input.complement ?? null,
+				district: input.district,
+				city: input.city,
+				state: input.state,
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
 			},
@@ -47,7 +55,11 @@ export class TypeOrmCondominiumMapper {
 			CNPJ: CNPJ.toString(parseInt(input.CNPJ)),
 			CEP: CEP.toString(input.CEP),
 			num: input.num,
-			seedKey: input.seed_key,
+			reference: input.reference ?? null,
+			complement: input.complement ?? null,
+			district: input.district,
+			city: input.city,
+			state: input.state,
 			updatedAt: input.updatedAt,
 			createdAt: input.createdAt,
 		};

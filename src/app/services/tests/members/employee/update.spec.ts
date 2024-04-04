@@ -23,20 +23,8 @@ describe('Update employee member by user id', () => {
 	});
 
 	it('should be able to update a member', async () => {
-		const uniqueRegistryOwner = uniqueRegistryFactory({
-			email: 'owner@email.com',
-		});
-		const condominiumOwner = userFactory({
-			uniqueRegistryId: uniqueRegistryOwner.id.value,
-		});
-		const condominium = condominiumFactory({
-			ownerId: condominiumOwner.id.value,
-		});
-		await condominiumRepo.create({
-			condominium,
-			user: condominiumOwner,
-			uniqueRegistry: uniqueRegistryOwner,
-		});
+		const condominium = condominiumFactory();
+		await condominiumRepo.create({ condominium });
 
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
@@ -60,6 +48,6 @@ describe('Update employee member by user id', () => {
 			name: 'new name',
 		});
 		expect(memberRepo.calls.update === 1).toEqual(true);
-		expect(memberRepo.users[1].name.value).toEqual('new name');
+		expect(memberRepo.users[0].name.value).toEqual('new name');
 	});
 });

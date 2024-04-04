@@ -35,7 +35,7 @@ export class InMemoryCondominiumReadOps implements CondominiumRepoReadOps {
 
 	async getCondominiumsByOwnerId(
 		input: CondominiumReadOpsInterfaces.getCondominiumsByOwnerId,
-	): Promise<Required<Required<TCondominiumInObject>>[]> {
+	): Promise<TCondominiumInObject[]> {
 		++this.calls.getCondominiumsByOwnerId;
 		const searchedData = this.condominiums.filter((item) =>
 			item.ownerId.equalTo(input.id),

@@ -23,20 +23,8 @@ describe('Get employee member by user id', () => {
 	});
 
 	it('should be able to get a member', async () => {
-		const uniqueRegistryOwner = uniqueRegistryFactory({
-			email: 'owner@email.com',
-		});
-		const condominiumOwner = userFactory({
-			uniqueRegistryId: uniqueRegistryOwner.id.value,
-		});
-		const condominium = condominiumFactory({
-			ownerId: condominiumOwner.id.value,
-		});
-		await condominiumRepo.create({
-			condominium,
-			user: condominiumOwner,
-			uniqueRegistry: uniqueRegistryOwner,
-		});
+		const condominium = condominiumFactory();
+		await condominiumRepo.create({ condominium });
 
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
@@ -45,6 +33,7 @@ describe('Get employee member by user id', () => {
 			condominiumId: condominium.id.value,
 			role: 1,
 		});
+
 		await memberRepo.create({
 			user,
 			member,
@@ -59,6 +48,6 @@ describe('Get employee member by user id', () => {
 			condominiumId: condominium.id.value,
 		});
 		expect(memberRepo.calls.remove === 1).toEqual(true);
-		expect(memberRepo.users.length === 1).toEqual(true);
+		expect(memberRepo.users.length === 0).toEqual(true);
 	});
 });

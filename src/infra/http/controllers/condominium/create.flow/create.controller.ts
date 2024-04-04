@@ -1,71 +1,73 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	HttpCode,
+	Post,
+	Req,
+	SetMetadata,
+	UseGuards,
+} from '@nestjs/common';
 import { CreateCondominiumService } from '@app/services/condominium/create.service';
 import { CreateCondominiumDTO } from '@infra/http/DTO/condominium/create.DTO';
 import { CONDOMINIUM_PREFIX } from '../consts';
-import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
-import { CreateTokenService } from '@app/services/login/createToken.service';
 import { User } from '@app/entities/user';
-import { Response } from 'express';
-import { TCondominiumInObject } from '@app/mapper/condominium';
+import { Request } from 'express';
+import { JwtGuard } from '@app/auth/guards/jwt.guard';
+import { GenTFAService } from '@app/services/login/genTFA.service';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
+import { CheckTFACodeGuard } from '@app/auth/guards/checkTFACode.guard';
+import { KeysEnum } from '@app/repositories/key';
+import { guardMetadataValues } from '@app/auth/guards/_metadata';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller(CONDOMINIUM_PREFIX)
 export class CreateCondominiumController {
 	constructor(
 		private readonly createCondominium: CreateCondominiumService,
-		private readonly createToken: CreateTokenService,
-		private readonly getEnv: GetEnvService,
+		private readonly genTFA: GenTFAService,
 	) {}
 
-	private async processTokens(
-		res: Response,
-		user: User,
-		uniqueRegistry: UniqueRegistry,
-		condominium: Omit<TCondominiumInObject, 'seedKey'>,
-	) {
-		const { accessToken, refreshToken, refreshTokenExp } =
-			await this.createToken.exec({
-				user,
-				uniqueRegistry,
-			});
+	@Throttle({
+		default: {
+			limit: 3,
+			ttl: 60000,
+		},
+	})
+	@Post('validate-account')
+	@HttpCode(202)
+	@UseGuards(JwtGuard)
+	async validateAccount(@Req() req: Request) {
+		const user = req.inMemoryData.user as User;
+		const uniqueRegistry = req.inMemoryData
+			.uniqueRegistry as UniqueRegistry;
 
-		const expires = new Date(Date.now() + refreshTokenExp);
-
-		const { env: NODE_ENV } = await this.getEnv.exec({
-			env: EnvEnum.NODE_ENV,
+		await this.genTFA.exec({
+			email: uniqueRegistry.email,
+			userId: user.id,
+			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
+			existentUserContent: { user, uniqueRegistry },
 		});
-		res.cookie('refresh-token', refreshToken, {
-			expires,
-			maxAge: refreshTokenExp * 1000,
-			path: '/',
-			httpOnly: true,
-			secure: NODE_ENV === 'production' && true,
-			sameSite: 'strict',
-			signed: true,
-		});
-
-		return { accessToken, condominium };
 	}
 
+	@Throttle({
+		default: {
+			limit: 5,
+			ttl: 60000,
+		},
+	})
 	@Post()
-	async create(
-		@Res({ passthrough: true }) res: Response,
-		@Body() body: CreateCondominiumDTO,
-	) {
-		const { user, condominium, uniqueRegistry } =
-			await this.createCondominium.exec({
-				user: {
-					name: body.userName,
-					email: body.email,
-					password: body.password,
-				},
-				condominium: {
-					name: body.condominiumName,
-					CEP: body.CEP,
-					CNPJ: body.CNPJ,
-					num: body.num,
-				},
-			});
-		return await this.processTokens(res, user, uniqueRegistry, condominium);
+	@SetMetadata(
+		guardMetadataValues.checkTFACodeGuard.keyName,
+		KeysEnum.CONDOMINIUM_VALIDATION_KEY,
+	)
+	@UseGuards(CheckTFACodeGuard)
+	async create(@Req() req: Request, @Body() body: CreateCondominiumDTO) {
+		const user = req.inMemoryData.user as User;
+		const { condominium } = await this.createCondominium.exec({
+			...body,
+			ownerId: user.id.value,
+		});
+
+		return { condominium };
 	}
 }

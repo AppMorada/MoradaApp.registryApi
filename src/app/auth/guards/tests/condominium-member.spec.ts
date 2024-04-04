@@ -106,17 +106,9 @@ describe('Condominium Member Guard test', () => {
 	});
 
 	it('should be able to validate condominium member', async () => {
-		const ownerUniqueRegistry = uniqueRegistryFactory({
-			email: 'condominium_owner@email.com',
-		});
-		const ownerUser = userFactory({
-			uniqueRegistryId: ownerUniqueRegistry.id.value,
-		});
-		const condominium = condominiumFactory({ ownerId: ownerUser.id.value });
+		const condominium = condominiumFactory();
 		await condominiumRepoWriteOps.create({
 			condominium,
-			user: ownerUser,
-			uniqueRegistry: ownerUniqueRegistry,
 		});
 
 		const uniqueRegistry = uniqueRegistryFactory();

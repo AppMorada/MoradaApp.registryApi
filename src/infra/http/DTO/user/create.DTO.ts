@@ -1,6 +1,12 @@
 import { globalRules } from '@app/entities/_rules/global';
 import { userRules } from '@app/entities/_rules/user';
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+	IsEmail,
+	IsOptional,
+	IsString,
+	MaxLength,
+	MinLength,
+} from 'class-validator';
 
 export class CreateUserDTO {
 	@IsString({
@@ -48,5 +54,6 @@ export class CreateUserDTO {
 	@MaxLength(userRules.CPF.maxLength, {
 		message: `O CPF precisa conter no máximo ${userRules.CPF.maxLength} caracteres`,
 	})
+	@IsOptional()
 		CPF: string;
 }

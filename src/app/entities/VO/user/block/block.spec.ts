@@ -11,6 +11,6 @@ describe('Block Value Object test', () => {
 	});
 
 	it('should be able to throw one error: length error', () => {
-		expect(() => new Block('1234567')).toThrow(EntitieError);
+		expect(() => new Block('1'.repeat(13))).toThrow(EntitieError);
 	});
 });

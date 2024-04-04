@@ -7,7 +7,6 @@ import { TypeOrmCondominiumMemberEntity } from './entities/condominiumMember.ent
 import { TypeOrmCommunityInfosEntity } from './entities/communityInfos.entity';
 import { TypeOrmUniqueRegistryEntity } from './entities/uniqueRegistry.entity';
 import { TypeOrmCondominiumRequestEntity } from './entities/condominiumRequest.entity';
-import { FirstMigration1712034171104 } from './migrations/1712034171104-firstMigration';
 
 export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
 	new TypeORMService({
@@ -36,8 +35,6 @@ export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
 		],
 		synchronize: false,
 		migrationsRun: false,
-		migrationsTableName: 'migration_typeorm',
-		migrations: [FirstMigration1712034171104],
 	}).initialize();
 
 export const databaseProviders = [

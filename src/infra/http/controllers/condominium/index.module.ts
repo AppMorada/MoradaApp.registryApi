@@ -16,6 +16,7 @@ import { DeleteCondominiumRequestService } from '@app/services/condominiumReques
 import { ShowAllCondominiumRequestsService } from '@app/services/condominiumRequests/showAllRequests';
 import { ShowAllUserCondominiumRequestsService } from '@app/services/condominiumRequests/showAlllUserRequests';
 import { SendInviteService } from '@app/services/invites/sendInvite.service';
+import { GenTFAService } from '@app/services/login/genTFA.service';
 
 @Module({
 	controllers: [
@@ -27,6 +28,7 @@ import { SendInviteService } from '@app/services/invites/sendInvite.service';
 	],
 	providers: [
 		SendInviteService,
+		GenTFAService,
 		CreateCondominiumService,
 		AcceptCondominiumRequestService,
 		DeleteCondominiumRequestService,

@@ -40,8 +40,20 @@ export class TypeOrmCondominiumEntity {
 	@Column({ type: 'bigint', name: 'cnpj' })
 		CNPJ: string;
 
-	@Column({ name: 'seed_key', type: 'varchar', length: 60 })
-		seed_key: string;
+	@Column({ type: 'varchar', length: 60 })
+		reference: string | null;
+
+	@Column({ type: 'varchar', length: 140 })
+		district: string;
+
+	@Column({ type: 'varchar', length: 140 })
+		city: string;
+
+	@Column({ type: 'varchar', length: 140 })
+		state: string;
+
+	@Column({ type: 'varchar', length: 60 })
+		complement: string | null;
 
 	@CreateDateColumn({ name: 'created_at' })
 		createdAt: Date;

@@ -1,5 +1,16 @@
 import { generateRandomChars } from '@utils/generateRandomChars';
-import { CEP, Name, Num, CNPJ, UUID } from '../VO';
+import {
+	CEP,
+	Name,
+	Num,
+	CNPJ,
+	UUID,
+	Reference,
+	Complement,
+	District,
+	State,
+	City,
+} from '../VO';
 import { Entity, ValueObject } from '../entities';
 
 interface IPropsCondominium {
@@ -8,8 +19,12 @@ interface IPropsCondominium {
 	name: Name;
 	CEP: CEP;
 	num: Num;
+	reference?: Reference | null;
+	district: District;
+	state: State;
+	city: City;
+	complement?: Complement | null;
 	CNPJ: CNPJ;
-	seedKey: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -20,8 +35,12 @@ export type TInputPropsCondominium = {
 	name: string;
 	CEP: string;
 	num: number;
+	reference?: string | null;
+	district: string;
+	state: string;
+	city: string;
+	complement?: string | null;
 	CNPJ: string;
-	seedKey: string;
 	createdAt?: Date;
 	updatedAt?: Date;
 };
@@ -37,8 +56,16 @@ export class Condominium implements Entity {
 			name: new Name(content.name),
 			CEP: new CEP(content.CEP),
 			num: new Num(content.num),
+			district: new District(content.district),
+			city: new City(content.city),
+			state: new State(content.state),
+			complement: ValueObject.build(Complement, content.complement)
+				.allowNullish()
+				.exec(),
+			reference: ValueObject.build(Reference, content.reference)
+				.allowNullish()
+				.exec(),
 			CNPJ: new CNPJ(content.CNPJ),
-			seedKey: content.seedKey,
 			createdAt: content.createdAt ?? new Date(),
 			updatedAt: content.updatedAt ?? new Date(),
 		};
@@ -53,8 +80,16 @@ export class Condominium implements Entity {
 				name: this.name.value,
 				CEP: this.CEP.value,
 				num: this.num.value,
+				reference: this.reference
+					? this.reference.value
+					: this.reference,
+				city: this.city.value,
+				district: this.district.value,
+				state: this.state.value,
+				complement: this.complement
+					? this.complement.value
+					: this.complement,
 				CNPJ: this.CNPJ.value,
-				seedKey: this.seedKey,
 				createdAt: this.createdAt,
 				updatedAt: this.updatedAt,
 			},
@@ -71,8 +106,12 @@ export class Condominium implements Entity {
 			ValueObject.compare(this.CEP, input.CEP) &&
 			ValueObject.compare(this.num, input.num) &&
 			ValueObject.compare(this.CNPJ, input.CNPJ) &&
+			ValueObject.compare(this.district, input.district) &&
+			ValueObject.compare(this.city, input.city) &&
+			ValueObject.compare(this.state, input.state) &&
+			ValueObject.compare(this.complement, input.complement) &&
+			ValueObject.compare(this.reference, input.reference) &&
 			this.humanReadableId === input.humanReadableId &&
-			this.seedKey === input.seedKey &&
 			this.props.createdAt === input.createdAt &&
 			this.props.updatedAt === input.updatedAt
 		);
@@ -93,12 +132,7 @@ export class Condominium implements Entity {
 		return this.props.humanReadableId;
 	}
 
-	// SeedKey
-	get seedKey(): string {
-		return this.props.seedKey;
-	}
-
-	// NAME
+	// Name
 	get name(): Name {
 		return this.props.name;
 	}
@@ -114,7 +148,7 @@ export class Condominium implements Entity {
 		this.props.CEP = input;
 	}
 
-	// NUM
+	// Num
 	get num(): Num {
 		return this.props.num;
 	}
@@ -130,12 +164,52 @@ export class Condominium implements Entity {
 		this.props.CNPJ = input;
 	}
 
-	// CREATEDAT
+	// Reference
+	get reference(): Reference | undefined | null {
+		return this.props.reference;
+	}
+	set reference(input: Reference | undefined | null) {
+		this.props.reference = input;
+	}
+
+	// Complement
+	get complement(): Complement | undefined | null {
+		return this.props.complement;
+	}
+	set complement(input: Complement | undefined | null) {
+		this.props.complement = input;
+	}
+
+	// District
+	get district(): District {
+		return this.props.district;
+	}
+	set district(input: District) {
+		this.props.district = input;
+	}
+
+	// City
+	get city(): City {
+		return this.props.city;
+	}
+	set city(input: City) {
+		this.props.city = input;
+	}
+
+	// State
+	get state(): State {
+		return this.props.state;
+	}
+	set state(input: State) {
+		this.props.state = input;
+	}
+
+	// Createdat
 	get createdAt(): Date {
 		return this.props.createdAt;
 	}
 
-	// UPDATEDAT
+	// Updatedat
 	get updatedAt(): Date {
 		return this.props.updatedAt;
 	}

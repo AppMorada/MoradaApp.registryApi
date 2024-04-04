@@ -6,7 +6,7 @@ import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.en
 import { TypeOrmCommunityInfosEntity } from '../entities/communityInfos.entity';
 import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
 import { TypeOrmCondominiumRequestEntity } from '../entities/condominiumRequest.entity';
-import { FirstMigration1712034171104 } from './1712034171104-firstMigration';
+import { FirstMigration1712199170992 } from './1712199170992-firstMigration';
 
 const config: PostgresConnectionOptions = {
 	type: 'postgres',
@@ -22,7 +22,7 @@ const config: PostgresConnectionOptions = {
 	synchronize: false,
 	migrationsRun: false,
 	migrationsTableName: 'migration_typeorm',
-	migrations: [FirstMigration1712034171104],
+	migrations: [FirstMigration1712199170992],
 };
 
 const dataSource = new TypeORMService({ ...config });

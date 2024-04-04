@@ -115,7 +115,7 @@ describe('Gen TFA Service', () => {
 
 		const payload: EventsTypes.Email.ISendProps = {
 			to: uniqueRegistry.email.value,
-			subject: `${PROJECT_NAME} - Solicitação de login`,
+			subject: `${PROJECT_NAME} - Confirmação de conta`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
 				<a href="${FRONT_END_AUTH_URL}${code}">${FRONT_END_AUTH_URL}${code}</a>`,

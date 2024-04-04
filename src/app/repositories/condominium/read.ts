@@ -45,5 +45,5 @@ export abstract class CondominiumRepoReadOps {
 
 	abstract getCondominiumsByOwnerId(
 		input: CondominiumReadOpsInterfaces.getCondominiumsByOwnerId,
-	): Promise<Required<TCondominiumInObject>[]>;
+	): Promise<TCondominiumInObject[]>;
 }

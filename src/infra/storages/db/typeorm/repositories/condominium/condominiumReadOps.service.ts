@@ -30,7 +30,7 @@ export class TypeOrmCondominiumRepoReadOps implements CondominiumRepoReadOps {
 
 	async getCondominiumsByOwnerId(
 		input: CondominiumReadOpsInterfaces.getCondominiumsByOwnerId,
-	): Promise<Required<TCondominiumInObject>[]> {
+	): Promise<TCondominiumInObject[]> {
 		const tracer = this.trace.getTracer(typeORMConsts.trace.name);
 		const span = tracer.startSpan(typeORMConsts.trace.op);
 		span.setAttribute('op.mode', 'read');
@@ -45,6 +45,7 @@ export class TypeOrmCondominiumRepoReadOps implements CondominiumRepoReadOps {
 					id: input.id.value,
 				},
 			},
+			loadRelationIds: true,
 		});
 
 		span.end();

@@ -33,7 +33,7 @@ export class TypeOrmCommunityInfosEntity {
 	@Column({ type: 'int', name: 'apartment_number', nullable: true })
 		apartmentNumber: number | null;
 
-	@Column({ length: 6, type: 'varchar', nullable: true })
+	@Column({ length: 12, type: 'varchar', nullable: true })
 		block: string | null;
 
 	@UpdateDateColumn({ name: 'updated_at' })

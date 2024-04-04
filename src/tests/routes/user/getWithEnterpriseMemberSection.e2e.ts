@@ -4,10 +4,19 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
+import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { GenTFAService } from '@app/services/login/genTFA.service';
+import { KeysEnum } from '@app/repositories/key';
+import { CreateTokenService } from '@app/services/login/createToken.service';
 
 describe('Get user with enterprise member section E2E', () => {
 	let app: INestApplication;
+	let userRepo: UserRepoWriteOps;
+	let genTFA: GenTFAService;
+	let genTokens: CreateTokenService;
+
 	const endpoints = {
+		createCondominium: '/condominium',
 		default: '/user',
 		createEmployee: (condominiumId: string) =>
 			`/condominium/${condominiumId}/as-owner/enterprise-user`,
@@ -15,33 +24,51 @@ describe('Get user with enterprise member section E2E', () => {
 		login: '/login',
 	};
 
-	let token: any;
+	let adminToken: any;
 	let condominiumInfos: any;
 
 	beforeAll(async () => {
 		app = await startApplication();
+		userRepo = app.get(UserRepoWriteOps);
+		genTFA = app.get(GenTFAService);
+		genTokens = app.get(CreateTokenService);
 	});
 
 	beforeEach(async () => {
 		const condominium = condominiumFactory();
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
+		await userRepo.create({ user, uniqueRegistry });
 
+		const { code } = await genTFA.exec({
+			email: uniqueRegistry.email,
+			userId: user.id,
+			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
+		});
+
+		const { accessToken } = await genTokens.exec({ user, uniqueRegistry });
+		adminToken = accessToken;
 		const createCondominiumResponse = await request(app.getHttpServer())
-			.post('/condominium')
+			.post(endpoints.createCondominium)
 			.set('content-type', 'application/json')
+			.set('authorization', `Bearer ${code}`)
 			.send({
-				userName: user.name.value,
-				condominiumName: condominium.name.value,
+				name: condominium.name.value,
 				email: uniqueRegistry.email.value,
 				password: user.password.value,
 				CEP: condominium.CEP.value,
 				num: condominium.num.value,
 				CNPJ: condominium.CNPJ.value,
+				district: condominium.district.value,
+				city: condominium.city.value,
+				state: condominium.state.value,
+				reference: condominium?.reference?.value,
+				complement: condominium?.complement?.value,
 			});
 
+		expect(createCondominiumResponse.statusCode).toEqual(201);
+
 		condominiumInfos = createCondominiumResponse.body?.condominium;
-		token = createCondominiumResponse.body?.accessToken;
 	});
 
 	afterAll(async () => await app.close());
@@ -57,7 +84,7 @@ describe('Get user with enterprise member section E2E', () => {
 		)
 			.post(endpoints.createEmployee(condominiumInfos?.id))
 			.set('content-type', 'application/json')
-			.set('authorization', `Bearer ${token}`)
+			.set('authorization', `Bearer ${adminToken}`)
 			.send({
 				name: 'Employee',
 				email: uniqueRegistry.email.value,
@@ -95,17 +122,14 @@ describe('Get user with enterprise member section E2E', () => {
 		expect(typeof body?.uniqueRegistry?.email).toEqual('string');
 		expect(typeof body?.uniqueRegistry?.CPF).toEqual('string');
 
-		expect(typeof body?.employeeRelations[0]?.id).toEqual('string');
-		expect(typeof body?.employeeRelations[0]?.condominiumId).toEqual(
-			'string',
-		);
-		expect(typeof body?.employeeRelations[0]?.uniqueRegistryId).toEqual(
-			'string',
-		);
-		expect(typeof body?.employeeRelations[0]?.userId).toEqual('string');
-		expect(body?.employeeRelations[0]?.role).toEqual(1);
-		expect(typeof body?.employeeRelations[0]?.updatedAt).toEqual('string');
-		expect(typeof body?.employeeRelations[0]?.createdAt).toEqual('string');
+		const employeeRelation = body?.employeeRelations[0];
+		expect(typeof employeeRelation?.id).toEqual('string');
+		expect(typeof employeeRelation?.condominiumId).toEqual('string');
+		expect(typeof employeeRelation?.uniqueRegistryId).toEqual('string');
+		expect(typeof employeeRelation?.userId).toEqual('string');
+		expect(employeeRelation?.role).toEqual(1);
+		expect(typeof employeeRelation?.updatedAt).toEqual('string');
+		expect(typeof employeeRelation?.createdAt).toEqual('string');
 	});
 
 	it('should be able to throw 401 because user is not authenticated', async () => {

@@ -11,7 +11,7 @@ export interface ICondominiumRequestConvertToObject {
 
 export type TCondominiumRequestInObject = TReplace<
 	ICondominiumRequestConvertToObject,
-	{ message?: string | null }
+	{ createdAt: Date }
 >;
 
 export class CondominiumRequestMapper {
