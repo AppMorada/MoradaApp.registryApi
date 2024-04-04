@@ -21,6 +21,10 @@ import { UUID } from '@app/entities/VO';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { InMemoryCommunityMembersReadOps } from '@tests/inMemoryDatabase/communityMember/read';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
+import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
+import { InMemoryCommunityMembersWriteOps } from '@tests/inMemoryDatabase/communityMember/write';
+import { communityInfosFactory } from '@tests/factories/communityInfos';
+import { InMemoryUserWriteOps } from '@tests/inMemoryDatabase/user/write';
 
 describe('Condominium Member Guard test', () => {
 	let jwtService: JwtService;
@@ -29,21 +33,40 @@ describe('Condominium Member Guard test', () => {
 	let validateTokenService: ValidateTokenService;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUserReadOps;
-	let communityMemberRepo: InMemoryCommunityMembersReadOps;
-	let condominiumRepo: InMemoryCondominiumReadOps;
+
+	let userRepoReadOps: InMemoryUserReadOps;
+	let userRepoWriteOps: InMemoryUserWriteOps;
+
+	let communityMemberRepoReadOps: InMemoryCommunityMembersReadOps;
+	let communityMemberRepoWriteOps: InMemoryCommunityMembersWriteOps;
+	let condominiumRepoReadOps: InMemoryCondominiumReadOps;
+	let condominiumRepoWriteOps: InMemoryCondominiumWriteOps;
+
 	let keyRepo: InMemoryKey;
 
 	let sut: CondominiumMemberGuard;
 
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUserReadOps(inMemoryContainer);
+
+		userRepoReadOps = new InMemoryUserReadOps(inMemoryContainer);
+		userRepoWriteOps = new InMemoryUserWriteOps(inMemoryContainer);
+
 		keyRepo = new InMemoryKey(inMemoryContainer);
-		communityMemberRepo = new InMemoryCommunityMembersReadOps(
+
+		communityMemberRepoReadOps = new InMemoryCommunityMembersReadOps(
 			inMemoryContainer,
 		);
-		condominiumRepo = new InMemoryCondominiumReadOps(inMemoryContainer);
+		communityMemberRepoWriteOps = new InMemoryCommunityMembersWriteOps(
+			inMemoryContainer,
+		);
+
+		condominiumRepoReadOps = new InMemoryCondominiumReadOps(
+			inMemoryContainer,
+		);
+		condominiumRepoWriteOps = new InMemoryCondominiumWriteOps(
+			inMemoryContainer,
+		);
 
 		jwtService = new JwtService();
 		getKeyService = new GetKeyService(keyRepo);
@@ -55,9 +78,9 @@ describe('Condominium Member Guard test', () => {
 
 		sut = new CondominiumMemberGuard(
 			validateTokenService,
-			userRepo,
-			communityMemberRepo,
-			condominiumRepo,
+			userRepoReadOps,
+			communityMemberRepoReadOps,
+			condominiumRepoReadOps,
 		);
 
 		const accessTokenKey = new Key({
@@ -83,19 +106,35 @@ describe('Condominium Member Guard test', () => {
 	});
 
 	it('should be able to validate condominium member', async () => {
+		const condominium = condominiumFactory();
+		await condominiumRepoWriteOps.create({
+			condominium,
+		});
+
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		const condominium = condominiumFactory({ ownerId: user.id.value });
 		const member = condominiumMemberFactory({
 			userId: user.id.value,
 			condominiumId: condominium.id.value,
 			uniqueRegistryId: uniqueRegistry.id.value,
 		});
+		const communityInfos = communityInfosFactory({
+			memberId: member.id.value,
+		});
 
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
-		communityMemberRepo.condominiumMembers.push(member);
-		condominiumRepo.condominiums.push(condominium);
+		userRepoWriteOps.create({ user, uniqueRegistry });
+		communityMemberRepoWriteOps.createMany({
+			members: [
+				{
+					content: member,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email!,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
+		});
 
 		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
@@ -110,11 +149,11 @@ describe('Condominium Member Guard test', () => {
 
 		await expect(sut.canActivate(context)).resolves.toBeTruthy();
 
-		expect(userRepo.calls.find).toEqual(1);
-		expect(communityMemberRepo.calls.checkByUserAndCondominiumId).toEqual(
-			1,
-		);
-		expect(condominiumRepo.calls.find).toEqual(1);
+		expect(userRepoReadOps.calls.find).toEqual(1);
+		expect(
+			communityMemberRepoReadOps.calls.getByUserAndCondominiumId,
+		).toEqual(1);
+		expect(condominiumRepoReadOps.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - user doesn\'t exists', async () => {
@@ -138,14 +177,13 @@ describe('Condominium Member Guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.find).toEqual(1);
+		expect(userRepoReadOps.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - condominium doesn\'t exists', async () => {
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
+		userRepoWriteOps.create({ uniqueRegistry, user });
 
 		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
@@ -165,17 +203,17 @@ describe('Condominium Member Guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.find).toEqual(1);
-		expect(condominiumRepo.calls.find).toEqual(1);
+		expect(userRepoReadOps.calls.find).toEqual(1);
+		expect(condominiumRepoReadOps.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - condominium member doesn\'t exists', async () => {
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
-		condominiumRepo.condominiums.push(condominium);
+		userRepoReadOps.uniqueRegistries.push(uniqueRegistry);
+		userRepoReadOps.users.push(user);
+		condominiumRepoReadOps.condominiums.push(condominium);
 
 		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
@@ -195,8 +233,8 @@ describe('Condominium Member Guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.find).toEqual(1);
-		expect(condominiumRepo.calls.find).toEqual(1);
+		expect(userRepoReadOps.calls.find).toEqual(1);
+		expect(condominiumRepoReadOps.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - empty token', async () => {

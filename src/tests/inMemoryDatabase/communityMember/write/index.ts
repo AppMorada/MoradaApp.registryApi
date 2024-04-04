@@ -10,19 +10,16 @@ import {
 	CommunityMemberWriteOpsRepo,
 } from '@app/repositories/communityMember/write';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
-import { Invite } from '@app/entities/invite';
 
 export class InMemoryCommunityMembersWriteOps
 implements CommunityMemberWriteOpsRepo
 {
 	calls = {
-		create: 0,
 		createMany: 0,
 		remove: 0,
 		update: 0,
 	};
 
-	invites: Invite[];
 	users: User[];
 	condominiumMembers: CondominiumMember[];
 	condominiums: Condominium[];
@@ -30,7 +27,6 @@ implements CommunityMemberWriteOpsRepo
 	uniqueRegistries: UniqueRegistry[];
 
 	constructor(container: InMemoryContainer) {
-		this.invites = container.props.inviteArr;
 		this.users = container.props.userArr;
 		this.uniqueRegistries = container.props.uniqueRegistryArr;
 		this.condominiumMembers = container.props.condominiumMemberArr;
@@ -38,58 +34,38 @@ implements CommunityMemberWriteOpsRepo
 		this.communityInfos = container.props.communityInfosArr;
 	}
 
-	async create(
-		input: CommunityMemberRepoWriteOpsInterfaces.create,
-	): Promise<void> {
-		++this.calls.create;
-
-		const member = this.condominiumMembers.find((item) =>
-			input.member.id.equalTo(item.id),
-		);
-		const communityInfos = this.communityInfos.find((item) =>
-			ValueObject.compare(item.memberId, member?.id),
-		);
-		const searchedInvite = this.invites.find(
-			(item) =>
-				item.memberId.equalTo(input.invite.memberId) ||
-				(item.recipient.equalTo(input.rawUniqueRegistry.email) &&
-					item.condominiumId.equalTo(input.member.condominiumId)),
-		);
-
-		if (member || communityInfos || searchedInvite)
-			throw new InMemoryError({
-				entity: EntitiesEnum.condominiumMember,
-				message: 'Condominium member already exist',
-			});
-
-		this.condominiumMembers.push(input.member);
-		this.communityInfos.push(input.communityInfos);
-		this.invites.push(input.invite);
-
-		const uniqueRegistry = this.uniqueRegistries.find((item) =>
-			item.email.equalTo(input.rawUniqueRegistry.email),
-		);
-		if (!uniqueRegistry)
-			this.uniqueRegistries.push(
-				new UniqueRegistry({
-					email: input.rawUniqueRegistry.email.value,
-					CPF: input.rawUniqueRegistry.CPF.value,
-				}),
-			);
-	}
-
 	async createMany(
 		input: CommunityMemberRepoWriteOpsInterfaces.createMany,
 	): Promise<void> {
 		++this.calls.createMany;
 
-		input.members.forEach((item) => {
-			this.create({
-				member: item.content,
-				communityInfos: item.communityInfos,
-				invite: item.invite,
-				rawUniqueRegistry: item.rawUniqueRegistry,
-			});
+		input.members.forEach((member) => {
+			const searchedMember = this.condominiumMembers.find((item) =>
+				item.id.equalTo(member.content.id),
+			);
+			const communityInfos = this.communityInfos.find((item) =>
+				item.memberId.equalTo(member.content.id),
+			);
+
+			if (searchedMember || communityInfos)
+				throw new InMemoryError({
+					entity: EntitiesEnum.condominiumMember,
+					message: 'Condominium member already exist',
+				});
+
+			this.condominiumMembers.push(member.content);
+			this.communityInfos.push(member.communityInfos);
+
+			const uniqueRegistry = this.uniqueRegistries.find((item) =>
+				item.email.equalTo(member.rawUniqueRegistry.email),
+			);
+			if (!uniqueRegistry)
+				this.uniqueRegistries.push(
+					new UniqueRegistry({
+						email: member.rawUniqueRegistry.email.value,
+						CPF: member.rawUniqueRegistry.CPF.value,
+					}),
+				);
 		});
 	}
 

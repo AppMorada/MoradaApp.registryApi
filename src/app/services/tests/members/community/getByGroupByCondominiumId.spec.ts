@@ -1,7 +1,6 @@
 import { GetCommunityMemberGroupByCondominiumIdService } from '@app/services/members/community/getByGroupByCondominiumId.service';
 import { communityInfosFactory } from '@tests/factories/communityInfos';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
-import { inviteFactory } from '@tests/factories/invite';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import { InMemoryCommunityMembersReadOps } from '@tests/inMemoryDatabase/communityMember/read';
 import { InMemoryCommunityMembersWriteOps } from '@tests/inMemoryDatabase/communityMember/write';
@@ -30,18 +29,18 @@ describe('Get community member by user id', () => {
 			uniqueRegistryId: uniqueRegistry.id.value,
 		});
 		const communityInfos = communityInfosFactory();
-		const invite = inviteFactory({
-			memberId: member.id.value,
-			recipient: uniqueRegistry.email.value,
-		});
-		await memberRepoWriteOps.create({
-			member,
-			invite,
-			communityInfos,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
+
+		await memberRepoWriteOps.createMany({
+			members: [
+				{
+					content: member,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
 		});
 
 		await sut.exec({ id: member.id.value });

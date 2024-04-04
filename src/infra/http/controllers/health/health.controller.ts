@@ -35,13 +35,15 @@ export class HealthController {
 		const { env: TIMEOUT } = await this.getEnv.exec({
 			env: EnvEnum.TYPEORM_TIMEOUT,
 		});
+		const { env: PING_URL } = await this.getEnv.exec({
+			env: EnvEnum.PING_URL,
+		});
 
-		const repo = 'https://github.com/AppMorada/MoradaApp.Api';
 		const max_mem_heap = parseInt(MAX_MEMORY_HEAP as string);
 		const max_mem_rss = parseInt(MAX_MEMORY_RSS as string);
 
 		return this.health.check([
-			() => this.http.pingCheck('http', repo),
+			() => this.http.pingCheck('http', PING_URL as string),
 			() => this.mem.checkHeap('memory_heap', max_mem_heap),
 			() => this.mem.checkRSS('memory_rss', max_mem_rss),
 			() =>

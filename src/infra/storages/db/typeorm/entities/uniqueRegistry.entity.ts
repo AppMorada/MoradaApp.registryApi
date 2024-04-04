@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { TypeOrmUserEntity } from './user.entity';
 import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
+import { TypeOrmCondominiumRequestEntity } from './condominiumRequest.entity';
 
 @Unique('UQ_unique_registries_email', ['email'])
 @Entity({ name: 'unique_registries' })
@@ -32,4 +33,10 @@ export class TypeOrmUniqueRegistryEntity {
 		(member) => member.uniqueRegistry,
 	)
 		member: Relation<TypeOrmCondominiumMemberEntity>;
+
+	@OneToMany(
+		() => TypeOrmCondominiumRequestEntity,
+		(request) => request.uniqueRegistry,
+	)
+		condominiumRequest: Relation<TypeOrmCondominiumRequestEntity[]>;
 }

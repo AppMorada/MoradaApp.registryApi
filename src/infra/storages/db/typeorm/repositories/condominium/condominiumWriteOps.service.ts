@@ -4,22 +4,17 @@ import {
 } from '@app/repositories/condominium/write';
 import { Inject, Injectable } from '@nestjs/common';
 import { TypeOrmCondominiumEntity } from '../../entities/condominium.entity';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { TypeOrmCondominiumMapper } from '../../mapper/condominium';
 import { typeORMConsts } from '../../consts';
-import { TypeOrmUniqueRegistryMapper } from '../../mapper/uniqueRegistry';
-import { TypeOrmUserMapper } from '../../mapper/user';
-import { TypeOrmUniqueRegistryEntity } from '../../entities/uniqueRegistry.entity';
-import { TypeOrmUserEntity } from '../../entities/user.entity';
 import { TRACE_ID, TraceHandler } from '@infra/configs/tracing';
+import { CEP } from '@app/entities/VO';
 
 @Injectable()
 export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 	constructor(
 		@Inject(typeORMConsts.entity.condominium)
 		private readonly condominiumRepo: Repository<TypeOrmCondominiumEntity>,
-		@Inject(typeORMConsts.databaseProviders)
-		private readonly dataSource: DataSource,
 		@Inject(TRACE_ID)
 		private readonly trace: TraceHandler,
 	) {}
@@ -30,19 +25,11 @@ export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 		span.setAttribute('op.mode', 'write');
 		span.setAttribute('op.description', 'Create condominium');
 
-		await this.dataSource.transaction(async (t) => {
-			const uniqueRegistry = TypeOrmUniqueRegistryMapper.toTypeOrm(
-				input.uniqueRegistry,
-			);
-			const user = TypeOrmUserMapper.toTypeOrm(input.user);
-			const condominium = TypeOrmCondominiumMapper.toTypeOrm(
-				input.condominium,
-			);
+		const condominium = TypeOrmCondominiumMapper.toTypeOrm(
+			input.condominium,
+		);
+		await this.condominiumRepo.insert(condominium);
 
-			await t.insert(TypeOrmUniqueRegistryEntity, uniqueRegistry);
-			await t.insert(TypeOrmUserEntity, user);
-			await t.insert(TypeOrmCondominiumEntity, condominium);
-		});
 		span.end();
 	}
 
@@ -65,8 +52,9 @@ export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 
 		const modifications = {
 			name: input.name?.value,
-			CEP: input.CEP?.value,
+			CEP: input.CEP ? CEP.toInt(input.CEP) : undefined,
 			num: input.num?.value,
+			isValidated: input.isValidated,
 		};
 
 		for (const rawKey in modifications) {
@@ -74,12 +62,10 @@ export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 			if (!modifications[key]) delete modifications[key];
 		}
 
-		await this.dataSource
-			.createQueryBuilder()
-			.update('condominiums')
-			.set(modifications)
-			.where('id = :id', { id: input.id.value })
-			.execute();
+		await this.condominiumRepo.update(
+			{ id: input.id.value },
+			modifications,
+		);
 
 		span.end();
 	}

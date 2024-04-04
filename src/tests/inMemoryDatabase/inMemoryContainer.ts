@@ -1,7 +1,7 @@
 import { CommunityInfos } from '@app/entities/communityInfos';
 import { Condominium } from '@app/entities/condominium';
 import { CondominiumMember } from '@app/entities/condominiumMember';
-import { Invite } from '@app/entities/invite';
+import { CondominiumRequest } from '@app/entities/condominiumRequest';
 import { Key } from '@app/entities/key';
 import { Secret } from '@app/entities/secret';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
@@ -11,9 +11,9 @@ interface IInMemoryContainerProps {
 	userArr: User[];
 	uniqueRegistryArr: UniqueRegistry[];
 	condominiumMemberArr: CondominiumMember[];
+	condominiumRequestArr: CondominiumRequest[];
 	condominiumArr: Condominium[];
 	communityInfosArr: CommunityInfos[];
-	inviteArr: Invite[];
 	secretArr: Secret[];
 	keyArr: { name: string; value: Key }[];
 	keyCacheArr: Key[];
@@ -24,8 +24,8 @@ export class InMemoryContainer {
 		userArr: [],
 		uniqueRegistryArr: [],
 		condominiumMemberArr: [],
+		condominiumRequestArr: [],
 		condominiumArr: [],
-		inviteArr: [],
 		secretArr: [],
 		keyArr: [],
 		keyCacheArr: [],
@@ -36,8 +36,8 @@ export class InMemoryContainer {
 		this.props = {
 			userArr: [],
 			uniqueRegistryArr: [],
-			inviteArr: [],
 			condominiumMemberArr: [],
+			condominiumRequestArr: [],
 			condominiumArr: [],
 			keyArr: [],
 			keyCacheArr: [],

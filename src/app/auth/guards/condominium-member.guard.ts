@@ -79,13 +79,13 @@ export class CondominiumMemberGuard implements CanActivate {
 			condominiumId,
 		);
 
-		const counter =
-			await this.condominiumMemberRepo.checkByUserAndCondominiumId({
+		const result =
+			await this.condominiumMemberRepo.getByUserAndCondominiumId({
 				userId: userContent.user.id,
 				condominiumId: new UUID(condominiumId),
 			});
 
-		if (counter <= 0)
+		if (!result)
 			throw new GuardErrors({
 				message: 'Usuário não tem autorização para realizar tal ação',
 			});
@@ -95,6 +95,8 @@ export class CondominiumMemberGuard implements CanActivate {
 			user: userContent.user,
 			uniqueRegistry: userContent.uniqueRegistry,
 			condominium,
+			communityInfos: result.communityInfos,
+			condominiumMember: result.member,
 		};
 
 		return true;

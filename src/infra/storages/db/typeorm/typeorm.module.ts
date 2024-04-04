@@ -1,8 +1,6 @@
 import { Global, Module } from '@nestjs/common';
-import { InviteRepo } from '@app/repositories/invite';
 import { databaseProviders } from './databaseProvider';
 import { entitiesProviders } from './entities.provider';
-import { TypeOrmInviteRepo } from './repositories/invite.service';
 import { CondominiumRepoReadOps } from '@app/repositories/condominium/read';
 import { TypeOrmCondominiumRepoReadOps } from './repositories/condominium/condominiumReadOps.service';
 import { CondominiumRepoWriteOps } from '@app/repositories/condominium/write';
@@ -19,16 +17,16 @@ import { CommunityMemberRepoReadOps } from '@app/repositories/communityMember/re
 import { TypeOrmCommunityMemberRepoReadOps } from './repositories/communityMember/communityMemberReadOps.service';
 import { CommunityMemberWriteOpsRepo } from '@app/repositories/communityMember/write';
 import { TypeOrmCommunityMemberRepoWriteOps } from './repositories/communityMember/communityMemberWriteOps.service';
+import { CondominiumRequestRepoReadOps } from '@app/repositories/condominiumRequest/read';
+import { TypeOrmCondominiumRequestReadOps } from './repositories/condominiumRequest/condominiumRequestReadOps.service';
+import { CondominiumRequestRepoWriteOps } from '@app/repositories/condominiumRequest/write';
+import { TypeOrmCondominiumRequestWriteOps } from './repositories/condominiumRequest/condominiumRequestWriteOps.service';
 
 @Global()
 @Module({
 	providers: [
 		...databaseProviders,
 		...entitiesProviders,
-		{
-			provide: InviteRepo,
-			useClass: TypeOrmInviteRepo,
-		},
 		{
 			provide: CondominiumRepoReadOps,
 			useClass: TypeOrmCondominiumRepoReadOps,
@@ -61,13 +59,22 @@ import { TypeOrmCommunityMemberRepoWriteOps } from './repositories/communityMemb
 			provide: CommunityMemberWriteOpsRepo,
 			useClass: TypeOrmCommunityMemberRepoWriteOps,
 		},
+		{
+			provide: CondominiumRequestRepoReadOps,
+			useClass: TypeOrmCondominiumRequestReadOps,
+		},
+		{
+			provide: CondominiumRequestRepoWriteOps,
+			useClass: TypeOrmCondominiumRequestWriteOps,
+		},
 	],
 	exports: [
 		UserRepoReadOps,
 		UserRepoWriteOps,
-		InviteRepo,
 		CondominiumRepoReadOps,
 		CondominiumRepoWriteOps,
+		CondominiumRequestRepoReadOps,
+		CondominiumRequestRepoWriteOps,
 		CommunityMemberRepoReadOps,
 		CommunityMemberWriteOpsRepo,
 		EmployeeMemberRepoReadOps,

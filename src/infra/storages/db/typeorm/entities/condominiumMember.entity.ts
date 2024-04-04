@@ -13,11 +13,10 @@ import {
 import { TypeOrmCondominiumEntity } from './condominium.entity';
 import { TypeOrmUserEntity } from './user.entity';
 import { TypeOrmCommunityInfosEntity } from './communityInfos.entity';
-import { TypeOrmInviteEntity } from './invite.entity';
 import { TypeOrmUniqueRegistryEntity } from './uniqueRegistry.entity';
 
-@Unique('UQ_condominium_members_user_id_condominium_id', [
-	'user',
+@Unique('UQ_condominium_members_unique_registry_id_condominium_id', [
+	'uniqueRegistry',
 	'condominium',
 ])
 @Entity({ name: 'condominium_members' })
@@ -64,7 +63,7 @@ export class TypeOrmCondominiumMemberEntity {
 		referencedColumnName: 'id',
 		foreignKeyConstraintName: 'FK_condominium_members_condominium_id',
 	})
-		condominium: string;
+		condominium: string | Relation<TypeOrmCondominiumEntity>;
 
 	@ManyToOne(() => TypeOrmUserEntity, (user) => user.condominiumMember, {
 		nullable: true,
@@ -79,7 +78,4 @@ export class TypeOrmCondominiumMemberEntity {
 
 	@OneToOne(() => TypeOrmCommunityInfosEntity, (infos) => infos.member)
 		communityInfos: Relation<TypeOrmCommunityInfosEntity>;
-
-	@OneToOne(() => TypeOrmInviteEntity, (infos) => infos.member)
-		invite: Relation<TypeOrmInviteEntity>;
 }

@@ -1,24 +1,12 @@
 import { ApartmentNumber, Block, CPF, Email, UUID } from '@app/entities/VO';
 import { CommunityInfos } from '@app/entities/communityInfos';
 import { CondominiumMember } from '@app/entities/condominiumMember';
-import { Invite } from '@app/entities/invite';
 
 export namespace CommunityMemberRepoWriteOpsInterfaces {
-	export interface create {
-		member: CondominiumMember;
-		communityInfos: CommunityInfos;
-		invite: Invite;
-		rawUniqueRegistry: {
-			email: Email;
-			CPF: CPF;
-		};
-	}
-
 	export interface createMany {
 		members: {
 			content: CondominiumMember;
 			communityInfos: CommunityInfos;
-			invite: Invite;
 			rawUniqueRegistry: {
 				email: Email;
 				CPF: CPF;
@@ -38,10 +26,6 @@ export namespace CommunityMemberRepoWriteOpsInterfaces {
 }
 
 export abstract class CommunityMemberWriteOpsRepo {
-	abstract create(
-		input: CommunityMemberRepoWriteOpsInterfaces.create,
-	): Promise<void>;
-
 	abstract createMany(
 		input: CommunityMemberRepoWriteOpsInterfaces.createMany,
 	): Promise<void>;

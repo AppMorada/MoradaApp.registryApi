@@ -3,7 +3,6 @@ import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { userFactory } from '@tests/factories/user';
 import { CondominiumMapper } from '@app/mapper/condominium';
 import { GetCondominiumByOwnerIdService } from '@app/services/condominium/getByOwnerId.service';
-import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import { InMemoryCondominiumReadOps } from '@tests/inMemoryDatabase/condominium/read';
 import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
 
@@ -27,15 +26,10 @@ describe('Get condominium by owner id service test', () => {
 	});
 
 	it('should be able to get a condominium', async () => {
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
+		const user = userFactory();
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
-		await condominiumRepoWriteOps.create({
-			user,
-			condominium,
-			uniqueRegistry,
-		});
+		await condominiumRepoWriteOps.create({ condominium });
 		const { condominiums } = await sut.exec({ id: user.id });
 
 		expect(Boolean(condominiums[0])).toEqual(true);

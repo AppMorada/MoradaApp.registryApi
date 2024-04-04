@@ -16,6 +16,7 @@ import { Key } from '@app/entities/key';
 import { randomBytes } from 'crypto';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
+import { Reflector } from '@nestjs/core';
 
 jest.mock('nodemailer');
 
@@ -70,7 +71,12 @@ describe('Check TFA Code guard test', () => {
 			cryptAdapter,
 		);
 
-		checkTFACodeGuard = new CheckTFACodeGuard(userRepo, validateTFAService);
+		const reflector = new Reflector();
+		checkTFACodeGuard = new CheckTFACodeGuard(
+			userRepo,
+			validateTFAService,
+			reflector,
+		);
 
 		const tfaKey = new Key({
 			name: KeysEnum.TFA_TOKEN_KEY,

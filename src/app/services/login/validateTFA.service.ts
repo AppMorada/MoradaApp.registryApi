@@ -109,12 +109,13 @@ export class ValidateTFAService implements IService {
 		const fields = this.validateNecessaryFields(input.code);
 
 		const { key } = await this.getKey.exec({ name: input.name });
-		const buildedAtFloor = Math.floor(key.actual.buildedAt / 1000);
+		const actualBuildedAtFloor = Math.floor(key.actual.buildedAt / 1000);
+		const expiresAtInMilliseconds = fields.exp * 1000;
 
 		if (
 			key?.prev &&
-			fields.iat < buildedAtFloor &&
-			fields.exp * 1000 > Date.now()
+			fields.iat < actualBuildedAtFloor &&
+			expiresAtInMilliseconds > Date.now()
 		) {
 			const { sigState } = await this.handleDepreacatedSignatures(
 				key,
@@ -124,7 +125,10 @@ export class ValidateTFAService implements IService {
 			return { sigState, email: fields.email };
 		}
 
-		if (fields.iat >= buildedAtFloor && fields.exp * 1000 > Date.now()) {
+		if (
+			fields.iat >= actualBuildedAtFloor &&
+			expiresAtInMilliseconds > Date.now()
+		) {
 			const { sigState } = await this.handleNewerSignatures(key, input);
 			return { sigState, email: fields.email };
 		}

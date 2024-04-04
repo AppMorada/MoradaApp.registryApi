@@ -1,6 +1,5 @@
 import { UUID } from '@app/entities/VO';
 import { Condominium, TInputPropsCondominium } from '@app/entities/condominium';
-import { randomBytes } from 'crypto';
 
 type TOverride = Partial<TInputPropsCondominium>;
 
@@ -12,7 +11,11 @@ export function condominiumFactory(input: TOverride = {}, id?: string) {
 			CEP: '97507040',
 			CNPJ: '95185265000118',
 			num: 32768,
-			seedKey: randomBytes(30).toString('hex'),
+			district: 'Some district',
+			city: 'Some city',
+			state: 'Some state',
+			reference: 'Some reference',
+			complement: 'Some complement',
 			...input,
 		},
 		id,

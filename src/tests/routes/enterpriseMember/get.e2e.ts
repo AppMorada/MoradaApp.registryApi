@@ -4,43 +4,71 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
+import { CreateTokenService } from '@app/services/login/createToken.service';
+import { GenTFAService } from '@app/services/login/genTFA.service';
+import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { KeysEnum } from '@app/repositories/key';
 
 describe('Get a enterprise member E2E', () => {
 	let app: INestApplication;
+	let userRepo: UserRepoWriteOps;
+	let genTFA: GenTFAService;
+	let genTokens: CreateTokenService;
+
 	const endpoints = {
-		create: (id?: string) => `/condominium/${id}/as-owner/enterprise-user`,
+		createCondominium: '/condominium',
+		createEnterpriseUser: (id?: string) =>
+			`/condominium/${id}/as-owner/enterprise-user`,
 		getOne: (condominiumId?: string, userId?: string) =>
 			`/condominium/${condominiumId}/as-employee/enterprise-user/${userId}`,
 		getAll: (condominiumId?: string) =>
 			`/condominium/${condominiumId}/as-employee/enterprise-user/all`,
 	};
 	let condominiumInfos: any;
-	let token: any;
+	let adminToken: any;
 
 	beforeAll(async () => {
 		app = await startApplication();
+		userRepo = app.get(UserRepoWriteOps);
+		genTFA = app.get(GenTFAService);
+		genTokens = app.get(CreateTokenService);
 	});
 
 	beforeEach(async () => {
 		const condominium = condominiumFactory();
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
+		await userRepo.create({ user, uniqueRegistry });
+
+		const { code } = await genTFA.exec({
+			email: uniqueRegistry.email,
+			userId: user.id,
+			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
+		});
+		const { accessToken } = await genTokens.exec({ user, uniqueRegistry });
+		adminToken = accessToken;
 
 		const createCondominiumResponse = await request(app.getHttpServer())
-			.post('/condominium')
+			.post(endpoints.createCondominium)
 			.set('content-type', 'application/json')
+			.set('authorization', `Bearer ${code}`)
 			.send({
-				userName: user.name.value,
-				condominiumName: condominium.name.value,
+				name: condominium.name.value,
 				email: uniqueRegistry.email.value,
 				password: user.password.value,
 				CEP: condominium.CEP.value,
 				num: condominium.num.value,
 				CNPJ: condominium.CNPJ.value,
+				district: condominium.district.value,
+				city: condominium.city.value,
+				state: condominium.state.value,
+				reference: condominium?.reference?.value,
+				complement: condominium?.complement?.value,
 			});
 
+		expect(createCondominiumResponse.statusCode).toEqual(201);
+
 		condominiumInfos = createCondominiumResponse.body?.condominium;
-		token = createCondominiumResponse.body?.accessToken;
 	});
 
 	afterAll(async () => await app.close());
@@ -52,9 +80,9 @@ describe('Get a enterprise member E2E', () => {
 		const user = userFactory();
 
 		await request(app.getHttpServer())
-			.post(endpoints.create(condominiumInfos?.id))
+			.post(endpoints.createEnterpriseUser(condominiumInfos?.id))
 			.set('content-type', 'application/json')
-			.set('authorization', `Bearer ${token}`)
+			.set('authorization', `Bearer ${adminToken}`)
 			.send({
 				name: 'Employee',
 				email: uniqueRegistry.email.value,
@@ -65,7 +93,7 @@ describe('Get a enterprise member E2E', () => {
 
 		const response = await request(app.getHttpServer())
 			.get(endpoints.getAll(condominiumInfos?.id))
-			.set('authorization', `Bearer ${token}`);
+			.set('authorization', `Bearer ${adminToken}`);
 
 		expect(response.statusCode).toEqual(200);
 
@@ -111,9 +139,9 @@ describe('Get a enterprise member E2E', () => {
 		const user = userFactory();
 
 		await request(app.getHttpServer())
-			.post(endpoints.create(condominiumInfos?.id))
+			.post(endpoints.createEnterpriseUser(condominiumInfos?.id))
 			.set('content-type', 'application/json')
-			.set('authorization', `Bearer ${token}`)
+			.set('authorization', `Bearer ${adminToken}`)
 			.send({
 				name: 'Employee',
 				email: uniqueRegistry.email.value,
@@ -126,7 +154,7 @@ describe('Get a enterprise member E2E', () => {
 			app.getHttpServer(),
 		)
 			.get(endpoints.getAll(condominiumInfos?.id))
-			.set('authorization', `Bearer ${token}`);
+			.set('authorization', `Bearer ${adminToken}`);
 
 		expect(getAllEnterpriseMembersResponse.statusCode).toEqual(200);
 
@@ -136,7 +164,7 @@ describe('Get a enterprise member E2E', () => {
 			app.getHttpServer(),
 		)
 			.get(endpoints.getOne(condominiumInfos?.id, userId))
-			.set('authorization', `Bearer ${token}`);
+			.set('authorization', `Bearer ${adminToken}`);
 
 		expect(getOneEnterpriseMemberResponse.statusCode).toEqual(200);
 
@@ -165,12 +193,12 @@ describe('Get a enterprise member E2E', () => {
 		const getAllMembersResponse = await request(app.getHttpServer())
 			.get(endpoints.getAll())
 			.set('content-type', 'application/json')
-			.set('authorization', `Bearer ${token}`);
+			.set('authorization', `Bearer ${adminToken}`);
 
 		const getOneMemberResponse = await request(app.getHttpServer())
 			.get(endpoints.getOne())
 			.set('content-type', 'application/json')
-			.set('authorization', `Bearer ${token}`);
+			.set('authorization', `Bearer ${adminToken}`);
 
 		expect(getAllMembersResponse.statusCode).toEqual(400);
 		expect(getAllMembersResponse.body?.statusCode).toEqual(400);
