@@ -50,7 +50,6 @@ implements CondominiumRequestRepoWriteOps
 					relations: ['uniqueRegistry'],
 				})
 				.where('user.id = :id', { id: input.userId.value })
-				.setLock('pessimistic_read')
 				.getOne();
 
 			if (!user)
@@ -101,9 +100,6 @@ implements CondominiumRequestRepoWriteOps
 						condominium: {
 							id: input.request.condominiumId.value,
 						},
-					},
-					lock: {
-						mode: 'pessimistic_read',
 					},
 				});
 			if (condominiumMember)
