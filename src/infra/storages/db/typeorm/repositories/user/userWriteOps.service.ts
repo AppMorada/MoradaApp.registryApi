@@ -46,9 +46,6 @@ export class TypeOrmUserRepoWriteOps implements UserRepoWriteOps {
 						email: input.uniqueRegistry.email.value,
 						CPF: input.uniqueRegistry.CPF?.value,
 					},
-					lock: {
-						mode: 'pessimistic_read',
-					},
 				});
 			if (!uniqueRegistry)
 				await t.insert('unique_registries', parsedUniqueRegistry);
@@ -88,9 +85,6 @@ export class TypeOrmUserRepoWriteOps implements UserRepoWriteOps {
 					id: input.key.value,
 				},
 				loadRelationIds: true,
-				lock: {
-					mode: 'pessimistic_read',
-				},
 			});
 			if (!user) return;
 
