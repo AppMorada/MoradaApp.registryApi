@@ -7,6 +7,9 @@ export const createMockExecutionContext = (request: any): ExecutionContext => {
 	} as HttpArgumentsHost;
 
 	return {
+		getHandler: function () {
+			return this;
+		},
 		switchToHttp: () => httpArgumentHost,
 	} as ExecutionContext;
 };

@@ -5,6 +5,7 @@ export enum EntitiesEnum {
 	secret = 'secret',
 	key = 'key',
 	condominium = 'Condominium',
+	condominiumRequest = 'Condominium Request',
 	member = 'Member',
 	condominiumMember = 'Condominium Member',
 	communityInfo = 'Community Info',

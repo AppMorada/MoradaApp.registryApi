@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { startApplication } from '../app';
-import { condominiumFactory } from '@tests/factories/condominium';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
@@ -9,39 +8,33 @@ describe('Update user E2E', () => {
 	let app: INestApplication;
 	const endpoints = {
 		default: '/user',
-		get: '/user/me/enterprise-user-section',
+		get: '/user/enterprise-user-section',
 	};
-
-	let token: any;
 
 	beforeAll(async () => {
 		app = await startApplication();
 	});
 
-	beforeEach(async () => {
-		const condominium = condominiumFactory();
-		const user = userFactory();
-		const uniqueRegistry = uniqueRegistryFactory();
-
-		const createCondominiumResponse = await request(app.getHttpServer())
-			.post('/condominium')
-			.set('content-type', 'application/json')
-			.send({
-				userName: user.name.value,
-				condominiumName: condominium.name.value,
-				email: uniqueRegistry.email.value,
-				password: user.password.value,
-				CEP: condominium.CEP.value,
-				num: condominium.num.value,
-				CNPJ: condominium.CNPJ.value,
-			});
-
-		token = createCondominiumResponse.body?.accessToken;
-	});
-
 	afterAll(async () => await app.close());
 
 	it('should update user data', async () => {
+		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+
+		const createUserResponse = await request(app.getHttpServer())
+			.post(endpoints.default)
+			.set('content-type', 'application/json')
+			.send({
+				name: user.name.value,
+				email: uniqueRegistry.email.value,
+				password: user.password.value,
+				CPF: uniqueRegistry.CPF?.value,
+			});
+
+		expect(createUserResponse.statusCode).toEqual(202);
+
+		const token = createUserResponse.body?.accessToken;
+
 		const updateUserResponse = await request(app.getHttpServer())
 			.patch(endpoints.default)
 			.set('authorization', `Bearer ${token}`)
@@ -70,6 +63,23 @@ describe('Update user E2E', () => {
 	});
 
 	it('should be able to throw a 400', async () => {
+		const user = userFactory();
+		const uniqueRegistry = uniqueRegistryFactory();
+
+		const createUserResponse = await request(app.getHttpServer())
+			.post(endpoints.default)
+			.set('content-type', 'application/json')
+			.send({
+				name: user.name.value,
+				email: uniqueRegistry.email.value,
+				password: user.password.value,
+				CPF: uniqueRegistry.CPF?.value,
+			});
+
+		expect(createUserResponse.statusCode).toEqual(202);
+
+		const token = createUserResponse.body?.accessToken;
+
 		const response = await request(app.getHttpServer())
 			.patch(endpoints.default)
 			.set('authorization', `Bearer ${token}`)

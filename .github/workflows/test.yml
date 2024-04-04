@@ -1,6 +1,7 @@
 name: CI - Tests & Lint 
 
 env:
+  PING_URL: ${{secrets.PING_URL}}
   OBSERVER_AGENT: ${{secrets.OBSERVER_AGENT}}
   SERVICE_NAME: ${{secrets.SERVICE_NAME}}
   SERVICE_VERSION: ${{secrets.SERVICE_VERSION}}

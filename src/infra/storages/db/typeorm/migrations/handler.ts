@@ -1,13 +1,12 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { TypeOrmCondominiumEntity } from '../entities/condominium.entity';
-import { TypeOrmInviteEntity } from '../entities/invite.entity';
 import { TypeOrmUserEntity } from '../entities/user.entity';
 import { TypeORMService } from '../typeORM.service';
 import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.entity';
 import { TypeOrmCommunityInfosEntity } from '../entities/communityInfos.entity';
 import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
-import { FirstMigration1709706321663 } from './1709706321663-firstMigration';
-import { AddUniqueRegistries1710480251681 } from './1710480251681-addUniqueRegistries';
+import { TypeOrmCondominiumRequestEntity } from '../entities/condominiumRequest.entity';
+import { FirstMigration1712199170992 } from './1712199170992-firstMigration';
 
 const config: PostgresConnectionOptions = {
 	type: 'postgres',
@@ -17,13 +16,13 @@ const config: PostgresConnectionOptions = {
 		TypeOrmCondominiumEntity,
 		TypeOrmCondominiumMemberEntity,
 		TypeOrmCommunityInfosEntity,
-		TypeOrmInviteEntity,
 		TypeOrmUniqueRegistryEntity,
+		TypeOrmCondominiumRequestEntity,
 	],
 	synchronize: false,
 	migrationsRun: false,
 	migrationsTableName: 'migration_typeorm',
-	migrations: [FirstMigration1709706321663, AddUniqueRegistries1710480251681],
+	migrations: [FirstMigration1712199170992],
 };
 
 const dataSource = new TypeORMService({ ...config });

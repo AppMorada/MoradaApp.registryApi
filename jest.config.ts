@@ -13,6 +13,7 @@ const config: Config = {
   testEnvironment: 'node',
   testRegex: '.*\\.(e2e|spec)\\.ts$',
   testTimeout: 30000,
+  setupFilesAfterEnv: ['./.jest/setup/flushall-typeorm.ts'],
 
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>/',

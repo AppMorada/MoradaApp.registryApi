@@ -9,10 +9,14 @@ import { EVENT_ID, EventsTypes } from '@infra/events/ids';
 import { GetKeyService } from '../key/getKey.service';
 import { KeysEnum } from '@app/repositories/key';
 import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
+import { User } from '@app/entities/user';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 interface IProps {
 	email: Email;
+	existentUserContent?: { user: User; uniqueRegistry: UniqueRegistry };
 	userId: UUID;
+	keyName?: KeysEnum;
 }
 
 @Injectable()
@@ -25,22 +29,28 @@ export class GenTFAService implements IService {
 		private readonly getEnv: GetEnvService,
 	) {}
 
-	private async genCode(input: UUID) {
-		const userContent = await this.userRepo.find({
-			key: input,
-			safeSearch: true,
-		});
+	private async genCode(
+		input: UUID,
+		keyName: KeysEnum = KeysEnum.TFA_TOKEN_KEY,
+		existentUserContent?: { user: User; uniqueRegistry: UniqueRegistry },
+	) {
+		const userContent =
+			existentUserContent ??
+			(await this.userRepo.find({
+				key: input,
+				safeSearch: true,
+			}));
 		let code = generateStringCodeContentBasedOnUser({
 			uniqueRegistry: userContent.uniqueRegistry,
 			user: userContent.user,
 		});
 		const { key } = await this.getKey.exec({
-			name: KeysEnum.TFA_TOKEN_KEY,
+			name: keyName,
 		});
 
 		const metadata = JSON.stringify({
 			iat: Math.floor(Date.now() / 1000),
-			exp: Math.floor((Date.now() + 1000 * 60 * 60 * 3) / 1000),
+			exp: Math.floor((Date.now() + key.ttl) / 1000),
 			sub: userContent.uniqueRegistry.email.value,
 		});
 		code = encodeURIComponent(
@@ -57,7 +67,11 @@ export class GenTFAService implements IService {
 	}
 
 	async exec(input: IProps) {
-		const code = await this.genCode(input.userId);
+		const code = await this.genCode(
+			input.userId,
+			input.keyName,
+			input.existentUserContent,
+		);
 
 		const { env: FRONT_END_AUTH_URL } = await this.getEnv.exec({
 			env: EnvEnum.FRONT_END_AUTH_URL,
@@ -68,7 +82,7 @@ export class GenTFAService implements IService {
 
 		const payload: EventsTypes.Email.ISendProps = {
 			to: input.email.value,
-			subject: `${PROJECT_NAME} - Solicitação de login`,
+			subject: `${PROJECT_NAME} - Confirmação de conta`,
 			body: `<h1>Seja bem-vindo!</h1>
 				<p>Não compartilhe este código com ninguém</p>
 				<a href="${FRONT_END_AUTH_URL}${code}">${FRONT_END_AUTH_URL}${code}</a>`,

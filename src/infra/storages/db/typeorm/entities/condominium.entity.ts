@@ -10,19 +10,23 @@ import {
 	Unique,
 	UpdateDateColumn,
 } from 'typeorm';
-import { TypeOrmInviteEntity } from './invite.entity';
 import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
 import { TypeOrmUserEntity } from './user.entity';
+import { TypeOrmCondominiumRequestEntity } from './condominiumRequest.entity';
 
 @Unique('UQ_condominiums_name', ['name'])
 @Unique('UQ_condominiums_cnpj', ['CNPJ'])
 @Unique('UQ_condominiums_cep', ['CEP'])
+@Unique('UQ_human_readable_id', ['humanReadableId'])
 @Entity({ name: 'condominiums' })
 export class TypeOrmCondominiumEntity {
 	@PrimaryGeneratedColumn('uuid', {
 		primaryKeyConstraintName: 'PK_condominiums_id',
 	})
 		id: string;
+
+	@Column({ type: 'char', length: 6, name: 'human_readable_id' })
+		humanReadableId: string;
 
 	@Column({ length: 120, type: 'varchar' })
 		name: string;
@@ -36,8 +40,20 @@ export class TypeOrmCondominiumEntity {
 	@Column({ type: 'bigint', name: 'cnpj' })
 		CNPJ: string;
 
-	@Column({ name: 'seed_key', type: 'varchar', length: 60 })
-		seed_key: string;
+	@Column({ type: 'varchar', length: 60 })
+		reference: string | null;
+
+	@Column({ type: 'varchar', length: 140 })
+		district: string;
+
+	@Column({ type: 'varchar', length: 140 })
+		city: string;
+
+	@Column({ type: 'varchar', length: 140 })
+		state: string;
+
+	@Column({ type: 'varchar', length: 60 })
+		complement: string | null;
 
 	@CreateDateColumn({ name: 'created_at' })
 		createdAt: Date;
@@ -45,8 +61,11 @@ export class TypeOrmCondominiumEntity {
 	@UpdateDateColumn({ name: 'updated_at' })
 		updatedAt: Date;
 
-	@OneToMany(() => TypeOrmInviteEntity, (invite) => invite.condominium)
-		invite: Relation<TypeOrmInviteEntity>[];
+	@OneToMany(
+		() => TypeOrmCondominiumRequestEntity,
+		(request) => request.condominium,
+	)
+		condominiumRequest: Relation<TypeOrmCondominiumRequestEntity[]>;
 
 	@OneToMany(
 		() => TypeOrmCondominiumMemberEntity,
@@ -63,5 +82,5 @@ export class TypeOrmCondominiumEntity {
 		referencedColumnName: 'id',
 		foreignKeyConstraintName: 'FK_condominiums_owner_id',
 	})
-		user: string;
+		user: string | Relation<TypeOrmUserEntity>;
 }

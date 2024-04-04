@@ -3,7 +3,7 @@ export const typeORMConsts = {
 	entity: {
 		user: Symbol.for('users'),
 		condominium: Symbol.for('condominiums'),
-		invite: Symbol.for('invites'),
+		condominiumsRequests: Symbol.for('condominium_requests'),
 		condominiumMember: Symbol.for('condominium_members'),
 		enterpriseMember: Symbol.for('enterprise_members'),
 		communityInfos: Symbol.for('community_infos'),

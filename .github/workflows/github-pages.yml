@@ -30,7 +30,7 @@ jobs:
 
       - name: Setup Pages
         id: set-jekyll
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Build with Jekyll
         id: jekyll-build

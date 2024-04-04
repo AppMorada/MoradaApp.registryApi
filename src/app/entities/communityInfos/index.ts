@@ -3,15 +3,15 @@ import { Entity, ValueObject } from '../entities';
 
 interface IProps {
 	memberId: UUID;
-	apartmentNumber: ApartmentNumber;
-	block: Block;
+	apartmentNumber?: ApartmentNumber | null;
+	block?: Block | null;
 	updatedAt: Date;
 }
 
 export interface ICondominiumInfosInput {
 	memberId: string;
-	apartmentNumber: number;
-	block: string;
+	apartmentNumber?: number | null;
+	block?: string | null;
 	updatedAt?: Date;
 }
 
@@ -21,8 +21,13 @@ export class CommunityInfos implements Entity {
 	constructor(input: ICondominiumInfosInput) {
 		this.props = {
 			memberId: new UUID(input.memberId),
-			block: new Block(input.block),
-			apartmentNumber: new ApartmentNumber(input.apartmentNumber),
+			block: ValueObject.build(Block, input.block).allowNullish().exec(),
+			apartmentNumber: ValueObject.build(
+				ApartmentNumber,
+				input.apartmentNumber,
+			)
+				.allowNullish()
+				.exec(),
 			updatedAt: input.updatedAt ?? new Date(),
 		};
 	}
@@ -40,8 +45,8 @@ export class CommunityInfos implements Entity {
 	dereference(): CommunityInfos {
 		return new CommunityInfos({
 			memberId: this.memberId.value,
-			block: this.block.value,
-			apartmentNumber: this.apartmentNumber.value,
+			block: this.block?.value,
+			apartmentNumber: this.apartmentNumber?.value,
 			updatedAt: this.updatedAt,
 		});
 	}
@@ -50,17 +55,17 @@ export class CommunityInfos implements Entity {
 		return this.props.memberId;
 	}
 
-	get apartmentNumber(): ApartmentNumber {
+	get apartmentNumber(): ApartmentNumber | undefined | null {
 		return this.props.apartmentNumber;
 	}
-	set apartmentNumber(input: ApartmentNumber) {
+	set apartmentNumber(input: ApartmentNumber | undefined | null) {
 		this.props.apartmentNumber = input;
 	}
 
-	get block(): Block {
+	get block(): Block | undefined | null {
 		return this.props.block;
 	}
-	set block(input: Block) {
+	set block(input: Block | undefined | null) {
 		this.props.block = input;
 	}
 

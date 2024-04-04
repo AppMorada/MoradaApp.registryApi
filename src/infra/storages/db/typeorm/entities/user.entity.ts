@@ -12,6 +12,7 @@ import {
 import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
 import { TypeOrmCondominiumEntity } from './condominium.entity';
 import { TypeOrmUniqueRegistryEntity } from './uniqueRegistry.entity';
+import { TypeOrmCondominiumRequestEntity } from './condominiumRequest.entity';
 
 @Entity({ name: 'users' })
 export class TypeOrmUserEntity {
@@ -54,4 +55,7 @@ export class TypeOrmUserEntity {
 		foreignKeyConstraintName: 'FK_users_registry_id',
 	})
 		uniqueRegistry: string | Relation<TypeOrmUniqueRegistryEntity>;
+
+	@OneToMany(() => TypeOrmCondominiumRequestEntity, (request) => request.user)
+		condominiumRequest: Relation<TypeOrmCondominiumRequestEntity[]>;
 }

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UploadCollectionOfMembersController } from './uploadCollectioOfMembers.flow/uploadCollectionOfMembers.controller';
 import { UploadCollectionOfMembersService } from '@app/services/members/community/uploadCollectionOfUsers';
-import { GenInviteService } from '@app/services/invites/genInvite.service';
+import { SendInviteService } from '@app/services/invites/sendInvite.service';
 import { UpdateCommunityMemberService } from '@app/services/members/community/updateMember.service';
 import { RemoveCommunityMemberService } from '@app/services/members/community/removeMember.service';
 import { GetCommunityMemberByIdService } from '@app/services/members/community/getById.service';
@@ -23,7 +23,7 @@ import { GetCommunityMemberController } from './get.flow/get.controller';
 		RemoveCommunityMemberService,
 		GetCommunityMemberByIdService,
 		GetCommunityMemberGroupByCondominiumIdService,
-		GenInviteService,
+		SendInviteService,
 	],
 })
 export class CommunityMemberModule {}

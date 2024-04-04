@@ -4,11 +4,9 @@ import {
 	JoinColumn,
 	OneToOne,
 	PrimaryColumn,
-	Relation,
 	UpdateDateColumn,
 } from 'typeorm';
 import { TypeOrmCondominiumMemberEntity } from './condominiumMember.entity';
-import { TypeOrmInviteEntity } from './invite.entity';
 
 @Entity({ name: 'community_infos' })
 export class TypeOrmCommunityInfosEntity {
@@ -32,15 +30,12 @@ export class TypeOrmCommunityInfosEntity {
 	})
 		member: string;
 
-	@Column({ type: 'int', name: 'apartment_number' })
-		apartmentNumber: number;
+	@Column({ type: 'int', name: 'apartment_number', nullable: true })
+		apartmentNumber: number | null;
 
-	@Column({ length: 6, type: 'varchar' })
-		block: string;
+	@Column({ length: 12, type: 'varchar', nullable: true })
+		block: string | null;
 
 	@UpdateDateColumn({ name: 'updated_at' })
 		updatedAt: Date;
-
-	@OneToOne(() => TypeOrmInviteEntity, (invite) => invite.member)
-		invite: Relation<TypeOrmInviteEntity>;
 }

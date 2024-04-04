@@ -2,7 +2,7 @@ import { typeORMConsts } from './consts';
 import { TypeOrmCommunityInfosEntity } from './entities/communityInfos.entity';
 import { TypeOrmCondominiumEntity } from './entities/condominium.entity';
 import { TypeOrmCondominiumMemberEntity } from './entities/condominiumMember.entity';
-import { TypeOrmInviteEntity } from './entities/invite.entity';
+import { TypeOrmCondominiumRequestEntity } from './entities/condominiumRequest.entity';
 import { TypeOrmUserEntity } from './entities/user.entity';
 import { TypeORMService } from './typeORM.service';
 
@@ -20,12 +20,6 @@ export const entitiesProviders = [
 		inject: [typeORMConsts.databaseProviders],
 	},
 	{
-		provide: typeORMConsts.entity.invite,
-		useFactory: (dataSource: TypeORMService) =>
-			dataSource.getRepository(TypeOrmInviteEntity),
-		inject: [typeORMConsts.databaseProviders],
-	},
-	{
 		provide: typeORMConsts.entity.condominiumMember,
 		useFactory: (dataSource: TypeORMService) =>
 			dataSource.getRepository(TypeOrmCondominiumMemberEntity),
@@ -35,6 +29,12 @@ export const entitiesProviders = [
 		provide: typeORMConsts.entity.communityInfos,
 		useFactory: (dataSource: TypeORMService) =>
 			dataSource.getRepository(TypeOrmCommunityInfosEntity),
+		inject: [typeORMConsts.databaseProviders],
+	},
+	{
+		provide: typeORMConsts.entity.condominiumsRequests,
+		useFactory: (dataSource: TypeORMService) =>
+			dataSource.getRepository(TypeOrmCondominiumRequestEntity),
 		inject: [typeORMConsts.databaseProviders],
 	},
 ];

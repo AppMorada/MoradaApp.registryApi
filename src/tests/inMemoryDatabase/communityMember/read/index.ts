@@ -12,7 +12,6 @@ import {
 } from '@app/repositories/communityMember/read';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { UniqueRegistryMapper } from '@app/mapper/uniqueRegistry';
-import { Invite } from '@app/entities/invite';
 
 export class InMemoryCommunityMembersReadOps
 implements CommunityMemberRepoReadOps
@@ -21,10 +20,9 @@ implements CommunityMemberRepoReadOps
 		getByUserId: 0,
 		getById: 0,
 		getGroupCondominiumId: 0,
-		checkByUserAndCondominiumId: 0,
+		getByUserAndCondominiumId: 0,
 	};
 
-	invites: Invite[];
 	users: User[];
 	condominiumMembers: CondominiumMember[];
 	condominiums: Condominium[];
@@ -32,7 +30,6 @@ implements CommunityMemberRepoReadOps
 	uniqueRegistries: UniqueRegistry[];
 
 	constructor(container: InMemoryContainer) {
-		this.invites = container.props.inviteArr;
 		this.users = container.props.userArr;
 		this.uniqueRegistries = container.props.uniqueRegistryArr;
 		this.condominiumMembers = container.props.condominiumMemberArr;
@@ -92,20 +89,30 @@ implements CommunityMemberRepoReadOps
 		return parsedCondominiumMember;
 	}
 
-	async checkByUserAndCondominiumId(
+	async getByUserAndCondominiumId(
 		input: CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumId,
-	): Promise<number> {
-		++this.calls.checkByUserAndCondominiumId;
-		let counter = 0;
-		for (const item of this.condominiumMembers) {
-			if (
-				input.condominiumId.equalTo(item.condominiumId) &&
-				ValueObject.compare(input.userId, item?.userId)
-			) {
-				++counter;
-			}
-		}
-		return counter;
+	): Promise<
+		| CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumIdReturn
+		| undefined
+	> {
+		++this.calls.getByUserAndCondominiumId;
+
+		const condominiumMember = this.condominiumMembers.find(
+			(item) =>
+				ValueObject.compare(item.userId, input.userId) &&
+				ValueObject.compare(item.condominiumId, input.condominiumId) &&
+				item.role.value === 0,
+		);
+		const communityInfos = this.communityInfos.find((item) =>
+			ValueObject.compare(item.memberId, condominiumMember?.id),
+		);
+
+		if (!condominiumMember || !communityInfos) return undefined;
+
+		return {
+			member: condominiumMember,
+			communityInfos,
+		};
 	}
 
 	async getGroupCondominiumId(
