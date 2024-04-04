@@ -5,8 +5,8 @@ import { TypeOrmCondominiumMemberEntity } from '../entities/condominiumMember.en
 import { TypeOrmCommunityInfosEntity } from '../entities/communityInfos.entity';
 import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
 import { CockroachConnectionOptions } from 'typeorm/driver/cockroachdb/CockroachConnectionOptions';
-import { FirstProdMigration1710642771706 } from './1710642771706-firstProdMigration';
-import { AddCascadeDeletionOnCondominiumOwnerId1710703928497 } from './1710703928497-addCascadeDeletionOnCondominiumOwnerId';
+import { TypeOrmCondominiumRequestEntity } from '../entities/condominiumRequest.entity';
+import { FirstProdMigration1712250638388 } from './1712250638388-firstProdMigration';
 
 const config: CockroachConnectionOptions = {
 	type: 'cockroachdb',
@@ -18,15 +18,13 @@ const config: CockroachConnectionOptions = {
 		TypeOrmCondominiumEntity,
 		TypeOrmCondominiumMemberEntity,
 		TypeOrmCommunityInfosEntity,
+		TypeOrmCondominiumRequestEntity,
 		TypeOrmUniqueRegistryEntity,
 	],
 	synchronize: false,
 	migrationsRun: false,
 	migrationsTableName: 'migration_typeorm',
-	migrations: [
-		FirstProdMigration1710642771706,
-		AddCascadeDeletionOnCondominiumOwnerId1710703928497,
-	],
+	migrations: [FirstProdMigration1712250638388],
 };
 
 const dataSource = new TypeORMService({ ...config });
