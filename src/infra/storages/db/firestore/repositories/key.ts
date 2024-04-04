@@ -27,6 +27,7 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 		KeysEnum.INVITE_ADMIN_TOKEN_KEY,
 		KeysEnum.INVITE_SUPER_ADMIN_TOKEN_KEY,
 		KeysEnum.TFA_TOKEN_KEY,
+		KeysEnum.CONDOMINIUM_VALIDATION_KEY,
 	];
 
 	private async execAsFatalError(err: FirestoreCustomError) {
