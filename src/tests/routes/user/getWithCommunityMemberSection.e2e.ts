@@ -4,45 +4,65 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
-import { GenInviteService } from '@app/services/invites/genInvite.service';
 import { CommunityMemberWriteOpsRepo } from '@app/repositories/communityMember/write';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { communityInfosFactory } from '@tests/factories/communityInfos';
+import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { GenTFAService } from '@app/services/login/genTFA.service';
+import { KeysEnum } from '@app/repositories/key';
 
 describe('Get user with enterprise member section E2E', () => {
 	let app: INestApplication;
+	let userRepo: UserRepoWriteOps;
+	let genTFA: GenTFAService;
+
 	const endpoints = {
+		createCondominium: '/condominium',
 		default: '/user',
-		get: '/user/me/community-member-section',
+		get: '/user/community-member-section',
 	};
 
 	let condominiumInfos: any;
-	let genInvite: GenInviteService;
 	let memberRepo: CommunityMemberWriteOpsRepo;
 
 	beforeAll(async () => {
 		app = await startApplication();
-		genInvite = app.get(GenInviteService);
 		memberRepo = app.get(CommunityMemberWriteOpsRepo);
+		userRepo = app.get(UserRepoWriteOps);
+		genTFA = app.get(GenTFAService);
 	});
 
 	beforeEach(async () => {
 		const condominium = condominiumFactory();
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
+		await userRepo.create({ user, uniqueRegistry });
+
+		const { code } = await genTFA.exec({
+			email: uniqueRegistry.email,
+			userId: user.id,
+			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
+		});
 
 		const createCondominiumResponse = await request(app.getHttpServer())
-			.post('/condominium')
+			.post(endpoints.createCondominium)
 			.set('content-type', 'application/json')
+			.set('authorization', `Bearer ${code}`)
 			.send({
-				userName: user.name.value,
-				condominiumName: condominium.name.value,
+				name: condominium.name.value,
 				email: uniqueRegistry.email.value,
 				password: user.password.value,
 				CEP: condominium.CEP.value,
 				num: condominium.num.value,
 				CNPJ: condominium.CNPJ.value,
+				district: condominium.district.value,
+				city: condominium.city.value,
+				state: condominium.state.value,
+				reference: condominium?.reference?.value,
+				complement: condominium?.complement?.value,
 			});
+
+		expect(createCondominiumResponse.statusCode).toEqual(201);
 
 		condominiumInfos = createCondominiumResponse.body?.condominium;
 	});
@@ -61,21 +81,17 @@ describe('Get user with enterprise member section E2E', () => {
 			memberId: member.id.value,
 		});
 
-		const { invite, unhashedCode } = await genInvite.exec({
-			memberId: member.id.value,
-			CPF: uniqueRegistry!.CPF!.value,
-			recipient: uniqueRegistry.email.value,
-			condominiumId: condominiumInfos.id,
-		});
-
-		await memberRepo.create({
-			invite,
-			member,
-			communityInfos,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
+		await memberRepo.createMany({
+			members: [
+				{
+					content: member,
+					communityInfos,
+					rawUniqueRegistry: {
+						email: uniqueRegistry.email,
+						CPF: uniqueRegistry.CPF!,
+					},
+				},
+			],
 		});
 
 		const createUserResponse = await request(app.getHttpServer())
@@ -86,8 +102,10 @@ describe('Get user with enterprise member section E2E', () => {
 				email: uniqueRegistry.email.value,
 				password: '12345678',
 				CPF: uniqueRegistry.CPF?.value,
-				code: unhashedCode,
+				code: condominiumInfos?.humanReadableId,
 			});
+
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const getUserResponse = await request(app.getHttpServer())
 			.get(endpoints.get)
@@ -109,35 +127,21 @@ describe('Get user with enterprise member section E2E', () => {
 		expect(typeof body?.uniqueRegistry?.email).toEqual('string');
 		expect(typeof body?.uniqueRegistry?.CPF).toEqual('string');
 
-		expect(typeof body?.memberInfos[0]?.memberCoreInfo?.id).toEqual(
-			'string',
-		);
-		expect(
-			typeof body?.memberInfos[0]?.memberCoreInfo?.condominiumId,
-		).toEqual('string');
-		expect(
-			typeof body?.memberInfos[0]?.memberCoreInfo?.uniqueRegistryId,
-		).toEqual('string');
-		expect(body?.memberInfos[0]?.memberCoreInfo?.role).toEqual(0);
-		expect(typeof body?.memberInfos[0]?.memberCoreInfo?.createdAt).toEqual(
-			'string',
-		);
-		expect(typeof body?.memberInfos[0]?.memberCoreInfo?.updatedAt).toEqual(
-			'string',
-		);
+		const memberCoreInfo = body?.memberInfos[0]?.memberCoreInfo;
+		expect(typeof memberCoreInfo?.id).toEqual('string');
+		expect(typeof memberCoreInfo?.condominiumId).toEqual('string');
+		expect(typeof memberCoreInfo?.uniqueRegistryId).toEqual('string');
+		expect(memberCoreInfo?.role).toEqual(0);
+		expect(typeof memberCoreInfo?.createdAt).toEqual('string');
+		expect(typeof memberCoreInfo?.updatedAt).toEqual('string');
 
-		expect(typeof body?.memberInfos[0]?.communityInfo?.memberId).toEqual(
-			'string',
+		const communityInfo = body?.memberInfos[0]?.communityInfo;
+		expect(typeof communityInfo?.memberId).toEqual('string');
+		expect(communityInfo?.apartmentNumber).toEqual(
+			communityInfos?.apartmentNumber?.value,
 		);
-		expect(body?.memberInfos[0]?.communityInfo?.apartmentNumber).toEqual(
-			communityInfos.apartmentNumber.value,
-		);
-		expect(body?.memberInfos[0]?.communityInfo?.block).toEqual(
-			communityInfos.block.value,
-		);
-		expect(typeof body?.memberInfos[0]?.communityInfo?.updatedAt).toEqual(
-			'string',
-		);
+		expect(communityInfo?.block).toEqual(communityInfos?.block?.value);
+		expect(typeof communityInfo?.updatedAt).toEqual('string');
 	});
 
 	it('should be able to throw 401 because user is not authenticated', async () => {

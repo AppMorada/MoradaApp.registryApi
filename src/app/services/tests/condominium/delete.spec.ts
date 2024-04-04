@@ -1,9 +1,7 @@
 import { condominiumFactory } from '@tests/factories/condominium';
 import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { userFactory } from '@tests/factories/user';
 import { DeleteCondominiumService } from '@app/services/condominium/delete.service';
-import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Delete condominium service test', () => {
 	let sut: DeleteCondominiumService;
@@ -19,11 +17,9 @@ describe('Delete condominium service test', () => {
 	});
 
 	it('should be able to delete a condominium', async () => {
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		const condominium = condominiumFactory({ ownerId: user.id.value });
+		const condominium = condominiumFactory();
 
-		await condominiumRepo.create({ user, condominium, uniqueRegistry });
+		await condominiumRepo.create({ condominium });
 		await sut.exec({
 			id: condominium.id,
 		});

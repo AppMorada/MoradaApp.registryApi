@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { startApplication } from '../app';
-import { condominiumFactory } from '@tests/factories/condominium';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
@@ -8,7 +7,7 @@ import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 describe('Refresh token E2E', () => {
 	let app: INestApplication;
 	const endpoints = {
-		createCondominium: '/condominium',
+		createUser: '/user',
 		login: '/login',
 		refreshToken: '/refresh-tokens',
 	};
@@ -20,22 +19,22 @@ describe('Refresh token E2E', () => {
 	afterAll(async () => await app.close());
 
 	it('should be able to refresh tokens', async () => {
-		const condominium = condominiumFactory();
-		const user = userFactory();
-		const uniqueRegistry = uniqueRegistryFactory();
+		const uniqueRegistry = uniqueRegistryFactory({
+			email: 'newuser@email.com',
+		});
+		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 
-		await request(app.getHttpServer())
-			.post(endpoints.createCondominium)
+		const createUserResponse = await request(app.getHttpServer())
+			.post(endpoints.createUser)
 			.set('content-type', 'application/json')
 			.send({
-				userName: user.name.value,
-				condominiumName: condominium.name.value,
+				name: user.name.value,
 				email: uniqueRegistry.email.value,
 				password: user.password.value,
-				CEP: condominium.CEP.value,
-				num: condominium.num.value,
-				CNPJ: condominium.CNPJ.value,
+				CPF: uniqueRegistry.CPF?.value,
 			});
+
+		expect(createUserResponse.statusCode).toEqual(202);
 
 		const loginResponse = await request(app.getHttpServer())
 			.post(endpoints.login)

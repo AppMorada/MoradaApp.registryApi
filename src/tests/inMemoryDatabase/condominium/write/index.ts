@@ -73,21 +73,13 @@ export class InMemoryCondominiumWriteOps implements CondominiumRepoWriteOps {
 		const existentCondominium = this.condominiums.find((item) =>
 			input.condominium.equalTo(item),
 		);
-		const existentUser = this.users.find((item) =>
-			item.id.equalTo(input.user.id),
-		);
-		const uniqueRegistry = this.uniqueRegistries.find((item) =>
-			item.email.equalTo(input.uniqueRegistry.email),
-		);
 
-		if (existentUser || existentCondominium || uniqueRegistry)
+		if (existentCondominium)
 			throw new InMemoryError({
 				entity: EntitiesEnum.condominium,
 				message: 'Condominium already exist',
 			});
 
-		this.uniqueRegistries.push(input.uniqueRegistry);
-		this.users.push(input.user);
 		this.condominiums.push(input.condominium);
 	}
 }

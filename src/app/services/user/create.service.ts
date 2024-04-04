@@ -1,40 +1,33 @@
 import { CryptAdapter } from '@app/adapters/crypt';
-import { CPF, Email, Password } from '@app/entities/VO';
+import { Password } from '@app/entities/VO';
 import { User } from '@app/entities/user';
 import { Injectable } from '@nestjs/common';
-import { InviteRepo } from '@app/repositories/invite';
 import { IService } from '../_IService';
-import { Invite } from '@app/entities/invite';
+import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 interface IProps {
 	user: User;
-	invite: Invite;
-	flatAndRawUniqueRegistry: {
-		CPF: string;
-		email: string;
-	};
+	uniqueRegistry: UniqueRegistry;
 }
 
 @Injectable()
 export class CreateUserService implements IService {
 	constructor(
-		private readonly inviteRepo: InviteRepo,
+		private readonly userRepo: UserRepoWriteOps,
 		private readonly crypt: CryptAdapter,
 	) {}
 
-	async exec({ user, invite, flatAndRawUniqueRegistry }: IProps) {
+	async exec({ user, uniqueRegistry }: IProps) {
 		const hashPass = await this.crypt.hash(user.password.value);
 
 		const userCopy = user.dereference();
 		userCopy.password = new Password(hashPass);
 
-		await this.inviteRepo.transferToUserResources({
+		const result = await this.userRepo.create({
 			user: userCopy,
-			invite,
-			rawUniqueRegistry: {
-				CPF: new CPF(flatAndRawUniqueRegistry.CPF),
-				email: new Email(flatAndRawUniqueRegistry.email),
-			},
+			uniqueRegistry,
 		});
+		return result;
 	}
 }

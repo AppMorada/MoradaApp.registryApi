@@ -3,12 +3,10 @@ import { typeORMConsts } from './consts';
 import { TypeORMService } from './typeORM.service';
 import { TypeOrmUserEntity } from './entities/user.entity';
 import { TypeOrmCondominiumEntity } from './entities/condominium.entity';
-import { TypeOrmInviteEntity } from './entities/invite.entity';
 import { TypeOrmCondominiumMemberEntity } from './entities/condominiumMember.entity';
 import { TypeOrmCommunityInfosEntity } from './entities/communityInfos.entity';
 import { TypeOrmUniqueRegistryEntity } from './entities/uniqueRegistry.entity';
-import { FirstMigration1709706321663 } from './migrations/1709706321663-firstMigration';
-import { AddUniqueRegistries1710480251681 } from './migrations/1710480251681-addUniqueRegistries';
+import { TypeOrmCondominiumRequestEntity } from './entities/condominiumRequest.entity';
 
 export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
 	new TypeORMService({
@@ -28,20 +26,15 @@ export const getDataSource = (NODE_ENV: string, DATABASE_URL: string) =>
 		type: 'postgres',
 		url: DATABASE_URL,
 		entities: [
+			TypeOrmCondominiumRequestEntity,
 			TypeOrmUserEntity,
 			TypeOrmCondominiumEntity,
 			TypeOrmCondominiumMemberEntity,
 			TypeOrmCommunityInfosEntity,
-			TypeOrmInviteEntity,
 			TypeOrmUniqueRegistryEntity,
 		],
 		synchronize: false,
 		migrationsRun: false,
-		migrationsTableName: 'migration_typeorm',
-		migrations: [
-			FirstMigration1709706321663,
-			AddUniqueRegistries1710480251681,
-		],
 	}).initialize();
 
 export const databaseProviders = [

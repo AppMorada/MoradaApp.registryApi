@@ -5,7 +5,7 @@ import {
 } from '@app/repositories/condominium/read';
 import { Inject, Injectable } from '@nestjs/common';
 import { TypeOrmCondominiumEntity } from '../../entities/condominium.entity';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CEP, CNPJ, Name, UUID } from '@app/entities/VO';
 import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../../error';
 import { TypeOrmCondominiumMapper } from '../../mapper/condominium';
@@ -24,15 +24,13 @@ export class TypeOrmCondominiumRepoReadOps implements CondominiumRepoReadOps {
 	constructor(
 		@Inject(typeORMConsts.entity.condominium)
 		private readonly condominiumRepo: Repository<TypeOrmCondominiumEntity>,
-		@Inject(typeORMConsts.databaseProviders)
-		private readonly dataSource: DataSource,
 		@Inject(TRACE_ID)
 		private readonly trace: TraceHandler,
 	) {}
 
 	async getCondominiumsByOwnerId(
 		input: CondominiumReadOpsInterfaces.getCondominiumsByOwnerId,
-	): Promise<Required<TCondominiumInObject>[]> {
+	): Promise<TCondominiumInObject[]> {
 		const tracer = this.trace.getTracer(typeORMConsts.trace.name);
 		const span = tracer.startSpan(typeORMConsts.trace.op);
 		span.setAttribute('op.mode', 'read');
@@ -41,13 +39,15 @@ export class TypeOrmCondominiumRepoReadOps implements CondominiumRepoReadOps {
 			'Get condominium based on owner id',
 		);
 
-		const rawData = await this.dataSource
-			.getRepository(TypeOrmCondominiumEntity)
-			.createQueryBuilder('condominium')
-			.where('owner_id = :owner_id', {
-				owner_id: input.id.value,
-			})
-			.getMany();
+		const rawData = await this.condominiumRepo.find({
+			where: {
+				user: {
+					id: input.id.value,
+				},
+			},
+			loadRelationIds: true,
+		});
+
 		span.end();
 
 		return rawData.map((item) => TypeOrmCondominiumMapper.toObject(item));
@@ -78,21 +78,56 @@ export class TypeOrmCondominiumRepoReadOps implements CondominiumRepoReadOps {
 			return { CEP: CEP.toInt(input.key) };
 		};
 
-		const rawData = await this.condominiumRepo.findOne({
+		const raw = await this.condominiumRepo.findOne({
 			where: queryBuilder(),
 			loadRelationIds: true,
 		});
 		span.end();
 
-		if (!rawData && input?.safeSearch)
+		if (!raw && input?.safeSearch)
 			throw new DatabaseCustomError({
 				message: 'Este condomínio não existe',
 				tag: DatabaseCustomErrorsTags.contentDoesntExists,
 			});
 
-		if (!rawData) return undefined;
+		return raw ? TypeOrmCondominiumMapper.toClass(raw) : undefined;
+	}
 
-		const condominium = TypeOrmCondominiumMapper.toClass(rawData);
-		return condominium;
+	async getByHumanReadableId(
+		input: CondominiumReadOpsInterfaces.getByHumanReadableId,
+	): Promise<Condominium | undefined>;
+	async getByHumanReadableId(
+		input: CondominiumReadOpsInterfaces.getByHumanReadableIdAsSafeSearch,
+	): Promise<Condominium>;
+
+	async getByHumanReadableId(
+		input:
+			| CondominiumReadOpsInterfaces.getByHumanReadableId
+			| CondominiumReadOpsInterfaces.getByHumanReadableIdAsSafeSearch,
+	): Promise<Condominium | undefined> {
+		const tracer = this.trace.getTracer(typeORMConsts.trace.name);
+		const span = tracer.startSpan(typeORMConsts.trace.op);
+		span.setAttribute('op.mode', 'read');
+		span.setAttribute(
+			'op.description',
+			'Get condominium based human readable id',
+		);
+
+		const raw = await this.condominiumRepo.findOne({
+			where: {
+				humanReadableId: input.id,
+			},
+			loadRelationIds: true,
+		});
+
+		span.end();
+
+		if (!raw && input?.safeSearch)
+			throw new DatabaseCustomError({
+				message: 'Este condomínio não existe',
+				tag: DatabaseCustomErrorsTags.contentDoesntExists,
+			});
+
+		return raw ? TypeOrmCondominiumMapper.toClass(raw) : undefined;
 	}
 }

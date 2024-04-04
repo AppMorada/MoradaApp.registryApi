@@ -12,6 +12,7 @@ import { TypeOrmUniqueRegistryMapper } from '../../mapper/uniqueRegistry';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { DatabaseCustomError, DatabaseCustomErrorsTags } from '../../../error';
 import { TRACE_ID, TraceHandler } from '@infra/configs/tracing';
+import { TypeOrmUniqueRegistryEntity } from '../../entities/uniqueRegistry.entity';
 
 @Injectable()
 export class TypeOrmEmployeeMemberRepoWriteOps
@@ -103,6 +104,9 @@ implements EmployeeMemberRepoWriteOps
 			const user = await t.getRepository(TypeOrmUserEntity).findOne({
 				where: { id: input.userId.value },
 				loadRelationIds: true,
+				lock: {
+					mode: 'pessimistic_read',
+				},
 			});
 
 			if (!user)
@@ -111,12 +115,9 @@ implements EmployeeMemberRepoWriteOps
 					tag: DatabaseCustomErrorsTags.contentDoesntExists,
 				});
 
-			await t
-				.createQueryBuilder()
-				.delete()
-				.from('unique_registries')
-				.where('id = :id', { id: user.uniqueRegistry })
-				.execute();
+			await t.delete(TypeOrmUniqueRegistryEntity, {
+				id: user.uniqueRegistry,
+			});
 		});
 
 		span.end();

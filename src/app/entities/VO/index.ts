@@ -15,3 +15,8 @@ export { UUIDGroup } from './generals/UUID/group';
 export { CEP } from './condominium/CEP';
 export { CNPJ } from './condominium/CNPJ';
 export { Num } from './condominium/num';
+export { District } from './condominium/district';
+export { City } from './condominium/city';
+export { State } from './condominium/state';
+export { Reference } from './condominium/reference';
+export { Complement } from './condominium/complement';

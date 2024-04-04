@@ -19,6 +19,7 @@ export class IsolatedKeyRepo implements KeyRepo, OnModuleInit {
 		KeysEnum.INVITE_ADMIN_TOKEN_KEY.toString(),
 		KeysEnum.INVITE_SUPER_ADMIN_TOKEN_KEY.toString(),
 		KeysEnum.TFA_TOKEN_KEY.toString(),
+		KeysEnum.CONDOMINIUM_VALIDATION_KEY.toString(),
 	];
 
 	async onModuleInit() {

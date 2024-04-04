@@ -5,12 +5,15 @@ import { Request } from 'express';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTFAService } from '@app/services/login/validateTFA.service';
 import { UserRepoReadOps } from '@app/repositories/user/read';
+import { Reflector } from '@nestjs/core';
+import { guardMetadataValues } from './_metadata';
 
 @Injectable()
 export class CheckTFACodeGuard implements CanActivate {
 	constructor(
 		private readonly userRepo: UserRepoReadOps,
 		private readonly validateTFA: ValidateTFAService,
+		private readonly reflector: Reflector,
 	) {}
 
 	private parseToken(token: string) {
@@ -55,11 +58,15 @@ export class CheckTFACodeGuard implements CanActivate {
 				});
 			});
 
+		const keyName = this.reflector.get<KeysEnum | undefined>(
+			guardMetadataValues.checkTFACodeGuard.keyName,
+			context.getHandler(),
+		);
 		await this.validateTFA.exec({
 			user: userContent.user,
 			uniqueRegistry: userContent.uniqueRegistry,
 			code: token,
-			name: KeysEnum.TFA_TOKEN_KEY,
+			name: keyName ?? KeysEnum.TFA_TOKEN_KEY,
 		});
 
 		req.inMemoryData = {

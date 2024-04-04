@@ -24,7 +24,7 @@ export class TypeOrmCondominiumMemberMapper {
 				uniqueRegistryId: String(input.uniqueRegistry),
 				role: input.role,
 				updatedAt: input.updatedAt,
-				condominiumId: input.condominium,
+				condominiumId: String(input.condominium),
 			},
 			input.id,
 		);
@@ -35,7 +35,7 @@ export class TypeOrmCondominiumMemberMapper {
 	): ICondominiumMemberInObject {
 		return {
 			id: input.id,
-			condominiumId: input.condominium,
+			condominiumId: String(input.condominium),
 			uniqueRegistryId: String(input.uniqueRegistry),
 			userId: input.user ? String(input.user) : null,
 			role: input.role,
