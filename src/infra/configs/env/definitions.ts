@@ -6,6 +6,10 @@ export interface IEnvMetadata {
 type TEnv = Record<string, IEnvMetadata>;
 
 export const environmentVariablesMetadata: TEnv = {
+	PING_URL: {
+		name: 'PING_URL',
+		isOptional: false,
+	},
 	TYPEORM_TIMEOUT: {
 		name: 'TYPEORM_TIMEOUT',
 		isOptional: true,
