@@ -33,16 +33,8 @@ env:
 on:
   push:
     branches:
-      - "feature/**"
-      - "perf/**"
-      - "refactor/**"
-      - "bugfix/**"
-      - "ci/**"
-      - "chore/**"
-      - "release/**"
-      - "hotfix/**"
-      - "support/**"
-      - "dependabot/**"
+      - "*"
+      - "!main"
 
 jobs:
   unit-test:
