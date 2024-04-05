@@ -19,6 +19,10 @@ import { TypeOrmUniqueRegistryEntity } from './uniqueRegistry.entity';
 	'uniqueRegistry',
 	'condominium',
 ])
+@Unique('UQ_condominium_members_user_id_condominium_id', [
+	'user',
+	'condominium',
+])
 @Entity({ name: 'condominium_members' })
 export class TypeOrmCondominiumMemberEntity {
 	@PrimaryGeneratedColumn('uuid', {
