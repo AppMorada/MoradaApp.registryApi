@@ -14,7 +14,6 @@ import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { TypeOrmUserEntity } from '../../entities/user.entity';
 import { TypeOrmCommunityInfosEntity } from '../../entities/communityInfos.entity';
 import { TRACE_ID, TraceHandler } from '@infra/configs/tracing';
-import { TypeOrmCondominiumRequestEntity } from '../../entities/condominiumRequest.entity';
 
 @Injectable()
 export class TypeOrmCommunityMemberRepoWriteOps
@@ -56,16 +55,6 @@ implements CommunityMemberWriteOpsRepo
 
 				const member =
 					TypeOrmCondominiumMemberMapper.toTypeOrm(content);
-
-				if (typeOrmUniqueRegistry) {
-					member.user = typeOrmUniqueRegistry.user;
-					await t
-						.getRepository(TypeOrmCondominiumRequestEntity)
-						.delete({
-							uniqueRegistry: typeOrmUniqueRegistry.id,
-							condominium: content.condominiumId.value,
-						});
-				}
 
 				if (!typeOrmUniqueRegistry) {
 					const uniqueRegistry = new UniqueRegistry({

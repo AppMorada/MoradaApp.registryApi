@@ -1,7 +1,8 @@
+import { Level } from '@app/entities/VO';
 import { CommunityInfos } from '@app/entities/communityInfos';
 import { CondominiumMember } from '@app/entities/condominiumMember';
 import { CondominiumRequest } from '@app/entities/condominiumRequest';
-import { EntitiesEnum } from '@app/entities/entities';
+import { EntitiesEnum, ValueObject } from '@app/entities/entities';
 import { User } from '@app/entities/user';
 import {
 	CondominiumRequestRepoWriteOps,
@@ -39,27 +40,28 @@ implements CondominiumRequestRepoWriteOps
 		const condominiumRequestIndex = this.condominiumRequests.findIndex(
 			(item) =>
 				item.userId.equalTo(input.userId) &&
-				item.condominiumId.equalTo(
-					input.condominiumMember.condominiumId,
-				),
+				item.condominiumId.equalTo(input.condominiumId),
 		);
-		const condominiumMember = this.condominiumMembers.find((item) =>
-			item.id.equalTo(input.condominiumMember.id),
+		const condominiumMemberIndex = this.condominiumMembers.findIndex(
+			(item) =>
+				ValueObject.compare(item.userId, input.userId) &&
+				item.condominiumId.equalTo(input.condominiumId),
 		);
-		const communityInfo = this.communityInfos.find((item) =>
-			item.memberId.equalTo(input.condominiumMember.id),
-		);
-		if (condominiumRequestIndex < 0 || condominiumMember || communityInfo)
+		if (condominiumRequestIndex < 0 || condominiumMemberIndex < 0)
 			throw new InMemoryError({
 				message:
 					'Condominium request doesn\'t exist or member already exist',
 				entity: EntitiesEnum.condominiumRequest,
 			});
 
-		const newCondominiumMember = input.condominiumMember.dereference();
-		newCondominiumMember.userId = input.userId;
-		this.condominiumMembers.push(newCondominiumMember);
-		this.communityInfos.push(input.communityInfo);
+		const condominiumMember =
+			this.condominiumMembers[condominiumRequestIndex];
+		const communityInfos = new CommunityInfos({
+			memberId: condominiumMember.id.value,
+		});
+
+		condominiumMember.role = new Level(0);
+		this.communityInfos.push(communityInfos);
 		this.condominiumRequests.splice(condominiumRequestIndex, 1);
 	}
 
@@ -79,6 +81,14 @@ implements CondominiumRequestRepoWriteOps
 				entity: EntitiesEnum.condominiumRequest,
 			});
 
+		const requesterCondominiumMember = new CondominiumMember({
+			condominiumId: input.request.condominiumId.value,
+			userId: input.request.userId.value,
+			uniqueRegistryId: input.request.uniqueRegistryId.value,
+			role: -1,
+		});
+
+		this.condominiumMembers.push(requesterCondominiumMember);
 		this.condominiumRequests.push(input.request);
 	}
 

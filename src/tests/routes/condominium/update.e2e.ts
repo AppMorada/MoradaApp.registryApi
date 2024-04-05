@@ -72,6 +72,11 @@ describe('Update condominium E2E', () => {
 				name: 'New condominium name',
 				CEP: '65636-678',
 				num: 64512,
+				district: 'New district',
+				city: 'New city',
+				state: 'New state',
+				reference: 'New reference',
+				complement: 'New complement',
 			});
 
 		expect(updateCondominiumResponse.statusCode).toEqual(200);
@@ -84,6 +89,10 @@ describe('Update condominium E2E', () => {
 		expect(searchedCondominium?.name).toEqual('New condominium name');
 		expect(searchedCondominium?.CEP).toEqual('65636678');
 		expect(searchedCondominium?.num).toEqual(64512);
+		expect(searchedCondominium?.district).toEqual('New district');
+		expect(searchedCondominium?.city).toEqual('New city');
+		expect(searchedCondominium?.state).toEqual('New state');
+		expect(searchedCondominium?.complement).toEqual('New complement');
 	});
 
 	it('should be able to throw a 400', async () => {

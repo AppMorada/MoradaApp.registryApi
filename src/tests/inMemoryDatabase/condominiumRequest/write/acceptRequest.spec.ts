@@ -5,7 +5,6 @@ import { EntitiesEnum } from '@app/entities/entities';
 import { InMemoryContainer } from '../../inMemoryContainer';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { condominiumRequestFactory } from '@tests/factories/condominiumRequest';
-import { communityInfosFactory } from '@tests/factories/communityInfos';
 
 describe('InMemoryData test: Condominium request acceptRequest method', () => {
 	let container: InMemoryContainer;
@@ -20,22 +19,20 @@ describe('InMemoryData test: Condominium request acceptRequest method', () => {
 		const user = userFactory();
 		const condominiumMember = condominiumMemberFactory({
 			userId: user.id.value,
+			role: -1,
 		});
 		const condominiumRequest = condominiumRequestFactory({
 			userId: user.id.value,
 			condominiumId: condominiumMember.condominiumId.value,
 		});
-		const communityInfo = communityInfosFactory({
-			memberId: condominiumMember.id.value,
-		});
 
 		sut.users.push(user);
 		sut.condominiumRequests.push(condominiumRequest);
+		sut.condominiumMembers.push(condominiumMember);
 
 		await sut.acceptRequest({
-			condominiumMember,
-			communityInfo,
 			userId: user.id,
+			condominiumId: condominiumMember.condominiumId,
 		});
 
 		expect(sut.condominiumMembers[0].userId?.equalTo(user.id)).toBe(true);
@@ -44,14 +41,12 @@ describe('InMemoryData test: Condominium request acceptRequest method', () => {
 
 	it('should be able to throw one error: condominium request doesn\'t exist', async () => {
 		const condominiumMember = condominiumMemberFactory();
-		const communityInfo = communityInfosFactory();
 		const user = userFactory();
 
 		await expect(
 			sut.acceptRequest({
-				condominiumMember,
-				communityInfo,
 				userId: user.id,
+				condominiumId: condominiumMember.condominiumId,
 			}),
 		).rejects.toThrow(
 			new InMemoryError({

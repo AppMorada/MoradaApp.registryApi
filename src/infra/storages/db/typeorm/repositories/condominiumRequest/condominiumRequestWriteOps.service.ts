@@ -16,6 +16,9 @@ import {
 } from '@infra/storages/db/error';
 import { TypeOrmUserEntity } from '../../entities/user.entity';
 import { TypeOrmCondominiumMemberEntity } from '../../entities/condominiumMember.entity';
+import { CondominiumMember } from '@app/entities/condominiumMember';
+import { CommunityInfos } from '@app/entities/communityInfos';
+import { TypeOrmCommunityInfosEntity } from '../../entities/communityInfos.entity';
 
 @Injectable()
 export class TypeOrmCondominiumRequestWriteOps
@@ -24,6 +27,8 @@ implements CondominiumRequestRepoWriteOps
 	constructor(
 		@Inject(typeORMConsts.entity.condominiumsRequests)
 		private readonly requestRepo: Repository<TypeOrmCondominiumRequestEntity>,
+		@Inject(typeORMConsts.entity.condominiumMember)
+		private readonly condominiumMemberRepo: Repository<TypeOrmCondominiumMemberEntity>,
 		@Inject(typeORMConsts.databaseProviders)
 		private readonly dataSource: DataSource,
 		@Inject(TRACE_ID)
@@ -52,26 +57,43 @@ implements CondominiumRequestRepoWriteOps
 				.where('user.id = :id', { id: input.userId.value })
 				.getOne();
 
-			if (!user)
+			const condominiumMember = await t
+				.getRepository(TypeOrmCondominiumMemberEntity)
+				.findOne({
+					where: {
+						user: { id: input.userId.value },
+						condominium: { id: input.condominiumId.value },
+					},
+					loadRelationIds: true,
+				});
+
+			if (!user || !condominiumMember)
 				throw new DatabaseCustomError({
 					tag: DatabaseCustomErrorsTags.contentDoesntExists,
 					message:
 						'Usuário não solicitou a sua entrada no condomínio',
 				});
 
-			const condominiumMember = TypeOrmCondominiumMemberMapper.toTypeOrm(
-				input.condominiumMember,
-			);
-			condominiumMember.uniqueRegistry = user.uniqueRegistry;
 			const communityInfo = TypeOrmCommunityInfoMapper.toTypeOrm(
-				input.communityInfo,
+				new CommunityInfos({ memberId: condominiumMember.id }),
 			);
 
-			await t.insert('condominium_members', condominiumMember);
-			await t.insert('community_infos', communityInfo);
+			await t.getRepository(TypeOrmCondominiumMemberEntity).update(
+				{
+					user: input.userId.value,
+					condominium: input.condominiumId.value,
+				},
+				{ role: 0 },
+			);
+
 			await t
-				.getRepository(TypeOrmCondominiumRequestEntity)
-				.delete({ user: user.id });
+				.getRepository(TypeOrmCommunityInfosEntity)
+				.insert(communityInfo);
+
+			await t.getRepository(TypeOrmCondominiumRequestEntity).delete({
+				user: user.id,
+				condominium: input.condominiumId.value,
+			});
 		});
 
 		span.end();
@@ -83,37 +105,25 @@ implements CondominiumRequestRepoWriteOps
 		span.setAttribute('op.mode', 'write');
 		span.setAttribute('op.description', 'Create condominium request');
 
-		if (input.request.userId.equalTo(input.condominium.ownerId))
-			throw new DatabaseCustomError({
-				message: 'Usuário já está participando do condomínio',
-				tag: DatabaseCustomErrorsTags.contentAlreadyExists,
-			});
-
 		await this.dataSource.transaction(async (t) => {
-			const condominiumMember = await t
-				.getRepository(TypeOrmCondominiumMemberEntity)
-				.findOne({
-					where: {
-						user: {
-							id: input.request.userId.value,
-						},
-						condominium: {
-							id: input.request.condominiumId.value,
-						},
-					},
-				});
-			if (condominiumMember)
-				throw new DatabaseCustomError({
-					message: 'Usuário já está participando do condomínio',
-					tag: DatabaseCustomErrorsTags.contentAlreadyExists,
-				});
+			const requesterCondominiumMember =
+				TypeOrmCondominiumMemberMapper.toTypeOrm(
+					new CondominiumMember({
+						condominiumId: input.request.condominiumId.value,
+						userId: input.request.userId.value,
+						uniqueRegistryId: input.request.uniqueRegistryId.value,
+						role: -1,
+					}),
+				);
+			const condominiumRequest =
+				TypeOrmCondominiumRequestMapper.toTypeOrm(input.request);
 
-			const parsedData = TypeOrmCondominiumRequestMapper.toTypeOrm(
-				input.request,
-			);
+			await t
+				.getRepository(TypeOrmCondominiumMemberEntity)
+				.insert(requesterCondominiumMember);
 			await t
 				.getRepository(TypeOrmCondominiumRequestEntity)
-				.insert(parsedData);
+				.insert(condominiumRequest);
 		});
 
 		span.end();
@@ -128,6 +138,10 @@ implements CondominiumRequestRepoWriteOps
 		span.setAttribute('op.description', 'Delete condominium request');
 
 		await this.requestRepo.delete({
+			user: input.userId.value,
+			condominium: input.condominiumId.value,
+		});
+		await this.condominiumMemberRepo.delete({
 			user: input.userId.value,
 			condominium: input.condominiumId.value,
 		});
