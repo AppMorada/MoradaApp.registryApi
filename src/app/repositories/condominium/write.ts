@@ -1,4 +1,14 @@
-import { CEP, UUID, Name, Num } from '@app/entities/VO';
+import {
+	CEP,
+	UUID,
+	Name,
+	Num,
+	District,
+	City,
+	State,
+	Reference,
+	Complement,
+} from '@app/entities/VO';
 import { Condominium } from '@app/entities/condominium';
 
 export namespace CondominiumWriteOpsInterfaces {
@@ -8,9 +18,13 @@ export namespace CondominiumWriteOpsInterfaces {
 
 	export interface update {
 		id: UUID;
-		isValidated?: boolean;
 		name?: Name;
 		CEP?: CEP;
+		district?: District;
+		city?: City;
+		state?: State;
+		reference?: Reference;
+		complement?: Complement;
 		num?: Num;
 	}
 

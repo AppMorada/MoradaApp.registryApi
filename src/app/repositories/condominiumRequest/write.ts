@@ -1,7 +1,5 @@
 import { UUID } from '@app/entities/VO';
-import { CommunityInfos } from '@app/entities/communityInfos';
 import { Condominium } from '@app/entities/condominium';
-import { CondominiumMember } from '@app/entities/condominiumMember';
 import { CondominiumRequest } from '@app/entities/condominiumRequest';
 
 export namespace CondominiumRequestRepoWriteOpsInterfaces {
@@ -15,8 +13,7 @@ export namespace CondominiumRequestRepoWriteOpsInterfaces {
 	}
 	export interface accept {
 		userId: UUID;
-		condominiumMember: CondominiumMember;
-		communityInfo: CommunityInfos;
+		condominiumId: UUID;
 	}
 }
 

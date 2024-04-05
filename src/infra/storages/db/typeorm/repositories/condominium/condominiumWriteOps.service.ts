@@ -54,7 +54,11 @@ export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 			name: input.name?.value,
 			CEP: input.CEP ? CEP.toInt(input.CEP) : undefined,
 			num: input.num?.value,
-			isValidated: input.isValidated,
+			district: input.district?.value,
+			city: input.city?.value,
+			state: input.state?.value,
+			reference: input.reference?.value,
+			complement: input.complement?.value,
 		};
 
 		for (const rawKey in modifications) {
