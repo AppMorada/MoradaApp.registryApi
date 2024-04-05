@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "MoradaApp - OpenAPI 3.0",
-    "description": "Documentação dedicada a API de registro de usuários e condomínio do MoradaApp, para começar a usar verifique nosso [repositório](https://github.com/AppMorada/MoradaApp.Api) e siga as instruções necessárias para realizar a instalação das ferramentas requisitadas e a definição das variáveis de ambiente em .env.example ou solicite o link da API em ambiente de produção no GCP. \\\n\\\nAlém disso, você também pode seguir o fluxo da aplicação atual no [Miro](https://miro.com/welcomeonboard/OFgybWhHSFdtNllYd01sSmlYTzIzYWJYdGp2NDkwRXcxSUpQcDhHRGltbE0waWFubDBUTkhGaThjT2RzbFBMTHwzNDU4NzY0NTQ1MzUwMDE3OTQ2fDI=?share_link_id=790923327853).",
+    "description": "Documentação dedicada a API de registro de usuários e condomínio do MoradaApp, para começar a usar verifique nosso [repositório](https://github.com/AppMorada/MoradaApp.Api) e siga as instruções necessárias para realizar a instalação das ferramentas requisitadas e a definição das variáveis de ambiente em .env.example ou solicite o link da API em ambiente de produção no GCP. \\\n\\\nAlém disso, você também pode seguir o fluxo da aplicação atual no [Miro](https://miro.com/app/board/uXjVKbtvjfc=/).",
     "version": "0.0.0"
   },
   "externalDocs": {
@@ -47,13 +47,309 @@
         ]
       }
     },
+    "/condominium/my/requests": {
+      "get": {
+        "tags": [
+          "Solicitações de entrada"
+        ],
+        "summary": "Pesquisar solicitações de entradas",
+        "description": "Pesquisa por solicitações de entrada do usuário autenticado",
+        "operationId": "getMyRequests",
+        "responses": {
+          "200": {
+            "description": "Caminho feliz. Retorna os dados das solicitações",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resGetCondominiumRequest"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ação não autorizada. Geralmente ocorre devido ao fato de que o usuário não está autenticado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/condominium/requests/{condominiumId}": {
+      "get": {
+        "tags": [
+          "Solicitações de entrada"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "condominiumId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Um id no formato de UUID"
+          }
+        ],
+        "summary": "Pesquisar por todas as solicitações em um condomínio",
+        "description": "Pesquisar por todos as solicitações do condomínio usando um id de condomínio. Atenção! todos os usuário que tentarem acessar está rota deve ter nível de permissões equivalentes ao de um funcionário ou administrador",
+        "operationId": "getAllRequestByCondominiumId",
+        "responses": {
+          "200": {
+            "description": "Caminho feliz. Retorna os dados das solicitações",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resGetAllCondominiumRequestByCondominiumId"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bad_request"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ação não autorizada. Geralmente ocorre devido ao fato de que o usuário não está autenticado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/condominium/requests/{condominiumId}/{userId}": {
+      "delete": {
+        "tags": [
+          "Solicitações de entrada"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "condominiumId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Representa o id do condomínio no formato de UUID"
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Representa o id do usuário da empresa no formato de UUID"
+          }
+        ],
+        "summary": "Deleta a solicitação de um usuário",
+        "description": "Endpoint utilizado por um administrador ou funcionário para deletar as solicitações de um usuário",
+        "operationId": "deleteRequest",
+        "responses": {
+          "204": {
+            "description": "Caminho feliz. Deleta os dados do usuário com sucesso"
+          },
+          "400": {
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bad_request"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ação não autorizada. Geralmente ocorre devido ao fato de que o usuário não está autenticado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/condominium/requests/call/{humanReadableId}": {
+      "post": {
+        "tags": [
+          "Solicitações de entrada"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "humanReadableId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Representa o id do condomínio no formato de alfanúmerico"
+          }
+        ],
+        "summary": "Cria uma nova solicitação de entrada no condomínio",
+        "description": "Se o usuário já não estiver no condomínio, cria-se uma solicitação de entrada no mesmo",
+        "operationId": "postRequest",
+        "responses": {
+          "201": {
+            "description": "Caminho feliz. Solicitação criada com sucesso"
+          },
+          "401": {
+            "description": "Ação não autorizada. Geralmente ocorre devido ao fato de que o usuário não está autenticado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Disparado caso a solicitação já exista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/conflictContentAlreadyExist"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/condominium/requests/{condominiumId}/accept/{userId}": {
+      "post": {
+        "tags": [
+          "Solicitações de entrada"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "condominiumId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Representa o id do condomínio no formato de UUID"
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Representa o id do usuário da empresa no formato de UUID"
+          }
+        ],
+        "summary": "Aceita solicitações de entrada aos condomínios",
+        "description": "Aceita novas solicitações de entrada nos condomínios. Somente administradores e funcionários tem a permissão de acessar esté endpoint",
+        "operationId": "acceptPostRequest",
+        "responses": {
+          "201": {
+            "description": "Caminho feliz. Solicitação aceita com sucesso"
+          },
+          "400": {
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bad_request"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ação não autorizada. Geralmente ocorre devido ao fato de que o usuário não está autenticado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/condominium/validate-account": {
+      "post": {
+        "tags": [
+          "Condomínios"
+        ],
+        "summary": "Solicita a validação da conta do sindíco",
+        "description": "Realiza o envio do código de validação no email do usuário",
+        "operationId": "validateCondominium",
+        "responses": {
+          "202": {
+            "description": "Caminho feliz. Código enviado por email"
+          },
+          "401": {
+            "description": "Ação não autorizada. Ocorre caso o usuário não tenha válidado o seu email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/condominium": {
       "post": {
         "tags": [
           "Condomínios"
         ],
         "summary": "Cria um novo condomínio",
-        "description": "Cria um novo condomínio e uma conta de sindíco, marcando seu número de identificação ao condomínio em questão. Assim, toda vez que o condomínio for pesquisado, seu ID também poderá ser coletado.",
+        "description": "Cria um novo condomínio utilizando o código de confirmação no email do usuário",
         "operationId": "postCondominium",
         "requestBody": {
           "content": {
@@ -67,29 +363,31 @@
         },
         "responses": {
           "201": {
-            "description": "Retorna as credenciais do condomínio e autentica de \\\nmaneira automática o novo usuário sindíco.\n",
+            "description": "Caminho feliz. Retorna os dados do condomínio",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/resPostCondominium"
                 }
               }
-            },
-            "headers": {
-              "Set-Cookie": {
-                "schema": {
-                  "type": "string",
-                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2078 03:24:08 GMT;\n"
-                }
-              }
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o body da requisição foi preenchido \\\nincorretamente. Quando disparado, o campo message deve \\\nindicar qual o motivo do erro, podendo variar \\\ncom as seguintes mensagens:\n- O nome do usuário precisa conter caracteres válidos\n- O nome do usuário precisa conter no máximo 120 caracteres\n- O nome do usuário precisa conter no mínimo 2 caracteres\n- O email do usuário precisa conter caracteres válidos\n- O email do usuário precisa ser um email válido\n- O email do usuário precisa conter no máximo 320 caracteres\n- A senha precisa conter caracteres válidos\n- A senha precisa conter no máximo 64 caracteres\n- A senha precisa conter no mínimo 8 caracteres\n- O nome do condomínio precisa conter caracteres válidos\n- O nome do condomínio precisa conter no máximo 120 caracteres\n- O nome do condomínio precisa conter no mínimo 2 caracteres\n- O CEP precisa conter caracteres válidos\n- O CEP precisa conter no mínimo 8 caracteres\n- O CEP precisa conter no máximo 9 caracteres\n- O número da rua do condomínio precisa ser um número\n- O número da rua do condomínio precisa ser maior ou igual a 0\n- O número da rua do condomínio precisa ser menor ou igual a 2147483647\n- O CNPJ precisa conter caracteres válidos\n- O CNPJ precisa conter no máximo 18 caracteres\n- O CNPJ precisa conter no mínimo 14 caracteres\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/bad_request"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ação não autorizada. Ocorre caso o usuário não tenha válidado o seu email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
                 }
               }
             }
@@ -104,7 +402,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "condominiumTfaToken": []
+          }
+        ]
       }
     },
     "/condominium/{condominiumId}": {
@@ -141,7 +444,7 @@
             "description": "Caminho feliz"
           },
           "400": {
-            "description": "Geralmente, obtido quando o body da requisição ou o condominiumId foi preenchido \\\nincorretamente. Quando disparado, o campo message deve \\\nindicar qual o motivo do erro, podendo variar \\\ncom as seguintes mensagens:\n- O nome precisa conter caracteres válidos\n- O nome precisa conter no máximo 120 caracteres\n- O nome precisa conter no mínimo 2 caracteres\n- O CEP precisa conter caracteres válidos\n- O CEP precisa conter no mínimo 8 caracteres\n- O CEP precisa conter no máximo 9 caracteres\n- O número da rua precisa ser um número\n- O número da rua precisa ser maior ou igual a 0\n- O número da rua precisa ser menor ou igual a 2147483647\n- Valor incorreto de CNPJ\n- Valor incorreto de CEP\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -197,7 +500,7 @@
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId foi preenchido \\\nincorretamente, disparando a seguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -231,7 +534,7 @@
             "description": "Caminho feliz"
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId foi preenchido \\\nincorretamente, disparando a seguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -297,7 +600,7 @@
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId ou o memberId \\\né preenchido de maneira incorreta, disparando a \\\nseguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -347,7 +650,7 @@
             "description": "Um id do condomínio no formato de UUID"
           }
         ],
-        "summary": "Atualiza um funcionário",
+        "summary": "Atualiza um membro do condomínio",
         "description": "Atualiza os dados de um funcionário. Por padrão, o funcionário ou qualquer indivíduo de hierarquia maior tem permissão para usar esta rota",
         "requestBody": {
           "content": {
@@ -363,7 +666,7 @@
             "description": "Caminho feliz"
           },
           "400": {
-            "description": "Geralmente, obtido quando o body, condominiumId ou o memberId \\\né preenchido de maneira incorreta, disparando as \\\nseguintes mensagens no campo message:\n- O número de identificação não está formatado corretamente\n- O email precisa conter caracteres válidos\n- O email precisa ser um email válido\n- O email precisa conter no máximo 320 caracteres\n- O número do apartamento precisa ser um número\n- O número do apartamento precisa ser menor ou igual a 2147483647\n- O número do apartamento precisa ser maior ou igual a 0\n- O bloco do condomínio precisa conter caracteres válidos\n- O bloco do condomínio precisa conter no máximo 6 caracteres\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -420,7 +723,7 @@
             "description": "Caminho feliz"
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId ou o memberId \\\né preenchido de maneira incorreta, disparando a \\\nseguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -477,7 +780,7 @@
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId é preenchido de maneira incorreta, disparando a \\\nseguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -534,7 +837,7 @@
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId é preenchido de maneira incorreta, disparando a \\\nseguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -600,7 +903,7 @@
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId é preenchido de maneira incorreta, disparando a \\\nseguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -659,7 +962,7 @@
             "description": "Caminho feliz"
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId ou o userId é preenchido de maneira incorreta, disparando a \\\nseguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -719,7 +1022,7 @@
             "description": "Caminho feliz"
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId ou o body é preenchido de maneira incorreta, disparando a seguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n- O nome precisa conter caracteres válidos\n- O nome precisa conter no máximo 120 caracteres\n- O nome precisa conter no mínimo 2 caracteres\n- O email precisa conter caracteres válidos\n- O email precisa ser um email válido\n- O email precisa conter no máximo 320 caracteres\n- A senha precisa conter caracteres válidos\n- A senha precisa conter no máximo 64 caracteres\n- A senha precisa conter no mínimo 8 caracteres\n- Valor incorreto de CPF\n- O CPF precisa conter caracteres válidos\n- O CPF precisa conter no mínimo 11 caracteres\n- O CPF precisa conter no máximo 14 caracteres\n- O número do telefone precisa conter caracteres válidos\n- O número do telefone precisa conter no máximo 8 caracteres\n- O número do telefone precisa conter no mínimo 64 caracteres\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -786,7 +1089,7 @@
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId é preenchido de maneira incorreta, disparando a seguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -852,7 +1155,7 @@
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId e o userId é preenchido de maneira incorreta, disparando a seguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -918,7 +1221,7 @@
             "description": "Caminho feliz"
           },
           "400": {
-            "description": "Geralmente, obtido quando o condominiumId e o userId é preenchido de maneira incorreta, disparando a seguinte mensagem no campo message:\n- O número de identificação não está formatado corretamente\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -979,7 +1282,7 @@
             "description": "Caminho feliz"
           },
           "400": {
-            "description": "Geralmente, obtido quando o body é preenchido de maneira incorreta, disparando as seguintes mensagens no campo message, indicando o index do array ao qual teve este erro:\n- members.[index].O email precisa conter caracteres válidos\n- members.[index].O email precisa ser um email válido\n- members.[index].O email precisa conter no máximo 320 caracteres\n- members.[index].O número do apartamento precisa ser um número\n- members.[index].O número do apartamento precisa ser menor ou igual a 0\n- members.[index].O número do apartamento precisa ser maior ou igual a 2147483647\n- members.[index].O bloco do condomínio precisa conter caracteres válidos\n- members.[index].O bloco do condomínio precisa conter no máximo 6 caracteres\n- members.[index].O CPF precisa conter caracteres válidos\n- members.[index].O CPF precisa conter no mínimo 14 caracteres\n- members.[index].O CPF precisa conter no máximo 11 caracteres \\\n\\\nCaso o campo members não seja um array, o sistema também vai disparar mensagens informando sobre esta incoerência.\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1054,7 +1357,7 @@
             }
           },
           "400": {
-            "description": "Geralmente, obtido quando o body é preenchido de maneira incorreta, disparando as seguintes mensagens no campo message:\n- O nome precisa conter caracteres válidos\n- O nome precisa conter no máximo 120 caracteres\n- O nome precisa conter no mínimo 2 caracteres\n- O número de telefone precisa conter caracteres válidos\n- O número de telefone precisa conter no máximo 20 caracteres\n- O número de telefone precisa conter no mínimo 10 caracteres\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1112,8 +1415,8 @@
         "tags": [
           "Usuários"
         ],
-        "summary": "Cria um novo usuário com base em um convite",
-        "description": "Cria um usuário, contanto que o mesmo já tenha sido convidado por um condomínio",
+        "summary": "Cria um novo usuário",
+        "description": "Cria um usuário, status 201 significa que o usuário já possui algum pre-cadastro realizado em algum condomínio e 202 significa que o usuário precisa solicitar um cadastro ou criar seu próprio condomínio, vale ressaltar que o campo CPF é opcional.",
         "operationId": "postUser",
         "requestBody": {
           "content": {
@@ -1144,8 +1447,26 @@
               }
             }
           },
+          "202": {
+            "description": "Caminho feliz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resLogin"
+                }
+              }
+            },
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string",
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2078 03:24:08 GMT;\n"
+                }
+              }
+            }
+          },
           "400": {
-            "description": "Geralmente, obtido quando o body é preenchido de maneira incorreta, disparando as seguintes mensagens no campo message:\n- O nome precisa conter caracteres válidos\n- O nome precisa conter no máximo 120 caracteres\n- O nome precisa conter no mínimo 2 caracteres\n- O email precisa conter caracteres válidos\n- O email precisa ser um email válido\n- O email precisa conter no máximo 320 caracteres\n- A senha precisa conter caracteres válidos\n- A senha precisa conter no máximo 64 caracteres\n- A senha precisa conter no mínimo 8 caracteres\n- Valor incorreto de CPF\n- O CPF precisa conter caracteres válidos\n- O CPF precisa conter no mínimo 11 caracteres\n- O CPF precisa conter no máximo 14 caracteres\n- O número do telefone precisa conter caracteres válidos\n- O número do telefone precisa conter no máximo 8 caracteres\n- O número do telefone precisa conter no mínimo 64 caracteres\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1167,7 +1488,7 @@
         }
       }
     },
-    "/user/me/community-member-section": {
+    "/user/community-member-section": {
       "get": {
         "tags": [
           "Usuários"
@@ -1204,7 +1525,7 @@
         ]
       }
     },
-    "/user/me/enterprise-user-section": {
+    "/user/enterprise-user-section": {
       "get": {
         "tags": [
           "Usuários"
@@ -1225,6 +1546,65 @@
           },
           "401": {
             "description": "Disparado caso o usuário não esteja autenticado no sistema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/condominium/{condominiumId}/myself/as-community": {
+      "patch": {
+        "tags": [
+          "Membros do condomínio"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "condominiumId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Um id do condomínio no formato de UUID"
+          }
+        ],
+        "summary": "Atualizar dados do usuário armazenados no condomínio",
+        "description": "Atualiza os dados do condomínio do usuário autenticado. Utilizado somente por moradores do condomínio.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/patchCondominiumMember"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Caminho feliz"
+          },
+          "400": {
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bad_request"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Disparado caso o usuário não esteja autorizado ou autenticado no sistema",
             "content": {
               "application/json": {
                 "schema": {
@@ -1282,7 +1662,7 @@
             "description": "Primeiro passo da autenticação de dois fatores concluido"
           },
           "400": {
-            "description": "Geralmente, obtido quando o body é preenchido de maneira incorreta, disparando as seguintes mensagens no campo message:\n- O email precisa conter caracteres válidos\n- O email precisa ser um email válido\n- O email precisa conter no máximo 320 caracteres\n- A senha precisa conter caracteres válidos\n- A senha precisa conter no máximo 64 caracteres\n- A senha precisa conter no mínimo 8 caracteres\n",
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1406,6 +1786,10 @@
         "type": "http",
         "scheme": "bearer"
       },
+      "condominiumTfaToken": {
+        "type": "http",
+        "scheme": "bearer"
+      },
       "cookieAuth": {
         "type": "http",
         "scheme": "bearer"
@@ -1468,7 +1852,7 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "format": "UUID",
+                  "format": "uuid",
                   "description": "Número de identificação do condomínio"
                 },
                 "humanReadableId": {
@@ -1497,18 +1881,26 @@
                   "description": "CNPJ do condomínio",
                   "example": "11.111.111/0001-11"
                 },
-                "seedKey": {
+                "district": {
                   "type": "string",
-                  "description": "Chave usada para criar links e convidar novos usuários"
+                  "description": "Bairro do condomínio"
+                },
+                "city": {
+                  "type": "string",
+                  "description": "Cidade do condomínio"
+                },
+                "state": {
+                  "type": "string",
+                  "description": "Estado do condomínio"
                 },
                 "createdAt": {
                   "type": "string",
-                  "format": "datetime",
+                  "format": "date",
                   "description": "Data de criação do condomínio"
                 },
                 "updatedAt": {
                   "type": "string",
-                  "format": "datetime",
+                  "format": "date",
                   "description": "Data de atualização do condomínio"
                 }
               }
@@ -1526,6 +1918,10 @@
                 "type": "string",
                 "format": "UUID",
                 "description": "Número de identificação do condomínio"
+              },
+              "humanReadableId": {
+                "type": "string",
+                "description": "Número de identificação legível para humanos"
               },
               "ownerId": {
                 "type": "string",
@@ -1554,6 +1950,18 @@
                 "description": "CNPJ do condomínio",
                 "example": "11.111.111/0001-11"
               },
+              "district": {
+                "type": "string",
+                "description": "Bairro do condomínio"
+              },
+              "city": {
+                "type": "string",
+                "description": "Cidade do condomínio"
+              },
+              "state": {
+                "type": "string",
+                "description": "Estado do condomínio"
+              },
               "createdAt": {
                 "type": "string",
                 "format": "datetime",
@@ -1571,30 +1979,14 @@
       "postCondominium": {
         "type": "object",
         "properties": {
-          "userName": {
-            "type": "string",
-            "description": "Nome do usuário super administrador",
-            "example": "John Doe"
-          },
-          "condominiumName": {
+          "name": {
             "type": "string",
             "description": "Nome do condomínio",
             "example": "Meu condomínio"
           },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "Email do proprietário",
-            "example": "johndoe@email.com"
-          },
-          "password": {
-            "type": "string",
-            "description": "Senha do usuário",
-            "example": "12345678"
-          },
           "CEP": {
             "type": "string",
-            "format": "CEP",
+            "format": "cep",
             "description": "CEP do condomínio",
             "example": "40325390"
           },
@@ -1605,31 +1997,50 @@
           },
           "CNPJ": {
             "type": "string",
-            "format": "CNPJ",
+            "format": "cnpj",
             "description": "CNPJ do condomínio",
             "example": "11.111.111/0001-11"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Referência da localidade"
+          },
+          "complement": {
+            "type": "string",
+            "description": "Complemento da localidade"
+          },
+          "district": {
+            "type": "string",
+            "description": "Bairro do condomínio"
+          },
+          "city": {
+            "type": "string",
+            "description": "Cidade do condomínio"
+          },
+          "state": {
+            "type": "string",
+            "description": "Estado do condomínio"
           }
         }
       },
       "resPostCondominium": {
         "type": "object",
         "properties": {
-          "accessToken": {
-            "type": "string",
-            "format": "JWT",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0OTJkOGJjYS01OTVmLTQyYTYtYTk3Zi0xNzc0MDYyYTIwZDgiLCJjb250ZW50Ijp7ImVtYWlsIjoiam9obmRvZUBnbWFpbC5jb20iLCJibG9jayI6IjMyNjAwMCIsImFwYXJ0bWVudE51bWJlciI6MTUsIm5hbWUiOiJKb2huIERvZSIsImxldmVsIjoyLCJjcmVhdGVkQXQiOiIyMDIzLTEyLTE1VDA2OjU1OjM3LjY4NFoiLCJ1cGRhdGVkQXQiOiIyMDIzLTEyLTE1VDA2OjU1OjM3LjY4NFoiLCJwaG9uZU51bWJlciI6IjEyMzQ1Njc4OTEifSwidHlwZSI6IkFjY2VzcyBUb2tlbiIsImlhdCI6MTcwMjYyMzMzOCwiZXhwIjoxNzAyNzA5NzM4fQ.I1bdcGH-U_R-bOCKRvXYNm_sCAiSNxX3YUOuao5bPbo"
-          },
           "condominium": {
             "type": "object",
             "properties": {
               "id": {
                 "type": "string",
-                "format": "UUID",
-                "description": "Número de identificação do condomínio"
+                "format": "uuid",
+                "description": "Número de identificação do condomíni"
+              },
+              "humanReadableId": {
+                "type": "string",
+                "description": "Número de identificação legível para humanos"
               },
               "ownerId": {
                 "type": "string",
-                "format": "UUID",
+                "format": "uuid",
                 "description": "Número de identificação do dono do condomínio"
               },
               "name": {
@@ -1643,6 +2054,18 @@
                 "description": "CEP do condomínio",
                 "example": "40325390"
               },
+              "district": {
+                "type": "string",
+                "description": "Bairro do condomínio"
+              },
+              "city": {
+                "type": "string",
+                "description": "Cidade do condomínio"
+              },
+              "state": {
+                "type": "string",
+                "description": "Estado do condomínio"
+              },
               "num": {
                 "type": "integer",
                 "format": "int32",
@@ -1650,18 +2073,18 @@
               },
               "CNPJ": {
                 "type": "string",
-                "format": "CNPJ",
+                "format": "cnpj",
                 "description": "CNPJ do condomínio",
                 "example": "11.111.111/0001-11"
               },
               "createdAt": {
                 "type": "string",
-                "format": "datetime",
+                "format": "date",
                 "description": "Data de criação do condomínio"
               },
               "updatedAt": {
                 "type": "string",
-                "format": "datetime",
+                "format": "date",
                 "description": "Data de atualização do condomínio"
               }
             }
@@ -1678,7 +2101,7 @@
           },
           "CEP": {
             "type": "string",
-            "format": "CEP",
+            "format": "cep",
             "description": "CEP do condomínio",
             "example": "40325390"
           },
@@ -1686,6 +2109,26 @@
             "type": "integer",
             "format": "int32",
             "example": 5124
+          },
+          "district": {
+            "type": "string",
+            "description": "Bairro do condomínio"
+          },
+          "city": {
+            "type": "string",
+            "description": "Cidade do condomínio"
+          },
+          "state": {
+            "type": "string",
+            "description": "Estado do condomínio"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Referência da localização"
+          },
+          "complement": {
+            "type": "string",
+            "description": "Complemento"
           }
         }
       },
@@ -1744,10 +2187,6 @@
             "type": "string",
             "format": "CEP",
             "description": "CPF do usuário (deve ser válido)"
-          },
-          "code": {
-            "type": "string",
-            "description": "Código de validação recebido via email"
           }
         }
       },
@@ -2301,12 +2740,6 @@
                       "format": "email",
                       "description": "Email do usuário",
                       "example": "johndoe@email.com"
-                    },
-                    "CPF": {
-                      "type": "string",
-                      "format": "CPF",
-                      "description": "CPF do usuário",
-                      "example": "83885645793"
                     }
                   }
                 }
@@ -2578,6 +3011,96 @@
             "type": "string",
             "format": "JWT",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0OTJkOGJjYS01OTVmLTQyYTYtYTk3Zi0xNzc0MDYyYTIwZDgiLCJjb250ZW50Ijp7ImVtYWlsIjoiam9obmRvZUBnbWFpbC5jb20iLCJibG9jayI6IjMyNjAwMCIsImFwYXJ0bWVudE51bWJlciI6MTUsIm5hbWUiOiJKb2huIERvZSIsImxldmVsIjoyLCJjcmVhdGVkQXQiOiIyMDIzLTEyLTE1VDA2OjU1OjM3LjY4NFoiLCJ1cGRhdGVkQXQiOiIyMDIzLTEyLTE1VDA2OjU1OjM3LjY4NFoiLCJwaG9uZU51bWJlciI6IjEyMzQ1Njc4OTEifSwidHlwZSI6IkFjY2VzcyBUb2tlbiIsImlhdCI6MTcwMjYyMzMzOCwiZXhwIjoxNzAyNzA5NzM4fQ.I1bdcGH-U_R-bOCKRvXYNm_sCAiSNxX3YUOuao5bPbo"
+          }
+        }
+      },
+      "resGetCondominiumRequest": {
+        "type": "object",
+        "properties": {
+          "requestsCollection": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "John Doe"
+              },
+              "email": {
+                "type": "string",
+                "example": "jhondoe@email.com"
+              },
+              "requests": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "condominiumId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "uniqueRegistryId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "resGetAllCondominiumRequestByCondominiumId": {
+        "type": "object",
+        "properties": {
+          "requestCollection": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "John Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "jhondoe@email.com"
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "condominiumId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "uniqueRegistryId": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

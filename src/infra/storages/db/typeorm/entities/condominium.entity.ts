@@ -40,7 +40,7 @@ export class TypeOrmCondominiumEntity {
 	@Column({ type: 'bigint', name: 'cnpj' })
 		CNPJ: string;
 
-	@Column({ type: 'varchar', length: 60 })
+	@Column({ type: 'varchar', length: 60, nullable: true })
 		reference: string | null;
 
 	@Column({ type: 'varchar', length: 140 })
@@ -52,7 +52,7 @@ export class TypeOrmCondominiumEntity {
 	@Column({ type: 'varchar', length: 140 })
 		state: string;
 
-	@Column({ type: 'varchar', length: 60 })
+	@Column({ type: 'varchar', length: 60, nullable: true })
 		complement: string | null;
 
 	@CreateDateColumn({ name: 'created_at' })

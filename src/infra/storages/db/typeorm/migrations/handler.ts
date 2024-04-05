@@ -7,6 +7,7 @@ import { TypeOrmCommunityInfosEntity } from '../entities/communityInfos.entity';
 import { TypeOrmUniqueRegistryEntity } from '../entities/uniqueRegistry.entity';
 import { TypeOrmCondominiumRequestEntity } from '../entities/condominiumRequest.entity';
 import { FirstMigration1712199170992 } from './1712199170992-firstMigration';
+import { AddIndexAndFixForgottenNullablesFields1712355043048 } from './1712355043048-addIndexAndFixForgottenNullablesFields';
 
 const config: PostgresConnectionOptions = {
 	type: 'postgres',
@@ -22,7 +23,10 @@ const config: PostgresConnectionOptions = {
 	synchronize: false,
 	migrationsRun: false,
 	migrationsTableName: 'migration_typeorm',
-	migrations: [FirstMigration1712199170992],
+	migrations: [
+		FirstMigration1712199170992,
+		AddIndexAndFixForgottenNullablesFields1712355043048,
+	],
 };
 
 const dataSource = new TypeORMService({ ...config });
