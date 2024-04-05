@@ -16,7 +16,7 @@ export const condominiumRelUserRules = {
 	},
 	level: {
 		maxLength: 2,
-		minLength: 0,
+		minLength: -1,
 		type: 'number',
 	},
 };
