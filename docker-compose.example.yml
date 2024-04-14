@@ -22,7 +22,7 @@ services:
 
   ### DESCOMENTAR CASO A SIGNATURE_TYPE ESTEJA MARCADA COMO "dynamic"
   # createKeyFunc:
-  #   image: nicolascbv/moradaapp-key-manager:latest
+  #   image: moradaapp/key-manager:latest
   #   restart: always
   #   env_file: .env
   #   hostname: createkeyfunc
@@ -31,17 +31,16 @@ services:
   #     - 8411:8411
   # 
   # deleteKeyFunc:
-  #   image: nicolascbv/moradaapp-key-manager:latest
+  #   image: moradaapp/key-manager:latest
   #   env_file: .env
   #   restart: always
   #   hostname: deletekeyfunc
-  #
   #   command: pnpm functions:deletekeyfunc
   #   ports:
   #     - 8412:8412
   #
   # updateKeyFunc:
-  #   image: nicolascbv/moradaapp-key-manager:latest
+  #   image: moradaapp/key-manager:latest
   #   env_file: .env
   #   restart: always
   #   hostname: updatekeyfunc

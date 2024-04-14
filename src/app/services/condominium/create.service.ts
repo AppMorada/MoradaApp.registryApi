@@ -3,9 +3,10 @@ import { CondominiumRepoWriteOps } from '@app/repositories/condominium/write';
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
 import { CondominiumMapper } from '@app/mapper/condominium';
+import { User } from '@app/entities/user';
 
 interface IProps {
-	ownerId: string;
+	user: User;
 	name: string;
 	CEP: string;
 	CNPJ: string;
@@ -24,11 +25,14 @@ export class CreateCondominiumService implements IService {
 		private readonly cepGate: CepGateway,
 	) {}
 
-	async exec(input: IProps) {
-		const condominium = CondominiumMapper.toClass({ ...input });
+	async exec({ user, ...input }: IProps) {
+		const condominium = CondominiumMapper.toClass({
+			...input,
+			ownerId: user.id.value,
+		});
 
 		await this.cepGate.check(condominium.CEP.value);
-		await this.condominiumRepo.create({ condominium });
+		await this.condominiumRepo.create({ condominium, user });
 
 		return {
 			condominium: CondominiumMapper.toObject(condominium),

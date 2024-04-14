@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class FirestoreListeners {
-	private listeners: Array<() => void> = [];
+	private unsubscribelistenersFunc: Array<() => void> = [];
 
 	get() {
-		return this.listeners;
+		return this.unsubscribelistenersFunc;
 	}
 }
