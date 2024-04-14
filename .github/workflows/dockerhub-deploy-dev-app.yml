@@ -6,6 +6,10 @@ on:
       - "main"
       - "release/**"
 
+concurrency:
+  group: 'dev-app-image'
+  cancel-in-progress: true
+
 jobs:
   dockerhub:
     runs-on: ubuntu-latest

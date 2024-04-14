@@ -10,6 +10,10 @@ on:
       - "example/pg.Dockerfile"
       - ".github/workflows/dockerhub-deploy-database.yml"
 
+concurrency:
+  group: "deploy-database-image"
+  cancel-in-progress: true
+
 jobs:
   dockerhub:
     runs-on: ubuntu-latest
