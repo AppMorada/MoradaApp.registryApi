@@ -43,12 +43,16 @@ implements OnModuleDestroy, OnApplicationShutdown
 	}
 
 	async onModuleDestroy() {
-		this.listeners.get().forEach((item) => item());
+		this.listeners
+			.get()
+			.forEach((unsubscribelistenerFunc) => unsubscribelistenerFunc());
 		await this._instance?.terminate();
 	}
 
 	async onApplicationShutdown() {
-		this.listeners.get().forEach((item) => item());
+		this.listeners
+			.get()
+			.forEach((unsubscribelistenerFunc) => unsubscribelistenerFunc());
 		await this._instance?.terminate();
 	}
 }

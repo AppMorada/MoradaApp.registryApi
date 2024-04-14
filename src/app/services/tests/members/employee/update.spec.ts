@@ -23,8 +23,9 @@ describe('Update employee member by user id', () => {
 	});
 
 	it('should be able to update a member', async () => {
+		const owner = userFactory();
 		const condominium = condominiumFactory();
-		await condominiumRepo.create({ condominium });
+		await condominiumRepo.create({ condominium, user: owner });
 
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });

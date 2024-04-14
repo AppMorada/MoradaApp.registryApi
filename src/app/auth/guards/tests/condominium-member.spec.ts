@@ -106,9 +106,11 @@ describe('Condominium Member Guard test', () => {
 	});
 
 	it('should be able to validate condominium member', async () => {
-		const condominium = condominiumFactory();
+		const owner = userFactory();
+		const condominium = condominiumFactory({ ownerId: owner.id.value });
 		await condominiumRepoWriteOps.create({
 			condominium,
+			user: owner,
 		});
 
 		const uniqueRegistry = uniqueRegistryFactory();

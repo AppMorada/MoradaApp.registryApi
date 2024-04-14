@@ -10,10 +10,12 @@ import {
 	Complement,
 } from '@app/entities/VO';
 import { Condominium } from '@app/entities/condominium';
+import { User } from '@app/entities/user';
 
 export namespace CondominiumWriteOpsInterfaces {
 	export interface create {
 		condominium: Condominium;
+		user: User;
 	}
 
 	export interface update {
