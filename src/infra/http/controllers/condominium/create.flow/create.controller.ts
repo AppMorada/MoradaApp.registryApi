@@ -65,7 +65,7 @@ export class CreateCondominiumController {
 		const user = req.inMemoryData.user as User;
 		const { condominium } = await this.createCondominium.exec({
 			...body,
-			ownerId: user.id.value,
+			user,
 		});
 
 		return { condominium };

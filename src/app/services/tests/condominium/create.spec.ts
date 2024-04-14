@@ -25,7 +25,7 @@ describe('Create condominium service test', () => {
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
 		await sut.exec({
-			ownerId: user.id.value,
+			user,
 			name: condominium.name.value,
 			CEP: condominium.CEP.value,
 			num: condominium.num.value,
