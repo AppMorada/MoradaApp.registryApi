@@ -1,0 +1,12 @@
+{
+  "name": "swagger",
+  "version": "1.0.0",
+  "main": "index.mjs",
+  "scripts": {
+    "start:docs": "node ."
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "swagger-ui-express": "^5.0.0"
+  }
+}
