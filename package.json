@@ -55,7 +55,7 @@
 		"@nestjs/event-emitter": "^2.0.3",
 		"@nestjs/jwt": "^10.2.0",
 		"@nestjs/platform-express": "^10.2.10",
-		"@nestjs/terminus": "^10.2.0",
+		"@nestjs/terminus": "^10.2.3",
 		"@nestjs/throttler": "^5.1.0",
 		"@nestjs/typeorm": "^10.0.2",
 		"@opentelemetry/exporter-zipkin": "^1.22.0",
