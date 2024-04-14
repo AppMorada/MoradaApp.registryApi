@@ -9,12 +9,17 @@ import { TypeOrmCondominiumMapper } from '../../mapper/condominium';
 import { typeORMConsts } from '../../consts';
 import { TRACE_ID, TraceHandler } from '@infra/configs/tracing';
 import { CEP } from '@app/entities/VO';
+import { TypeOrmCondominiumMemberEntity } from '../../entities/condominiumMember.entity';
+import { CondominiumMember } from '@app/entities/condominiumMember';
+import { TypeOrmCondominiumMemberMapper } from '../../mapper/condominiumMember';
 
 @Injectable()
 export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 	constructor(
 		@Inject(typeORMConsts.entity.condominium)
 		private readonly condominiumRepo: Repository<TypeOrmCondominiumEntity>,
+		@Inject(typeORMConsts.entity.condominiumMember)
+		private readonly condominiumMemberRepo: Repository<TypeOrmCondominiumMemberEntity>,
 		@Inject(TRACE_ID)
 		private readonly trace: TraceHandler,
 	) {}
@@ -25,10 +30,20 @@ export class TypeOrmCondominiumRepoWriteOps implements CondominiumRepoWriteOps {
 		span.setAttribute('op.mode', 'write');
 		span.setAttribute('op.description', 'Create condominium');
 
+		const condominiumMember = TypeOrmCondominiumMemberMapper.toTypeOrm(
+			new CondominiumMember({
+				role: 2,
+				userId: input.user.id.value,
+				condominiumId: input.condominium.id.value,
+				uniqueRegistryId: input.user.uniqueRegistryId.value,
+			}),
+		);
 		const condominium = TypeOrmCondominiumMapper.toTypeOrm(
 			input.condominium,
 		);
+
 		await this.condominiumRepo.insert(condominium);
+		await this.condominiumMemberRepo.insert(condominiumMember);
 
 		span.end();
 	}

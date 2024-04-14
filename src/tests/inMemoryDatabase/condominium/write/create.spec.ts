@@ -17,7 +17,8 @@ describe('InMemoryData test: Condominium create method', () => {
 	it('should be able to create one condominium', async () => {
 		const user = userFactory();
 		const condominium = condominiumFactory({ ownerId: user.id.value });
-		expect(sut.create({ condominium })).resolves;
+
+		expect(sut.create({ condominium, user })).resolves;
 		expect(sut.calls.create).toEqual(1);
 	});
 
@@ -25,8 +26,8 @@ describe('InMemoryData test: Condominium create method', () => {
 		const user = userFactory();
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
-		expect(sut.create({ condominium })).resolves;
-		await expect(sut.create({ condominium })).rejects.toThrow(
+		expect(sut.create({ condominium, user })).resolves;
+		await expect(sut.create({ condominium, user })).rejects.toThrow(
 			new InMemoryError({
 				entity: EntitiesEnum.condominium,
 				message: 'Condominium already exist',

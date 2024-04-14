@@ -31,7 +31,7 @@ describe('Get condominium service test', () => {
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
-		await condominiumRepoWriteOps.create({ condominium });
+		await condominiumRepoWriteOps.create({ condominium, user });
 		const { data: searchedCondominium } = await sut.exec({
 			id: condominium.id,
 		});

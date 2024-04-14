@@ -35,8 +35,9 @@ describe('Create request test', () => {
 	});
 
 	it('should be able to create a condominium request', async () => {
-		const condominium = condominiumFactory();
-		await condominiumRepoWriteOps.create({ condominium });
+		const owner = userFactory();
+		const condominium = condominiumFactory({ ownerId: owner.id.value });
+		await condominiumRepoWriteOps.create({ condominium, user: owner });
 
 		const uniqueRegistry = uniqueRegistryFactory({
 			email: 'randomuser@email.com',

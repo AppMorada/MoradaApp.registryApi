@@ -29,7 +29,7 @@ describe('Get condominium by owner id service test', () => {
 		const user = userFactory();
 		const condominium = condominiumFactory({ ownerId: user.id.value });
 
-		await condominiumRepoWriteOps.create({ condominium });
+		await condominiumRepoWriteOps.create({ condominium, user });
 		const { condominiums } = await sut.exec({ id: user.id });
 
 		expect(Boolean(condominiums[0])).toEqual(true);

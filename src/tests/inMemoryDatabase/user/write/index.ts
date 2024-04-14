@@ -60,16 +60,18 @@ export class InMemoryUserWriteOps implements UserRepoWriteOps {
 			(item) =>
 				ValueObject.compare(
 					item.uniqueRegistryId,
-					this.uniqueRegistries[existentUniqueRegistryIndex].id ??
+					this.uniqueRegistries[existentUniqueRegistryIndex]?.id ??
 						this.users[existentUserIndex]?.uniqueRegistryId,
 				),
 		);
 		if (condominiumMemberIndex >= 0) {
 			const existentCondominiumMember =
 				this.condominiumMembers[condominiumMemberIndex];
+
 			existentCondominiumMember.userId = new UUID(input.user.id.value);
 			this.condominiumMembers[condominiumMemberIndex] =
 				existentCondominiumMember;
+
 			return { affectedCondominiumMembers: 1 };
 		}
 

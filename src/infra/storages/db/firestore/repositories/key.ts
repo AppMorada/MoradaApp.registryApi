@@ -83,12 +83,12 @@ export class FirestoreKey implements KeyRepo, OnModuleInit {
 			const remoteSignature = await signaturesCollection.doc(name).get();
 			await this.getAndCache(name, remoteSignature);
 
-			const listener = signaturesCollection
+			const unsubscribelistenerFunc = signaturesCollection
 				.doc(name)
 				.onSnapshot(async (item) => {
 					await this.getAndCache(name, item);
 				});
-			this.listeners.get().push(listener);
+			this.listeners.get().push(unsubscribelistenerFunc);
 		}
 	}
 
