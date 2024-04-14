@@ -23,8 +23,9 @@ describe('Get employee member by user id', () => {
 	});
 
 	it('should be able to get a member', async () => {
-		const condominium = condominiumFactory();
-		await condominiumRepo.create({ condominium });
+		const owner = userFactory();
+		const condominium = condominiumFactory({ ownerId: owner.id.value });
+		await condominiumRepo.create({ condominium, user: owner });
 
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });

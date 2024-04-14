@@ -80,6 +80,14 @@ export class InMemoryCondominiumWriteOps implements CondominiumRepoWriteOps {
 				message: 'Condominium already exist',
 			});
 
+		const condominiumMember = new CondominiumMember({
+			userId: input.user.id.value,
+			role: 2,
+			condominiumId: input.condominium.id.value,
+			uniqueRegistryId: input.user.uniqueRegistryId.value,
+		});
+
+		this.condominiumMembers.push(condominiumMember);
 		this.condominiums.push(input.condominium);
 	}
 }

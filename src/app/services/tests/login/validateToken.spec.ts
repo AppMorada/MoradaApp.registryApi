@@ -106,7 +106,8 @@ describe('ValidateTokenService Service', () => {
 
 	it('should validate the token and return sigState as \'DEPREACATED\'', async () => {
 		const case1 = async () => {
-			// Testando o token mais velho possível que usa a assinatura depreciada
+			// Testando o token mais recente possível que faz o uso de assinaturas
+			// depreciadas
 			const actualDate = Date.now();
 			const oneHour = 1000 * 60 * 60;
 			const oneHourEarlier = actualDate - oneHour;
@@ -148,7 +149,7 @@ describe('ValidateTokenService Service', () => {
 		};
 
 		const case2 = async () => {
-			// Testando o token mais possível que faz o uso de assinaturas
+			// Testando o token mais recente possível que faz o uso de assinaturas
 			// depreciadas
 			const actualDate = Date.now();
 			const oneHour = 1000 * 60 * 60;
