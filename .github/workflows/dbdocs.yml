@@ -7,6 +7,10 @@ on:
       - ".github/workflows/dbdocs.yml"
       - "docs/dbdocs/**"
 
+concurrency:
+  group: "dbdocs"
+  cancel-in-progress: true
+
 jobs:
   publish:
     runs-on: ubuntu-latest
