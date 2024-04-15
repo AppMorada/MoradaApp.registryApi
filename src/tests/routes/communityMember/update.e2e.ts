@@ -42,8 +42,7 @@ describe('Update community member E2E', () => {
 		await userRepo.create({ user, uniqueRegistry });
 
 		const { code } = await genTFA.exec({
-			email: uniqueRegistry.email,
-			userId: user.id,
+			existentUserContent: { user, uniqueRegistry },
 			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
 		});
 

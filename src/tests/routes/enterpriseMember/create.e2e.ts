@@ -37,8 +37,7 @@ describe('Create a enterprise member E2E', () => {
 		await userRepo.create({ user, uniqueRegistry });
 
 		const { code } = await genTFA.exec({
-			email: uniqueRegistry.email,
-			userId: user.id,
+			existentUserContent: { uniqueRegistry, user },
 			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
 		});
 		const { accessToken } = await genTokens.exec({ user, uniqueRegistry });

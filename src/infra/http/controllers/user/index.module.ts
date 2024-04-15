@@ -12,6 +12,7 @@ import { UpdateUserController } from './update.flow/update.controller';
 import { UpdateUserService } from '@app/services/user/update.service';
 import { GetEmployeeMemberByUserIdService } from '@app/services/members/employee/getByUserId.service';
 import { GetCommunityMemberByUserIdService } from '@app/services/members/community/getByUserId.service';
+import { ChangePasswordController } from './changePassword.flow/changePassword.controller';
 
 @Module({
 	controllers: [
@@ -19,6 +20,7 @@ import { GetCommunityMemberByUserIdService } from '@app/services/members/communi
 		DeleteUserController,
 		GetUserController,
 		UpdateUserController,
+		ChangePasswordController,
 	],
 	providers: [
 		JwtService,

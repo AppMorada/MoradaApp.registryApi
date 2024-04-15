@@ -38,8 +38,7 @@ describe('Delete condominium E2E', () => {
 		await userRepo.create({ user, uniqueRegistry });
 
 		const { code } = await genTFA.exec({
-			email: uniqueRegistry.email,
-			userId: user.id,
+			existentUserContent: { uniqueRegistry, user },
 			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
 		});
 		const tokens = await genTokens.exec({ user, uniqueRegistry });

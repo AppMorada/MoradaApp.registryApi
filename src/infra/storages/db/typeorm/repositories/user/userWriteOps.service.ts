@@ -105,6 +105,7 @@ export class TypeOrmUserRepoWriteOps implements UserRepoWriteOps {
 		const modifications = {
 			name: input.name?.value,
 			phoneNumber: input.phoneNumber?.value,
+			password: input.password?.value,
 		};
 
 		for (const rawKey in modifications) {
