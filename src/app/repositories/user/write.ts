@@ -1,4 +1,4 @@
-import { UUID, Name, PhoneNumber } from '@app/entities/VO';
+import { UUID, Name, PhoneNumber, Password } from '@app/entities/VO';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { User } from '@app/entities/user';
 
@@ -10,6 +10,7 @@ export namespace UserRepoWriteOpsInterfaces {
 		id: UUID;
 		name?: Name;
 		phoneNumber?: PhoneNumber;
+		password?: Password;
 	}
 	export interface create {
 		user: User;

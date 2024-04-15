@@ -42,8 +42,6 @@ export class CreateCondominiumController {
 			.uniqueRegistry as UniqueRegistry;
 
 		await this.genTFA.exec({
-			email: uniqueRegistry.email,
-			userId: user.id,
 			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
 			existentUserContent: { user, uniqueRegistry },
 		});
