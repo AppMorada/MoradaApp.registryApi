@@ -66,7 +66,8 @@ export class UpdateUserController {
 
 		const { requestedModifications } = await this.updateUserService.exec({
 			id: user.id.value,
-			...body,
+			phoneNumber: body.phoneNumber,
+			name: body.name,
 		});
 		await this.createToken.exec({ user, uniqueRegistry });
 

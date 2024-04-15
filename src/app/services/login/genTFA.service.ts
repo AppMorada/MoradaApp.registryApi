@@ -12,12 +12,19 @@ import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { User } from '@app/entities/user';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
-interface IProps {
-	email: Email;
-	existentUserContent?: { user: User; uniqueRegistry: UniqueRegistry };
-	userId: UUID;
+interface INonCachedProps {
+	searchUserKey: UUID | Email;
+	existentUserContent?: undefined;
 	keyName?: KeysEnum;
 }
+
+interface ICachedProps {
+	searchUserKey?: undefined;
+	existentUserContent: { user: User; uniqueRegistry: UniqueRegistry };
+	keyName?: KeysEnum;
+}
+
+type IProps = INonCachedProps | ICachedProps;
 
 @Injectable()
 export class GenTFAService implements IService {
@@ -29,20 +36,22 @@ export class GenTFAService implements IService {
 		private readonly getEnv: GetEnvService,
 	) {}
 
+	private async searchUser(input: UUID | Email) {
+		const user = await this.userRepo.find({
+			key: input,
+			safeSearch: true,
+		});
+		return user;
+	}
+
 	private async genCode(
-		input: UUID,
+		user: User,
+		uniqueRegistry: UniqueRegistry,
 		keyName: KeysEnum = KeysEnum.TFA_TOKEN_KEY,
-		existentUserContent?: { user: User; uniqueRegistry: UniqueRegistry },
 	) {
-		const userContent =
-			existentUserContent ??
-			(await this.userRepo.find({
-				key: input,
-				safeSearch: true,
-			}));
 		let code = generateStringCodeContentBasedOnUser({
-			uniqueRegistry: userContent.uniqueRegistry,
-			user: userContent.user,
+			uniqueRegistry,
+			user,
 		});
 		const { key } = await this.getKey.exec({
 			name: keyName,
@@ -51,7 +60,7 @@ export class GenTFAService implements IService {
 		const metadata = JSON.stringify({
 			iat: Math.floor(Date.now() / 1000),
 			exp: Math.floor((Date.now() + key.ttl) / 1000),
-			sub: userContent.uniqueRegistry.email.value,
+			sub: uniqueRegistry.email.value,
 		});
 		code = encodeURIComponent(
 			`${btoa(metadata)}.${btoa(code)}`.replaceAll('=', ''),
@@ -66,11 +75,18 @@ export class GenTFAService implements IService {
 		);
 	}
 
-	async exec(input: IProps) {
+	async exec(input: IProps): Promise<{ code: string }>;
+	async exec(input: ICachedProps): Promise<{ code: string }>;
+
+	async exec(input: IProps): Promise<{ code: string }> {
+		const userContainer =
+			input?.existentUserContent ??
+			(await this.searchUser(input.searchUserKey));
+
 		const code = await this.genCode(
-			input.userId,
+			userContainer.user,
+			userContainer.uniqueRegistry,
 			input.keyName,
-			input.existentUserContent,
 		);
 
 		const { env: FRONT_END_AUTH_URL } = await this.getEnv.exec({
@@ -81,10 +97,9 @@ export class GenTFAService implements IService {
 		});
 
 		const payload: EventsTypes.Email.ISendProps = {
-			to: input.email.value,
+			to: userContainer.uniqueRegistry.email.value,
 			subject: `${PROJECT_NAME} - Confirmação de conta`,
-			body: `<h1>Seja bem-vindo!</h1>
-				<p>Não compartilhe este código com ninguém</p>
+			body: `<p>Não compartilhe este código com ninguém</p>
 				<a href="${FRONT_END_AUTH_URL}${code}">${FRONT_END_AUTH_URL}${code}</a>`,
 		};
 		this.eventEmitter.emit(EVENT_ID.EMAIL.SEND, payload);

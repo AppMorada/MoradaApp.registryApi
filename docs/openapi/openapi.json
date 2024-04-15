@@ -1562,6 +1562,92 @@
         ]
       }
     },
+    "/user/change-password": {
+      "patch": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Troca a senha do usuário",
+        "description": "Realiza a troca de senha do usuário",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/changePassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Caminho feliz"
+          },
+          "400": {
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bad_request"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Disparado caso o usuário não exista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/request-password-update": {
+      "post": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Solicita a troca de senha dos usuários",
+        "description": "Dispara um email com um token para validar o usuário e dar a permissão de troca de senha",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/requestPasswordUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Caminho feliz"
+          },
+          "400": {
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bad_request"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Disparado caso o usuário não exista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/condominium/{condominiumId}/myself/as-community": {
       "patch": {
         "tags": [
@@ -3001,6 +3087,23 @@
           "password": {
             "type": "string",
             "example": "12345678"
+          }
+        }
+      },
+      "changePassword": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "requestPasswordUpdate": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
           }
         }
       },

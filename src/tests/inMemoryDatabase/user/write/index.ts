@@ -120,5 +120,6 @@ export class InMemoryUserWriteOps implements UserRepoWriteOps {
 		const user = this.users[existentUserIndex];
 		user.name = input?.name ?? user.name;
 		user.phoneNumber = input?.phoneNumber ?? user.phoneNumber;
+		user.password = input?.password ?? user.password;
 	}
 }

@@ -66,8 +66,10 @@ export class StartLoginController {
 			.uniqueRegistry as UniqueRegistry;
 		if (user.tfa) {
 			await this.genTFA.exec({
-				email: uniqueRegistry.email,
-				userId: user.id,
+				existentUserContent: {
+					user,
+					uniqueRegistry,
+				},
 			});
 			return res.status(202).end();
 		}
