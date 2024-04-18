@@ -132,7 +132,6 @@ describe('Condominium Member Guard test', () => {
 					communityInfos,
 					rawUniqueRegistry: {
 						email: uniqueRegistry.email!,
-						CPF: uniqueRegistry.CPF!,
 					},
 				},
 			],

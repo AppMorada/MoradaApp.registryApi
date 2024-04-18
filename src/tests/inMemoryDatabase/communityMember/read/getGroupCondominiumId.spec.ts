@@ -37,9 +37,10 @@ describe('InMemoryData test: Community Member getGroupCondominiumId method', () 
 		});
 
 		expect(
-			CondominiumMemberMapper.toClass(
-				searchedMemberContent[0].member,
-			).equalTo(member),
+			CondominiumMemberMapper.toClass({
+				...searchedMemberContent[0].member,
+				uniqueRegistryId: uniqueRegistry.id.value,
+			}).equalTo(member),
 		).toBe(true);
 		expect(
 			UniqueRegistryMapper.toClass(
@@ -47,9 +48,10 @@ describe('InMemoryData test: Community Member getGroupCondominiumId method', () 
 			).equalTo(uniqueRegistry),
 		).toBe(true);
 		expect(
-			CommunityInfoMapper.toClass(
-				searchedMemberContent[0].communityInfos,
-			).equalTo(communityInfos),
+			CommunityInfoMapper.toClass({
+				...searchedMemberContent[0].communityInfos,
+				memberId: member.id.value,
+			}).equalTo(communityInfos),
 		).toBe(true);
 		expect(sut.calls.getGroupCondominiumId).toEqual(1);
 	});

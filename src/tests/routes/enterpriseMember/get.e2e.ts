@@ -98,7 +98,7 @@ describe('Get a enterprise member E2E', () => {
 
 		const employee = response.body?.employees[0];
 		expect(typeof employee?.user?.id).toEqual('string');
-		expect(typeof employee?.user?.uniqueRegistryId).toEqual('string');
+		expect(typeof employee?.user?.uniqueRegistryId).toEqual('undefined');
 		expect(employee?.user?.name).toEqual('Employee');
 		expect(employee?.user?.phoneNumber).toEqual(user?.phoneNumber?.value);
 		expect(typeof employee?.user?.createdAt).toEqual('string');
@@ -118,9 +118,9 @@ describe('Get a enterprise member E2E', () => {
 		);
 		expect(
 			typeof employee?.condominiumMemberInfos?.uniqueRegistryId,
-		).toEqual('string');
+		).toEqual('undefined');
 		expect(typeof employee?.condominiumMemberInfos?.userId).toEqual(
-			'string',
+			'undefined',
 		);
 		expect(typeof employee?.condominiumMemberInfos?.role).toEqual('number');
 		expect(typeof employee?.condominiumMemberInfos?.updatedAt).toEqual(
@@ -169,7 +169,7 @@ describe('Get a enterprise member E2E', () => {
 
 		const body = getOneEnterpriseMemberResponse.body;
 		expect(typeof body?.userData?.id).toEqual('string');
-		expect(typeof body?.userData?.uniqueRegistryId).toEqual('string');
+		expect(typeof body?.userData?.uniqueRegistryId).toEqual('undefined');
 		expect(body?.userData?.name).toEqual('Employee');
 		expect(body?.userData?.phoneNumber).toEqual(user?.phoneNumber?.value);
 		expect(typeof body?.userData?.createdAt).toEqual('string');
@@ -181,8 +181,8 @@ describe('Get a enterprise member E2E', () => {
 
 		expect(typeof body?.worksOn[0]?.id).toEqual('string');
 		expect(typeof body?.worksOn[0]?.condominiumId).toEqual('string');
-		expect(typeof body?.worksOn[0]?.uniqueRegistryId).toEqual('string');
-		expect(typeof body?.worksOn[0]?.userId).toEqual('string');
+		expect(typeof body?.worksOn[0]?.uniqueRegistryId).toEqual('undefined');
+		expect(typeof body?.worksOn[0]?.userId).toEqual('undefined');
 		expect(typeof body?.worksOn[0]?.role).toEqual('number');
 		expect(typeof body?.worksOn[0]?.updatedAt).toEqual('string');
 		expect(typeof body?.worksOn[0]?.createdAt).toEqual('string');

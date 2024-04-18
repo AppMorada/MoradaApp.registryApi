@@ -1,4 +1,4 @@
-import { ApartmentNumber, Block, CPF, Email, UUID } from '@app/entities/VO';
+import { ApartmentNumber, Block, Email, UUID } from '@app/entities/VO';
 import { CommunityInfos } from '@app/entities/communityInfos';
 import { CondominiumMember } from '@app/entities/condominiumMember';
 
@@ -9,7 +9,6 @@ export namespace CommunityMemberRepoWriteOpsInterfaces {
 			communityInfos: CommunityInfos;
 			rawUniqueRegistry: {
 				email: Email;
-				CPF: CPF;
 			};
 		}[];
 	}

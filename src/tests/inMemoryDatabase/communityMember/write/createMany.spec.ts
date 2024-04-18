@@ -25,7 +25,6 @@ describe('InMemoryData test: Community Member createMany method', () => {
 		});
 
 		const uniqueRegistry2 = uniqueRegistryFactory({
-			CPF: '344.538.175-50',
 			email: 'dianadoe@email.com',
 		});
 		const newMember2 = condominiumMemberFactory({
@@ -42,7 +41,6 @@ describe('InMemoryData test: Community Member createMany method', () => {
 						content: newMember1,
 						rawUniqueRegistry: {
 							email: uniqueRegistry1.email,
-							CPF: uniqueRegistry1.CPF!,
 						},
 						communityInfos: newCommunityInfo1,
 					},
@@ -50,7 +48,6 @@ describe('InMemoryData test: Community Member createMany method', () => {
 						content: newMember2,
 						rawUniqueRegistry: {
 							email: uniqueRegistry2.email,
-							CPF: uniqueRegistry2.CPF!,
 						},
 						communityInfos: newCommunityInfo2,
 					},

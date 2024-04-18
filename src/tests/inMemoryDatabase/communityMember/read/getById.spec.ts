@@ -4,6 +4,9 @@ import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { userFactory } from '@tests/factories/user';
 import { communityInfosFactory } from '@tests/factories/communityInfos';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
+import { CondominiumMemberMapper } from '@app/mapper/condominiumMember';
+import { CommunityInfoMapper } from '@app/mapper/communityInfo';
+import { UniqueRegistryMapper } from '@app/mapper/uniqueRegistry';
 
 describe('InMemoryData test: Community Member getById method', () => {
 	let container: InMemoryContainer;
@@ -31,12 +34,25 @@ describe('InMemoryData test: Community Member getById method', () => {
 
 		const searchedMemberContent = await sut.getById({ id: member.id });
 
-		expect(searchedMemberContent?.member.equalTo(member)).toEqual(true);
+		const searchedMemberInstance = CondominiumMemberMapper.toClass({
+			...searchedMemberContent!.member,
+			uniqueRegistryId: uniqueRegistry.id.value,
+		});
+		const searchedCommunityInfosInstance = CommunityInfoMapper.toClass({
+			memberId: member.id.value,
+			...searchedMemberContent!.communityInfos,
+		});
+
+		expect(member.equalTo(searchedMemberInstance)).toEqual(true);
+		expect(communityInfos.equalTo(searchedCommunityInfosInstance)).toEqual(
+			true,
+		);
 		expect(
-			searchedMemberContent?.communityInfos.equalTo(communityInfos),
-		).toEqual(true);
-		expect(
-			searchedMemberContent?.uniqueRegistry.equalTo(uniqueRegistry),
+			uniqueRegistry.equalTo(
+				UniqueRegistryMapper.toClass(
+					searchedMemberContent!.uniqueRegistry,
+				),
+			),
 		).toEqual(true);
 		expect(sut.calls.getById).toEqual(1);
 	});

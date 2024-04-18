@@ -66,25 +66,32 @@ implements EmployeeMemberRepoReadOps
 			const typeOrmUniqueRegistry =
 				item.uniqueRegistry as TypeOrmUniqueRegistryEntity;
 
-			if (!user) {
-				user = TypeOrmUserMapper.toObject(typeOrmUser);
-				user.uniqueRegistryId = typeOrmUniqueRegistry.id;
-			}
+			if (!user) user = TypeOrmUserMapper.toObject(typeOrmUser);
+
 			if (!uniqueRegistry)
 				uniqueRegistry = TypeOrmUniqueRegistryMapper.toObject(
 					typeOrmUniqueRegistry,
 				);
 
-			item.user = typeOrmUser.id;
-			item.uniqueRegistry = typeOrmUniqueRegistry.id;
+			const parsedCondominiumMember =
+				TypeOrmCondominiumMemberMapper.toObject(item) as any;
+			delete parsedCondominiumMember.uniqueRegistryId;
+			delete parsedCondominiumMember.userId;
 
-			return TypeOrmCondominiumMemberMapper.toObject(item);
+			return parsedCondominiumMember;
 		});
 
 		return worksOn.length > 0
 			? {
 				worksOn,
-				user: user!,
+				user: {
+					id: user!.id!,
+					name: user!.name!,
+					tfa: user!.tfa!,
+					phoneNumber: user?.phoneNumber,
+					createdAt: user!.createdAt!,
+					updatedAt: user!.updatedAt!,
+				},
 				uniqueRegistry: uniqueRegistry!,
 			}
 			: undefined;
@@ -130,14 +137,13 @@ implements EmployeeMemberRepoReadOps
 				typeOrmUniqueRegistry,
 			);
 			const condominiumMemberInfos =
-				TypeOrmCondominiumMemberMapper.toObject(item);
-			condominiumMemberInfos.uniqueRegistryId = uniqueRegistry.id;
-			condominiumMemberInfos.userId = typeOrmUser.id;
+				TypeOrmCondominiumMemberMapper.toObject(item) as any;
+			delete condominiumMemberInfos.userId;
+			delete condominiumMemberInfos.uniqueRegistryId;
 
 			const userAsObjt = TypeOrmUserMapper.toObject(typeOrmUser) as any;
-			userAsObjt.uniqueRegistryId = uniqueRegistry.id;
 			delete userAsObjt.password;
-			delete userAsObjt.tfa;
+			delete userAsObjt.uniqueRegistryId;
 
 			return { user: userAsObjt, uniqueRegistry, condominiumMemberInfos };
 		});

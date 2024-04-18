@@ -8,11 +8,10 @@ import {
 import { Condominium } from '@app/entities/condominium';
 import { User } from '@app/entities/user';
 import { CommunityInfos } from '@app/entities/communityInfos';
-import { CPF, Email } from '@app/entities/VO';
+import { Email } from '@app/entities/VO';
 import { SendInviteService } from '@app/services/invites/sendInvite.service';
 
 interface IBuildInformations {
-	CPF: CPF;
 	email: Email;
 	condominium: Condominium;
 	apartmentNumber: number;
@@ -26,7 +25,6 @@ interface IProps {
 		email: string;
 		apartmentNumber: number;
 		block: string;
-		CPF: string;
 	}>;
 }
 
@@ -39,7 +37,6 @@ export class UploadCollectionOfMembersService implements IService {
 
 	private async buildInformations(input: IBuildInformations) {
 		const rawUniqueRegistry = {
-			CPF: input.CPF,
 			email: input.email,
 		};
 
@@ -68,7 +65,6 @@ export class UploadCollectionOfMembersService implements IService {
 		for (const item of input.members) {
 			const { condominiumMember, communityInfos, rawUniqueRegistry } =
 				await this.buildInformations({
-					CPF: new CPF(item.CPF),
 					email: new Email(item.email),
 					condominium: input.condominium,
 					block: item.block,
