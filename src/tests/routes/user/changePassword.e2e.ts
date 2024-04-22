@@ -37,7 +37,7 @@ describe('Change Password E2E', () => {
 				CPF: uniqueRegistry.CPF?.value,
 			});
 
-		expect(createUserResponse.statusCode).toEqual(202);
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const tfaToken = await genTFA.exec({
 			searchUserKey: uniqueRegistry.email,
@@ -77,7 +77,7 @@ describe('Change Password E2E', () => {
 				CPF: uniqueRegistry.CPF?.value,
 			});
 
-		expect(createUserResponse.statusCode).toEqual(202);
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const tfaToken = await genTFA.exec({
 			searchUserKey: uniqueRegistry.email,

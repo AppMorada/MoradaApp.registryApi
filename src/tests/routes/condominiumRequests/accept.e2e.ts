@@ -90,7 +90,7 @@ describe('Accept condominium request', () => {
 				CPF: uniqueRegistry2.CPF?.value,
 			});
 
-		expect(createUserResponse.statusCode).toEqual(202);
+		expect(createUserResponse.statusCode).toEqual(201);
 		const requestMembershipResponse = await request(app.getHttpServer())
 			.post(endpoints.createRequest(condominiumInfos.humanReadableId))
 			.set(

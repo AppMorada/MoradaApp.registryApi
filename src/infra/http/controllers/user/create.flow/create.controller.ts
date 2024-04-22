@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { User } from '@app/entities/user';
 import { UserMapper } from '@app/mapper/user';
@@ -9,6 +9,8 @@ import { Response } from 'express';
 import { USER_PREFIX } from '../consts';
 import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
+import { CreateCondominiumMemberUserDTO } from '@infra/http/DTO/user/createCondominiumMemberUser.DTO';
+import { HumanReadableCondominiumIdGuard } from '@app/auth/guards/humanReadableCondominiumId.guard';
 
 @Controller(USER_PREFIX)
 export class CreateUserController {
@@ -64,7 +66,35 @@ export class CreateUserController {
 			CPF,
 			email: body.email,
 		});
-		const user = UserMapper.toClass({ ...rest, tfa: false });
+		const user = UserMapper.toClass({
+			...rest,
+			tfa: false,
+			uniqueRegistryId: uniqueRegistry.id.value,
+		});
+		await this.createUser.exec({ user, uniqueRegistry });
+
+		return await this.processTokens(res, user, uniqueRegistry);
+	}
+
+	@Throttle({
+		default: {
+			limit: 5,
+			ttl: 60000,
+		},
+	})
+	@UseGuards(HumanReadableCondominiumIdGuard)
+	@Post('/condominium-member-context')
+	async createUserAsCondominiumMember(
+		@Res({ passthrough: true }) res: Response,
+		@Body() body: CreateCondominiumMemberUserDTO,
+	) {
+		const uniqueRegistry = new UniqueRegistry({ email: body.email });
+		const user = UserMapper.toClass({
+			...body,
+			tfa: false,
+			uniqueRegistryId: uniqueRegistry.id.value,
+		});
+
 		const result = await this.createUser.exec({ user, uniqueRegistry });
 		if (!result?.affectedCondominiumMembers) res.status(202);
 

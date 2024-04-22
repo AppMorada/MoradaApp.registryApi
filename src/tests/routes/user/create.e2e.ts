@@ -27,7 +27,7 @@ describe('Create a user E2E', () => {
 				CPF: uniqueRegistry.CPF?.value,
 			});
 
-		expect(response.statusCode).toEqual(202);
+		expect(response.statusCode).toEqual(201);
 		expect(typeof response.body?.accessToken).toEqual('string');
 		expect(
 			typeof response.headers['set-cookie'][0]?.split(

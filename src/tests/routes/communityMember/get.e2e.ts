@@ -165,7 +165,7 @@ describe('Get a community member E2E', () => {
 		expect(typeof memberData?.member?.uniqueRegistryId).toEqual(
 			'undefined',
 		);
-		expect(memberData?.member?.userId).toBeNull();
+		expect(typeof memberData?.member?.userId).toEqual('undefined');
 		expect(memberData?.member?.role).toEqual(0);
 		expect(typeof memberData?.member?.updatedAt).toEqual('string');
 		expect(typeof memberData?.member?.createdAt).toEqual('string');

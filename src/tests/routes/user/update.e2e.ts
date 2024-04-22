@@ -31,7 +31,7 @@ describe('Update user E2E', () => {
 				CPF: uniqueRegistry.CPF?.value,
 			});
 
-		expect(createUserResponse.statusCode).toEqual(202);
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const token = createUserResponse.body?.accessToken;
 
@@ -76,7 +76,7 @@ describe('Update user E2E', () => {
 				CPF: uniqueRegistry.CPF?.value,
 			});
 
-		expect(createUserResponse.statusCode).toEqual(202);
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const token = createUserResponse.body?.accessToken;
 

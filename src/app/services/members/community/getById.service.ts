@@ -66,7 +66,7 @@ export class GetCommunityMemberByIdService implements IService {
 			? await this.getUserData(searchedMemberData.member.userId)
 			: null;
 
-		searchedMemberData.member.userId = user?.id ?? null;
+		delete searchedMemberData.member.userId;
 		return {
 			member: searchedMemberData?.member,
 			communityInfos: searchedMemberData?.communityInfos,
