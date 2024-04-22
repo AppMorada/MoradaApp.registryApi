@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 
 interface IProps {
 	id: string;
+	pruneSensitiveData?: boolean;
 }
 
 @Injectable()
@@ -15,6 +16,12 @@ export class GetCommunityMemberGroupByCondominiumIdService implements IService {
 		const data = await this.memberRepo.getGroupCondominiumId({
 			condominiumId: new UUID(input.id),
 		});
+
+		if (input.pruneSensitiveData)
+			return data.map((item) => {
+				delete item.uniqueRegistry.CPF;
+				return item;
+			});
 		return data;
 	}
 }

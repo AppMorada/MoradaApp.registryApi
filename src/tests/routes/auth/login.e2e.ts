@@ -33,7 +33,7 @@ describe('Login E2E', () => {
 				CPF: uniqueRegistry.CPF?.value,
 			});
 
-		expect(createUserResponse.statusCode).toEqual(202);
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const response = await request(app.getHttpServer())
 			.post(endpoints.login)
