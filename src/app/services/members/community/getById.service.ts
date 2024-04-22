@@ -1,10 +1,5 @@
 import { UUID } from '@app/entities/VO';
-import { CommunityInfoMapper } from '@app/mapper/communityInfo';
-import {
-	CondominiumMemberMapper,
-	ICondominiumMemberInObject,
-} from '@app/mapper/condominiumMember';
-import { UniqueRegistryMapper } from '@app/mapper/uniqueRegistry';
+import { ICondominiumMemberInObject } from '@app/mapper/condominiumMember';
 import { UserMapper } from '@app/mapper/user';
 import { CommunityMemberRepoReadOps } from '@app/repositories/communityMember/read';
 import { UserRepoReadOps } from '@app/repositories/user/read';
@@ -42,6 +37,7 @@ export class GetCommunityMemberByIdService implements IService {
 		});
 		const userRef = UserMapper.toObject(user) as any;
 
+		delete userRef.uniqueRegistryId;
 		delete userRef.password;
 		delete userRef.tfa;
 
@@ -50,24 +46,12 @@ export class GetCommunityMemberByIdService implements IService {
 	private async getMemberData(memberId: UUID, pruneSensitiveData?: boolean) {
 		const searchedData = await this.memberRepo.getById({ id: memberId });
 		if (!searchedData) return null;
-
-		const memberAsObject = CondominiumMemberMapper.toObject(
-			searchedData.member,
-		);
-		const uniqueRegistry = UniqueRegistryMapper.toObject(
-			searchedData.uniqueRegistry,
-		);
-
-		if (pruneSensitiveData) delete uniqueRegistry.CPF;
+		if (pruneSensitiveData) delete searchedData.uniqueRegistry.CPF;
 
 		return {
-			memberAsObject,
-			communityInfos: CommunityInfoMapper.toObject(
-				searchedData.communityInfos,
-			),
-			uniqueRegistry: UniqueRegistryMapper.toObject(
-				searchedData.uniqueRegistry,
-			),
+			member: searchedData.member,
+			communityInfos: searchedData.communityInfos,
+			uniqueRegistry: searchedData.uniqueRegistry,
 		};
 	}
 
@@ -78,13 +62,13 @@ export class GetCommunityMemberByIdService implements IService {
 		);
 		if (!searchedMemberData) return null;
 
-		const user = searchedMemberData.memberAsObject.userId
-			? await this.getUserData(searchedMemberData.memberAsObject.userId)
+		const user = searchedMemberData.member.userId
+			? await this.getUserData(searchedMemberData.member.userId)
 			: null;
 
-		searchedMemberData.memberAsObject.userId = user?.id ?? null;
+		searchedMemberData.member.userId = user?.id ?? null;
 		return {
-			member: searchedMemberData?.memberAsObject,
+			member: searchedMemberData?.member,
 			communityInfos: searchedMemberData?.communityInfos,
 			userData: user,
 			uniqueRegistry: searchedMemberData?.uniqueRegistry,

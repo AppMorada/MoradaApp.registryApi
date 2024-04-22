@@ -59,7 +59,6 @@ implements CommunityMemberWriteOpsRepo
 				if (!typeOrmUniqueRegistry) {
 					const uniqueRegistry = new UniqueRegistry({
 						email: rawUniqueRegistry.email.value,
-						CPF: rawUniqueRegistry.CPF.value,
 					});
 					typeOrmUniqueRegistry =
 						TypeOrmUniqueRegistryMapper.toTypeOrm(uniqueRegistry);

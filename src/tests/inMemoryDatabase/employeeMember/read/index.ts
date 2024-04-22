@@ -8,10 +8,7 @@ import {
 	EmployeeMemberRepoReadOps,
 	EmployeeMemberRepoReadOpsInterfaces,
 } from '@app/repositories/employeeMember/read';
-import {
-	CondominiumMemberMapper,
-	ICondominiumMemberInObject,
-} from '@app/mapper/condominiumMember';
+import { CondominiumMemberMapper } from '@app/mapper/condominiumMember';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 import { UniqueRegistryMapper } from '@app/mapper/uniqueRegistry';
 
@@ -52,16 +49,26 @@ implements EmployeeMemberRepoReadOps
 			ValueObject.compare(user?.uniqueRegistryId, item.id),
 		);
 
-		return user && member && uniqueRegistry
-			? {
-				user: UserMapper.toObject(user),
-				uniqueRegistry:
-						UniqueRegistryMapper.toObject(uniqueRegistry),
-				worksOn: member.map((item) =>
-					CondominiumMemberMapper.toObject(item),
-				),
-			}
-			: undefined;
+		if (user && member && uniqueRegistry) {
+			const parsedUser = UserMapper.toObject(user) as any;
+			delete parsedUser.password;
+			delete parsedUser.uniqueRegistryId;
+
+			return {
+				user: parsedUser,
+				uniqueRegistry: UniqueRegistryMapper.toObject(uniqueRegistry),
+				worksOn: member.map((item) => {
+					const parsedCondominiumMember =
+						CondominiumMemberMapper.toObject(item) as any;
+					delete parsedCondominiumMember.uniqueRegistryId;
+					delete parsedCondominiumMember.userId;
+
+					return parsedCondominiumMember;
+				}),
+			};
+		}
+
+		return undefined;
 	}
 
 	async getGroupCondominiumId(
@@ -72,30 +79,35 @@ implements EmployeeMemberRepoReadOps
 			[];
 
 		for (const user of this.users) {
-			let condominiumMemberInfos:
-				| CondominiumMember
-				| ICondominiumMemberInObject
-				| undefined;
-			condominiumMemberInfos = this.condominiumMembers.find(
+			const condominiumMemberInfos = this.condominiumMembers.find(
 				(item) =>
 					item?.userId &&
 					ValueObject.compare(user.id, item.userId) &&
 					item.role.value === 1 &&
 					item.condominiumId.equalTo(input.condominiumId),
 			);
-			condominiumMemberInfos = condominiumMemberInfos
-				? CondominiumMemberMapper.toObject(condominiumMemberInfos)
+			const parsedCondominiumMemberInfos = condominiumMemberInfos
+				? (CondominiumMemberMapper.toObject(
+					condominiumMemberInfos,
+				) as any)
 				: undefined;
+			delete parsedCondominiumMemberInfos?.uniqueRegistryId;
+			delete parsedCondominiumMemberInfos?.userId;
+
 			const uniqueRegistry = this.uniqueRegistries.find((item) =>
 				user.uniqueRegistryId.equalTo(item.id),
 			);
 
+			const parsedUser = UserMapper.toObject(user) as any;
+			delete parsedUser.uniqueRegistryId;
+			delete parsedUser.password;
+
 			if (condominiumMemberInfos && uniqueRegistry)
 				employees.push({
-					user: UserMapper.toObject(user),
+					user: parsedUser,
 					uniqueRegistry:
 						UniqueRegistryMapper.toObject(uniqueRegistry),
-					condominiumMemberInfos,
+					condominiumMemberInfos: parsedCondominiumMemberInfos,
 				});
 		}
 

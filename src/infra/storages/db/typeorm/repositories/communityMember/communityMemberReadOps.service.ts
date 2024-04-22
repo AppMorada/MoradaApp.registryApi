@@ -109,13 +109,19 @@ implements CommunityMemberRepoReadOps
 		span.end();
 
 		return raw.map((item) => {
-			const member = TypeOrmCondominiumMemberMapper.toObject(item);
+			const member = TypeOrmCondominiumMemberMapper.toObject(item) as any;
+			delete member.userId;
+			delete member.uniqueRegistryId;
+
 			const communityInfos = TypeOrmCommunityInfoMapper.toObject(
 				item.communityInfos,
-			);
-			communityInfos.memberId = member.id;
+			) as any;
+			delete communityInfos.memberId;
 
-			return { member, communityInfos };
+			return {
+				member,
+				communityInfos,
+			};
 		});
 	}
 
@@ -153,15 +159,15 @@ implements CommunityMemberRepoReadOps
 		const rawUniqueRegistry =
 			raw.uniqueRegistry as TypeOrmUniqueRegistryEntity;
 		const uniqueRegistry =
-			TypeOrmUniqueRegistryMapper.toClass(rawUniqueRegistry);
-		raw.uniqueRegistry = uniqueRegistry.id.value;
+			TypeOrmUniqueRegistryMapper.toObject(rawUniqueRegistry);
 
-		const member = TypeOrmCondominiumMemberMapper.toClass(raw);
-		raw.communityInfos.member = member.id.value;
+		const member = TypeOrmCondominiumMemberMapper.toObject(raw) as any;
+		delete member.uniqueRegistryId;
 
-		const communityInfos = TypeOrmCommunityInfoMapper.toClass(
+		const communityInfos = TypeOrmCommunityInfoMapper.toObject(
 			raw.communityInfos,
-		);
+		) as any;
+		delete communityInfos.memberId;
 
 		return { member, communityInfos, uniqueRegistry };
 	}
@@ -203,12 +209,14 @@ implements CommunityMemberRepoReadOps
 			const uniqueRegistry = TypeOrmUniqueRegistryMapper.toObject(
 				item.uniqueRegistry as TypeOrmUniqueRegistryEntity,
 			);
-			item.uniqueRegistry = uniqueRegistry.id;
 
-			const member = TypeOrmCondominiumMemberMapper.toObject(item);
+			const member = TypeOrmCondominiumMemberMapper.toObject(item) as any;
+			delete member.uniqueRegistryId;
+
 			const communityInfos = TypeOrmCommunityInfoMapper.toObject(
 				item.communityInfos,
-			);
+			) as any;
+			delete communityInfos.memberId;
 
 			return { member, communityInfos, uniqueRegistry };
 		});

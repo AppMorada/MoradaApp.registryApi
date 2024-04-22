@@ -63,7 +63,6 @@ implements CommunityMemberWriteOpsRepo
 				this.uniqueRegistries.push(
 					new UniqueRegistry({
 						email: member.rawUniqueRegistry.email.value,
-						CPF: member.rawUniqueRegistry.CPF.value,
 					}),
 				);
 		});

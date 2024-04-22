@@ -2231,11 +2231,6 @@
                   "format": "email",
                   "example": "johndoe@email.com"
                 },
-                "CPF": {
-                  "type": "string",
-                  "format": "CPF",
-                  "example": "745.110.136-32"
-                },
                 "apartmentNumber": {
                   "type": "integer",
                   "format": "int32",
