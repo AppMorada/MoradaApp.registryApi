@@ -87,7 +87,6 @@ describe('Get user with enterprise member section E2E', () => {
 					communityInfos,
 					rawUniqueRegistry: {
 						email: uniqueRegistry.email,
-						CPF: uniqueRegistry.CPF!,
 					},
 				},
 			],
@@ -100,7 +99,6 @@ describe('Get user with enterprise member section E2E', () => {
 				name: 'New User',
 				email: uniqueRegistry.email.value,
 				password: '12345678',
-				CPF: uniqueRegistry.CPF?.value,
 				code: condominiumInfos?.humanReadableId,
 			});
 
@@ -118,24 +116,25 @@ describe('Get user with enterprise member section E2E', () => {
 		const body = getUserResponse.body;
 		expect(typeof body?.id).toEqual('string');
 		expect(body?.name).toEqual('New User');
-		expect(typeof body?.uniqueRegistryId).toEqual('string');
+		expect(typeof body?.uniqueRegistryId).toEqual('undefined');
+		expect(typeof body?.password).toEqual('undefined');
 		expect(body?.phoneNumber).toBeNull();
 		expect(body?.tfa).toEqual(false);
 
 		expect(typeof body?.uniqueRegistry?.id).toEqual('string');
 		expect(typeof body?.uniqueRegistry?.email).toEqual('string');
-		expect(typeof body?.uniqueRegistry?.CPF).toEqual('string');
+		expect(body?.uniqueRegistry?.CPF).toBeNull();
 
 		const memberCoreInfo = body?.memberInfos[0]?.memberCoreInfo;
 		expect(typeof memberCoreInfo?.id).toEqual('string');
 		expect(typeof memberCoreInfo?.condominiumId).toEqual('string');
-		expect(typeof memberCoreInfo?.uniqueRegistryId).toEqual('string');
+		expect(typeof memberCoreInfo?.uniqueRegistryId).toEqual('undefined');
 		expect(memberCoreInfo?.role).toEqual(0);
 		expect(typeof memberCoreInfo?.createdAt).toEqual('string');
 		expect(typeof memberCoreInfo?.updatedAt).toEqual('string');
 
 		const communityInfo = body?.memberInfos[0]?.communityInfo;
-		expect(typeof communityInfo?.memberId).toEqual('string');
+		expect(typeof communityInfo?.memberId).toEqual('undefined');
 		expect(communityInfo?.apartmentNumber).toEqual(
 			communityInfos?.apartmentNumber?.value,
 		);

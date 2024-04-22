@@ -36,7 +36,6 @@ describe('Get community member by user id', () => {
 					communityInfos,
 					rawUniqueRegistry: {
 						email: uniqueRegistry.email,
-						CPF: uniqueRegistry.CPF!,
 					},
 				},
 			],

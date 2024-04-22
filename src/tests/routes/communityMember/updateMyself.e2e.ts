@@ -86,7 +86,6 @@ describe('Update my community member data E2E', () => {
 				members: [
 					{
 						email: newUniqueRegistry.email.value,
-						CPF: newUniqueRegistry?.CPF?.value,
 						apartmentNumber: communityInfo?.apartmentNumber?.value,
 						block: communityInfo?.block?.value,
 					},
@@ -100,7 +99,6 @@ describe('Update my community member data E2E', () => {
 				name: 'New User',
 				email: newUniqueRegistry.email.value,
 				password: '12345678',
-				CPF: newUniqueRegistry.CPF?.value,
 			});
 		commonUserToken = createUserResponse.body?.accessToken;
 	});

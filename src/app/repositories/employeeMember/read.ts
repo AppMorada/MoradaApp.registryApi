@@ -1,17 +1,35 @@
 import { UUID } from '@app/entities/VO';
-import { ICondominiumMemberInObject } from '@app/mapper/condominiumMember';
 import { IUniqueRegistryInObject } from '@app/mapper/uniqueRegistry';
-import { IUserInObject } from '@app/mapper/user';
 
 export namespace EmployeeMemberRepoReadOpsInterfaces {
+	export interface performantCondominiumMember {
+		id: string;
+		condominiumId: string;
+		uniqueRegistryId?: undefined;
+		userId?: undefined;
+		role: number;
+		createdAt: Date;
+		updatedAt: Date;
+	}
+	export interface performantUser {
+		id: string;
+		name: string;
+		phoneNumber?: string | null;
+		password?: undefined;
+		uniqueRegistryId?: undefined;
+		tfa: boolean;
+		createdAt: Date;
+		updatedAt: Date;
+	}
+
 	export interface getByCondominiumId {
 		condominiumId: UUID;
 	}
 
 	export interface getByCondominiumIdReturn {
-		condominiumMemberInfos: ICondominiumMemberInObject;
+		condominiumMemberInfos: performantCondominiumMember;
 		uniqueRegistry: IUniqueRegistryInObject;
-		user: Omit<IUserInObject, 'password' | 'tfa'>;
+		user: performantUser;
 	}
 
 	export interface getByUserId {
@@ -19,9 +37,9 @@ export namespace EmployeeMemberRepoReadOpsInterfaces {
 	}
 
 	export interface getByUserIdReturn {
-		worksOn: ICondominiumMemberInObject[];
+		worksOn: performantCondominiumMember[];
 		uniqueRegistry: IUniqueRegistryInObject;
-		user: IUserInObject;
+		user: performantUser;
 	}
 }
 

@@ -9,7 +9,6 @@ import {
 	Max,
 	MaxLength,
 	Min,
-	MinLength,
 	ValidateNested,
 } from 'class-validator';
 
@@ -49,17 +48,6 @@ class MembersDTO {
 		message: `O bloco do condomínio precisa conter no máximo ${condominiumRelUserRules.block.maxLength} caracteres`,
 	})
 		block: string;
-
-	@IsString({
-		message: 'O CPF precisa conter caracteres válidos',
-	})
-	@MinLength(userRules.CPF.minLength, {
-		message: `O CPF precisa conter no mínimo ${userRules.CPF.minLength} caracteres`,
-	})
-	@MaxLength(userRules.CPF.maxLength, {
-		message: `O CPF precisa conter no máximo ${userRules.CPF.maxLength} caracteres`,
-	})
-		CPF: string;
 }
 
 export class CommunityInvitesDTO {

@@ -30,13 +30,11 @@ describe('Upload collection of users', () => {
 				email: 'user1@email.com',
 				apartmentNumber: 100,
 				block: 'A12',
-				CPF: '176.193.509-77',
 			},
 			{
 				email: 'user2@email.com',
 				apartmentNumber: 200,
 				block: 'A23',
-				CPF: '512.301.626-07',
 			},
 		];
 

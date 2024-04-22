@@ -18,13 +18,9 @@ export class GetEmployeeMemberByUserIdService implements IService {
 		});
 		if (!data) return { content: null };
 
-		const userRef = data.user as any;
-		delete userRef.password;
-		delete userRef.tfa;
-
 		return {
 			content: {
-				user: userRef,
+				user: data.user,
 				uniqueRegistry: data.uniqueRegistry,
 				worksOn: data.worksOn,
 			},
