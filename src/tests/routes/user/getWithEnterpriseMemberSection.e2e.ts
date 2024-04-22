@@ -113,7 +113,8 @@ describe('Get user with enterprise member section E2E', () => {
 		const body = getUserResponse.body;
 		expect(typeof body?.id).toEqual('string');
 		expect(body?.name).toEqual('Employee');
-		expect(typeof body?.uniqueRegistryId).toEqual('string');
+		expect(typeof body?.uniqueRegistryId).toEqual('undefined');
+		expect(typeof body?.password).toEqual('undefined');
 		expect(body?.phoneNumber).toEqual(user?.phoneNumber?.value);
 		expect(body?.tfa).toEqual(false);
 
@@ -124,8 +125,8 @@ describe('Get user with enterprise member section E2E', () => {
 		const employeeRelation = body?.employeeRelations[0];
 		expect(typeof employeeRelation?.id).toEqual('string');
 		expect(typeof employeeRelation?.condominiumId).toEqual('string');
-		expect(typeof employeeRelation?.uniqueRegistryId).toEqual('string');
-		expect(typeof employeeRelation?.userId).toEqual('string');
+		expect(typeof employeeRelation?.uniqueRegistryId).toEqual('undefined');
+		expect(typeof employeeRelation?.userId).toEqual('undefined');
 		expect(employeeRelation?.role).toEqual(1);
 		expect(typeof employeeRelation?.updatedAt).toEqual('string');
 		expect(typeof employeeRelation?.createdAt).toEqual('string');

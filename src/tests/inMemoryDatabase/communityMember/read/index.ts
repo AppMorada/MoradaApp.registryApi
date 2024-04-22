@@ -51,13 +51,24 @@ implements CommunityMemberRepoReadOps
 			ValueObject.compare(item.id, condominiumMember?.uniqueRegistryId),
 		);
 
-		return !condominiumMember || !communityInfos || !uniqueRegistry
-			? undefined
-			: {
-				member: condominiumMember,
-				communityInfos,
-				uniqueRegistry,
-			};
+		if (!condominiumMember || !communityInfos || !uniqueRegistry)
+			return undefined;
+
+		const condominiumMemberParsed = CondominiumMemberMapper.toObject(
+			condominiumMember,
+		) as any;
+		delete condominiumMemberParsed.uniqueRegistryId;
+
+		const communityInfosParsed = CommunityInfoMapper.toObject(
+			communityInfos,
+		) as any;
+		delete communityInfosParsed.memberId;
+
+		return {
+			member: condominiumMemberParsed,
+			communityInfos: communityInfosParsed,
+			uniqueRegistry: UniqueRegistryMapper.toObject(uniqueRegistry),
+		};
 	}
 
 	async getByUserId(
@@ -76,12 +87,17 @@ implements CommunityMemberRepoReadOps
 				infos.memberId.equalTo(item.id),
 			);
 			const parsedCommunityInfo = rawCommunityInfo
-				? CommunityInfoMapper.toObject(rawCommunityInfo)
+				? (CommunityInfoMapper.toObject(rawCommunityInfo) as any)
 				: undefined;
+			delete parsedCommunityInfo?.memberId;
+
+			const memberParsed = CondominiumMemberMapper.toObject(item) as any;
+			delete memberParsed.userId;
+			delete memberParsed.uniqueRegistryId;
 
 			if (!parsedCommunityInfo) continue;
 			parsedCondominiumMember.push({
-				member: CondominiumMemberMapper.toObject(item),
+				member: memberParsed,
 				communityInfos: parsedCommunityInfo,
 			});
 		}
@@ -102,12 +118,15 @@ implements CommunityMemberRepoReadOps
 				ValueObject.compare(item.userId, input.userId) &&
 				ValueObject.compare(item.condominiumId, input.condominiumId) &&
 				item.role.value === 0,
-		);
+		) as any;
 		const communityInfos = this.communityInfos.find((item) =>
 			ValueObject.compare(item.memberId, condominiumMember?.id),
-		);
+		) as any;
 
 		if (!condominiumMember || !communityInfos) return undefined;
+
+		delete condominiumMember.uniqueRegistryId;
+		delete communityInfos.memberId;
 
 		return {
 			member: condominiumMember,
@@ -128,19 +147,27 @@ implements CommunityMemberRepoReadOps
 		const returnableData: CommunityMemberRepoReadOpsInterfaces.getByCondominiumIdReturn[] =
 			[];
 		for (const item of condominiumMembers) {
-			const member = CondominiumMemberMapper.toObject(item);
+			const member = CondominiumMemberMapper.toObject(item) as any;
+			delete member.uniqueRegistryId;
+
 			const communityInfos = this.communityInfos.find((infos) =>
 				infos.memberId.equalTo(item.id),
 			);
+
 			const uniqueRegistry = this.uniqueRegistries.find((registry) =>
 				registry.id.equalTo(item.uniqueRegistryId),
 			);
 
 			if (!communityInfos || !uniqueRegistry) continue;
 
+			const parsedCommunityInfos = CommunityInfoMapper.toObject(
+				communityInfos,
+			) as any;
+			delete parsedCommunityInfos?.memberId;
+
 			returnableData.push({
 				member,
-				communityInfos: CommunityInfoMapper.toObject(communityInfos),
+				communityInfos: parsedCommunityInfos,
 				uniqueRegistry: UniqueRegistryMapper.toObject(uniqueRegistry),
 			});
 		}

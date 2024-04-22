@@ -32,6 +32,7 @@ export class GetUserController {
 			UniqueRegistryMapper.toObject(uniqueRegistry);
 		const userAsObjt = UserMapper.toObject(user) as any;
 		delete userAsObjt.password;
+		delete userAsObjt.uniqueRegistryId;
 
 		return {
 			...userAsObjt,
@@ -56,6 +57,7 @@ export class GetUserController {
 			UniqueRegistryMapper.toObject(uniqueRegistry);
 		const userAsObjt = UserMapper.toObject(user) as any;
 		delete userAsObjt.password;
+		delete userAsObjt.uniqueRegistryId;
 
 		return {
 			...userAsObjt,

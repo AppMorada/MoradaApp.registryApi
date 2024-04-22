@@ -88,7 +88,6 @@ describe('Get a community member E2E', () => {
 				members: [
 					{
 						email: uniqueRegistry.email.value,
-						CPF: uniqueRegistry?.CPF?.value,
 						apartmentNumber: communityInfo?.apartmentNumber?.value,
 						block: communityInfo?.block?.value,
 					},
@@ -104,13 +103,17 @@ describe('Get a community member E2E', () => {
 		const memberData = response.body?.condominiumMembers[0];
 		expect(typeof memberData?.member?.id).toEqual('string');
 		expect(typeof memberData?.member?.condominiumId).toEqual('string');
-		expect(typeof memberData?.member?.uniqueRegistryId).toEqual('string');
+		expect(typeof memberData?.member?.uniqueRegistryId).toEqual(
+			'undefined',
+		);
 		expect(memberData?.member?.userId).toBeNull();
 		expect(memberData?.member?.role).toEqual(0);
 		expect(typeof memberData?.member?.updatedAt).toEqual('string');
 		expect(typeof memberData?.member?.createdAt).toEqual('string');
 
-		expect(typeof memberData?.communityInfos?.memberId).toEqual('string');
+		expect(typeof memberData?.communityInfos?.memberId).toEqual(
+			'undefined',
+		);
 		expect(memberData?.communityInfos?.apartmentNumber).toEqual(
 			communityInfo?.apartmentNumber?.value,
 		);
@@ -121,9 +124,6 @@ describe('Get a community member E2E', () => {
 		expect(typeof memberData?.uniqueRegistry?.id).toEqual('string');
 		expect(memberData?.uniqueRegistry?.email).toEqual(
 			uniqueRegistry.email.value,
-		);
-		expect(memberData?.uniqueRegistry?.CPF).toEqual(
-			uniqueRegistry?.CPF?.value,
 		);
 	});
 
@@ -141,7 +141,6 @@ describe('Get a community member E2E', () => {
 				members: [
 					{
 						email: uniqueRegistry.email.value,
-						CPF: uniqueRegistry?.CPF?.value,
 						apartmentNumber: communityInfo?.apartmentNumber?.value,
 						block: communityInfo?.block?.value,
 					},
@@ -163,13 +162,17 @@ describe('Get a community member E2E', () => {
 		const memberData = getOneMemberResponse.body;
 		expect(typeof memberData?.member?.id).toEqual('string');
 		expect(typeof memberData?.member?.condominiumId).toEqual('string');
-		expect(typeof memberData?.member?.uniqueRegistryId).toEqual('string');
+		expect(typeof memberData?.member?.uniqueRegistryId).toEqual(
+			'undefined',
+		);
 		expect(memberData?.member?.userId).toBeNull();
 		expect(memberData?.member?.role).toEqual(0);
 		expect(typeof memberData?.member?.updatedAt).toEqual('string');
 		expect(typeof memberData?.member?.createdAt).toEqual('string');
 
-		expect(typeof memberData?.communityInfos?.memberId).toEqual('string');
+		expect(typeof memberData?.communityInfos?.memberId).toEqual(
+			'undefined',
+		);
 		expect(memberData?.communityInfos?.apartmentNumber).toEqual(
 			communityInfo?.apartmentNumber?.value,
 		);
@@ -183,9 +186,7 @@ describe('Get a community member E2E', () => {
 		expect(memberData?.uniqueRegistry?.email).toEqual(
 			uniqueRegistry.email.value,
 		);
-		expect(memberData?.uniqueRegistry?.CPF).toEqual(
-			uniqueRegistry?.CPF?.value,
-		);
+		expect(memberData?.uniqueRegistry?.CPF).toBeNull();
 	});
 
 	it('should be able to throw 400', async () => {
