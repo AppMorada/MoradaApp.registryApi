@@ -1,4 +1,8 @@
 export const condominiumRules = {
+	code: {
+		length: 6,
+		type: 'string',
+	},
 	CEP: {
 		minLength: 8,
 		maxLength: 9,

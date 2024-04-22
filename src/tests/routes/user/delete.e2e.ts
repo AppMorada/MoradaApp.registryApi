@@ -28,7 +28,7 @@ describe('Delete user E2E', () => {
 				CPF: uniqueRegistry.CPF?.value,
 			});
 
-		expect(createUserResponse.statusCode).toEqual(202);
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const token = createUserResponse.body?.accessToken;
 		const response = await request(app.getHttpServer())

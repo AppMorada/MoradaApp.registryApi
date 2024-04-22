@@ -30,7 +30,10 @@ export class GetCommunityMemberController {
 	@UseGuards(CondominiumMemberGuard)
 	@Get(':condominiumId/as-community/community-member/all')
 	async getAll(@Param('condominiumId') id: string) {
-		const members = await this.getAllMembers.exec({ id });
+		const members = await this.getAllMembers.exec({
+			id,
+			pruneSensitiveData: true,
+		});
 		return {
 			condominiumMembers: members,
 		};

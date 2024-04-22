@@ -31,7 +31,7 @@ describe('Request Password Change E2E', () => {
 				CPF: uniqueRegistry.CPF?.value,
 			});
 
-		expect(createUserResponse.statusCode).toEqual(202);
+		expect(createUserResponse.statusCode).toEqual(201);
 
 		const requestPasswordChangeResponse = await request(app.getHttpServer())
 			.post(endpoints.requestPasswordChange)

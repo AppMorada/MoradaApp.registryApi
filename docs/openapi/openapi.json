@@ -831,7 +831,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/resGetAllCondominiumMember"
+                  "$ref": "#/components/schemas/resGetAllCondominiumMemberWithUnsensitiveInfo"
                 }
               }
             }
@@ -1149,7 +1149,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/resGetEnterpriseUser"
+                  "$ref": "#/components/schemas/resGetSensitiveDataOfCondominiumMember"
                 }
               }
             }
@@ -1351,7 +1351,7 @@
               "Set-Cookie": {
                 "schema": {
                   "type": "string",
-                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2078 03:24:08 GMT;\n"
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2023 03:24:08 GMT;\n"
                 }
               }
             }
@@ -1416,7 +1416,7 @@
           "Usuários"
         ],
         "summary": "Cria um novo usuário",
-        "description": "Cria um usuário, status 201 significa que o usuário já possui algum pre-cadastro realizado em algum condomínio e 202 significa que o usuário precisa solicitar um cadastro ou criar seu próprio condomínio, vale ressaltar que o campo CPF é opcional.",
+        "description": "Cria um usuário e retorna 201.",
         "operationId": "postUser",
         "requestBody": {
           "content": {
@@ -1442,7 +1442,7 @@
               "Set-Cookie": {
                 "schema": {
                   "type": "string",
-                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2078 03:24:08 GMT;\n"
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2023 03:24:08 GMT;\n"
                 }
               }
             }
@@ -1460,7 +1460,7 @@
               "Set-Cookie": {
                 "schema": {
                   "type": "string",
-                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2078 03:24:08 GMT;\n"
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2023 03:24:08 GMT;\n"
                 }
               }
             }
@@ -1481,6 +1481,94 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/condominium-member-context": {
+      "post": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Cria um novo usuário",
+        "description": "Cria um usuário no contexto de criação de um morador do condomínio, status 201 significa que o usuário já possui algum pre-cadastro realizado em algum condomínio e 202 significa que o usuário precisa solicitar um cadastro ou criar seu próprio condomínio, vale ressaltar que o campo CPF é opcional.",
+        "operationId": "postUserWithCondominiumMemberContext",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postUserWithCondominiumMemberContext"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Caminho feliz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resLogin"
+                }
+              }
+            },
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string",
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2023 03:24:08 GMT;\n"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Caminho feliz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resLogin"
+                }
+              }
+            },
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string",
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2023 03:24:08 GMT;\n"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Geralmente, obtido quando o dados são passados de maneira incorreta, verifique [aqui](https://giselerebuli.atlassian.net/wiki/spaces/MA/pages/edit-v2/28999681) as regras para se seguir.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bad_request"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Disparado caso o usuário já exista ou o convite não exista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/unauthorized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Disparado caso o condomínio não exista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/contentDoesntExist"
                 }
               }
             }
@@ -1539,7 +1627,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/resGetByEnterpriseMemberSection"
+                  "$ref": "#/components/schemas/resGetByCondominiumMemberSection"
                 }
               }
             }
@@ -1739,7 +1827,7 @@
               "Set-Cookie": {
                 "schema": {
                   "type": "string",
-                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2078 03:24:08 GMT;\n"
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2023 03:24:08 GMT;\n"
                 }
               }
             }
@@ -1792,7 +1880,7 @@
               "Set-Cookie": {
                 "schema": {
                   "type": "string",
-                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2078 03:24:08 GMT;\n"
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2023 03:24:08 GMT;\n"
                 }
               }
             }
@@ -1837,7 +1925,7 @@
               "Set-Cookie": {
                 "schema": {
                   "type": "string",
-                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2078 03:24:08 GMT;\n"
+                  "example": "refresh-token=s%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ\n9.eyJzdWIiOiI0ZjhjNzc4ZC1kY2EzLTRkZDctYWY1Ni02ZmFlNzkzM\njg0ZTUiLCJlbWFpbCI6ImpvaG5kb2VAZW1haWwuY29tIiwidHlwZSI6Il\nJlZnJlc2ggVG9rZW4iLCJpYXQiOjE3MDgzOTM1NDksImV4cCI6MzQxOTM3\nODY0OH0.P5ga0kPw89NQ19AmEv4KxlK2bQ8lkhrmxAV-FbGXqa\nI.z8FXw43fJatVOBQyzo6W2SwDcTmWEN8yrrk6VKfhISk;\nPath=/; HttpOnly; Expires=Tue, 10 May 2023 03:24:08 GMT;\n"
                 }
               }
             }
@@ -1925,6 +2013,23 @@
           "message": {
             "type": "string",
             "example": "Conteúdo já existe"
+          }
+        }
+      },
+      "contentDoesntExist": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Conteúdo não existe"
+          },
+          "message": {
+            "type": "string",
+            "example": "O conteúdo solicitado não foi encontrado"
+          },
+          "statusCode": {
+            "type": "number",
+            "example": 404
           }
         }
       },
@@ -2263,11 +2368,31 @@
             "type": "string",
             "description": "Senha do usuário",
             "example": "12345678"
-          },
-          "CPF": {
+          }
+        }
+      },
+      "postUserWithCondominiumMemberContext": {
+        "type": "object",
+        "properties": {
+          "name": {
             "type": "string",
-            "format": "CEP",
-            "description": "CPF do usuário (deve ser válido)"
+            "description": "Nome completo do usuário",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email do usuário",
+            "example": "johndoe@email.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Senha do usuário",
+            "example": "12345678"
+          },
+          "condominiumHumanReadableId": {
+            "type": "string",
+            "description": "código do condomínio"
           }
         }
       },
@@ -2283,109 +2408,6 @@
             "type": "string",
             "format": "tel",
             "description": "Número de telefone do usuário"
-          }
-        }
-      },
-      "resGetEnterpriseUser": {
-        "type": "object",
-        "properties": {
-          "userData": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "format": "UUID",
-                "description": "Número de identificação do membro do condomínio"
-              },
-              "uniqueRegistryId": {
-                "type": "string",
-                "format": "UUID",
-                "description": "Número de identificação do registro único do usuário"
-              },
-              "name": {
-                "type": "string",
-                "description": "Nome do usuário"
-              },
-              "phoneNumber": {
-                "type": "string",
-                "description": "Número de telefone do usuário"
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "datetime",
-                "description": "Data de criação do usuário"
-              },
-              "updatedAt": {
-                "type": "string",
-                "format": "datetime",
-                "description": "Data da última atualização do usuário"
-              }
-            }
-          },
-          "uniqueRegistry": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "format": "UUID",
-                "description": "Número de identificação do registro único"
-              },
-              "email": {
-                "type": "string",
-                "format": "email",
-                "description": "Email do usuário",
-                "example": "johndoe@email.com"
-              },
-              "CPF": {
-                "type": "string",
-                "format": "CPF",
-                "description": "CPF do usuário",
-                "example": "83885645793"
-              }
-            }
-          },
-          "worksOn": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "UUID",
-                  "description": "Número de identificação do membro do condomínio"
-                },
-                "condominiumId": {
-                  "type": "string",
-                  "format": "UUID",
-                  "description": "Número de identificação do condomínio"
-                },
-                "uniqueRegistryId": {
-                  "type": "string",
-                  "format": "UUID",
-                  "description": "Número de identificação do registro único"
-                },
-                "userId": {
-                  "type": "string",
-                  "format": "UUID",
-                  "description": "Número de identificação do usuário"
-                },
-                "role": {
-                  "type": "integer",
-                  "description": "Cargo do usuário",
-                  "example": 1
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "format": "datetime",
-                  "description": "Data da última atualização do membro do condomínio"
-                },
-                "createdAt": {
-                  "type": "string",
-                  "format": "datetime",
-                  "description": "Data de criação do membro do condomínio"
-                }
-              }
-            }
           }
         }
       },
@@ -2405,11 +2427,6 @@
                       "format": "UUID",
                       "description": "Número de identificação do membro do condomínio"
                     },
-                    "uniqueRegistryId": {
-                      "type": "string",
-                      "format": "UUID",
-                      "description": "Número de identificação do registro único do usuário"
-                    },
                     "name": {
                       "type": "string",
                       "description": "Nome do usuário"
@@ -2420,12 +2437,12 @@
                     },
                     "createdAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data de criação do usuário"
                     },
                     "updatedAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data da última atualização do usuário"
                     }
                   }
@@ -2465,16 +2482,6 @@
                       "format": "UUID",
                       "description": "Número de identificação do condomínio"
                     },
-                    "uniqueRegistryId": {
-                      "type": "string",
-                      "format": "UUID",
-                      "description": "Número de identificação do registro único"
-                    },
-                    "userId": {
-                      "type": "string",
-                      "format": "UUID",
-                      "description": "Número de identificação do usuário"
-                    },
                     "role": {
                       "type": "integer",
                       "description": "Cargo do usuário",
@@ -2482,12 +2489,12 @@
                     },
                     "updatedAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data da última atualização do membro do condomínio"
                     },
                     "createdAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data de criação do membro do condomínio"
                     }
                   }
@@ -2557,34 +2564,23 @@
                     "format": "UUID",
                     "description": "Número de identificação do membro do condomínio"
                   },
-                  "uniqueRegistryId": {
-                    "type": "string",
-                    "format": "UUID",
-                    "description": "Número de identificação do registro único"
-                  },
                   "condominiumId": {
                     "type": "string",
                     "format": "UUID",
                     "description": "Número de identificação do condomínio"
                   },
-                  "userId": {
-                    "type": "string",
-                    "format": "UUID",
-                    "description": "Número de identificação do usuário"
-                  },
                   "role": {
                     "type": "integer",
-                    "description": "Cargo do usuário",
-                    "example": 0
+                    "description": "Cargo do usuário"
                   },
                   "updatedAt": {
                     "type": "string",
-                    "format": "datetime",
+                    "format": "date",
                     "description": "Data da última atualização do membro do condomínio"
                   },
                   "createdAt": {
                     "type": "string",
-                    "format": "datetime",
+                    "format": "date",
                     "description": "Data de criação do membro do condomínio"
                   }
                 }
@@ -2592,11 +2588,6 @@
               "communityInfos": {
                 "type": "object",
                 "properties": {
-                  "memberId": {
-                    "type": "string",
-                    "format": "UUID",
-                    "description": "Número de identificação do membro do condomínio"
-                  },
                   "apartmentNumber": {
                     "type": "integer",
                     "description": "Número do apartamento"
@@ -2607,6 +2598,7 @@
                   },
                   "updatedAt": {
                     "type": "string",
+                    "format": "date",
                     "description": "Data da última atualização dos dados de comunidade do usuário"
                   }
                 }
@@ -2614,10 +2606,10 @@
               "userData": {
                 "type": "object",
                 "properties": {
-                  "uniqueRegistryId": {
+                  "id": {
                     "type": "string",
                     "format": "UUID",
-                    "description": "Número de identificação do registro único"
+                    "description": "Número de identificação do usuário"
                   },
                   "name": {
                     "type": "string",
@@ -2633,6 +2625,7 @@
                   },
                   "updatedAt": {
                     "type": "string",
+                    "format": "date",
                     "description": "Data da última atualização dos dados do usuário"
                   }
                 }
@@ -2669,74 +2662,179 @@
           "content": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string",
-                "format": "UUID",
-                "description": "Número de identificação do membro do condomínio"
+              "member": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "UUID",
+                    "description": "Número de identificação do membro do condomínio"
+                  },
+                  "condominiumId": {
+                    "type": "string",
+                    "format": "UUID",
+                    "description": "Número de identificação do condomínio"
+                  },
+                  "role": {
+                    "type": "integer",
+                    "description": "Cargo do usuário",
+                    "example": 0
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Data da última atualização do membro do condomínio"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Data de criação do membro do condomínio"
+                  }
+                }
               },
-              "userId": {
-                "type": "string",
-                "format": "UUID",
-                "description": "Número de identificação do usuário"
-              },
-              "condominiumId": {
-                "type": "string",
-                "format": "UUID",
-                "description": "Número de identificação do condomínio"
+              "communityInfos": {
+                "type": "object",
+                "properties": {
+                  "apartmentNumber": {
+                    "type": "integer",
+                    "description": "Número do apartamento"
+                  },
+                  "block": {
+                    "type": "string",
+                    "description": "Block do condomínio"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Data da última atualização dos dados de comunidade do usuário"
+                  }
+                }
               },
               "userData": {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "UUID",
+                    "description": "Número de identificação do usuário"
+                  },
                   "name": {
                     "type": "string",
-                    "description": "Nome completo do usuário",
-                    "example": "John Doe"
+                    "description": "Nome do usuário"
                   },
                   "phoneNumber": {
                     "type": "string",
-                    "format": "tel",
                     "description": "Número de telefone do usuário"
                   },
                   "createdAt": {
                     "type": "string",
-                    "format": "datetime",
+                    "format": "date",
                     "description": "Data de criação do usuário"
                   },
                   "updatedAt": {
                     "type": "string",
-                    "format": "datetime",
-                    "description": "Data de atualização do usuário"
+                    "format": "date",
+                    "description": "Data da última atualização dos dados do usuário"
                   }
                 }
               },
-              "autoEdit": {
-                "type": "boolean",
-                "description": "Indica se o usuário pode ou não editar estes dados"
-              },
-              "c_email": {
-                "type": "string",
-                "format": "email",
-                "description": "Email do usuário",
-                "example": "johndoe@email.com"
-              },
-              "block": {
-                "type": "string",
-                "description": "Bloco do apartamento do usuário"
-              },
-              "apartmentNumber": {
-                "type": "integer",
-                "format": "int32",
-                "description": "Número do apartamento do usuário"
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "datetime",
-                "description": "Data de criação do membro do condomínio"
-              },
-              "updatedAt": {
-                "type": "string",
-                "format": "datetime",
-                "description": "Data de atualização do membro do condomínio"
+              "uniqueRegistry": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "UUID",
+                    "description": "Número de identificação do registro único"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email do usuário",
+                    "example": "johndoe@email.com"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "resGetAllCondominiumMemberWithUnsensitiveInfo": {
+        "type": "object",
+        "properties": {
+          "condominiumMembers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "member": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "UUID",
+                      "description": "Número de identificação do membro do condomínio"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "format": "UUID",
+                      "description": "Número de identificação do membro do usuário"
+                    },
+                    "condominiumId": {
+                      "type": "string",
+                      "format": "UUID",
+                      "description": "Número de identificação do condomínio"
+                    },
+                    "role": {
+                      "type": "integer",
+                      "description": "Cargo do usuário",
+                      "example": 0
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Data da última atualização do membro do condomínio"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Data de criação do membro do condomínio"
+                    }
+                  }
+                },
+                "communityInfos": {
+                  "type": "object",
+                  "properties": {
+                    "apartmentNumber": {
+                      "type": "integer",
+                      "description": "Número do apartamento"
+                    },
+                    "block": {
+                      "type": "string",
+                      "description": "Block do condomínio"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Data da última atualização das informações do morador do condomínio"
+                    }
+                  }
+                },
+                "uniqueRegistry": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "UUID",
+                      "description": "Número de identificação do registro único"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "Email do usuário",
+                      "example": "johndoe@email.com"
+                    }
+                  }
+                }
               }
             }
           }
@@ -2758,20 +2856,15 @@
                       "format": "UUID",
                       "description": "Número de identificação do membro do condomínio"
                     },
+                    "userId": {
+                      "type": "string",
+                      "format": "UUID",
+                      "description": "Número de identificação do membro do usuário"
+                    },
                     "condominiumId": {
                       "type": "string",
                       "format": "UUID",
                       "description": "Número de identificação do condomínio"
-                    },
-                    "uniqueRegistryId": {
-                      "type": "string",
-                      "format": "UUID",
-                      "description": "Número de identificação do registro único"
-                    },
-                    "userId": {
-                      "type": "string",
-                      "format": "UUID",
-                      "description": "Número de identificação do usuário"
                     },
                     "role": {
                       "type": "integer",
@@ -2780,12 +2873,12 @@
                     },
                     "updatedAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data da última atualização do membro do condomínio"
                     },
                     "createdAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data de criação do membro do condomínio"
                     }
                   }
@@ -2793,11 +2886,6 @@
                 "communityInfos": {
                   "type": "object",
                   "properties": {
-                    "memberId": {
-                      "type": "string",
-                      "format": "UUID",
-                      "description": "Número de identificação do membro do condomínio"
-                    },
                     "apartmentNumber": {
                       "type": "integer",
                       "description": "Número do apartamento"
@@ -2805,6 +2893,11 @@
                     "block": {
                       "type": "string",
                       "description": "Block do condomínio"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Data da última atualização das informações do morador do condomínio"
                     }
                   }
                 },
@@ -2821,6 +2914,11 @@
                       "format": "email",
                       "description": "Email do usuário",
                       "example": "johndoe@email.com"
+                    },
+                    "CPF": {
+                      "type": "string",
+                      "format": "CEP",
+                      "description": "CPF do usuário"
                     }
                   }
                 }
@@ -2872,12 +2970,12 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "datetime",
+            "format": "date",
             "description": "Data de criação do usuário"
           },
           "updatedAt": {
             "type": "string",
-            "format": "datetime",
+            "format": "date",
             "description": "Data da última atualização dos dados do usuário"
           },
           "uniqueRegistry": {
@@ -2918,24 +3016,18 @@
                       "format": "UUID",
                       "description": "Número de identificação do condomínio"
                     },
-                    "uniqueRegistryId": {
-                      "type": "string",
-                      "format": "UUID",
-                      "description": "Número de identificação do registro único"
-                    },
                     "role": {
                       "type": "integer",
-                      "description": "Indica o nível de permissividade do usuário para com o condomínio",
-                      "example": 0
+                      "description": "Indica o nível de permissividade do usuário para com o condomínio"
                     },
                     "updatedAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data da última atualização do membro do condomínio"
                     },
                     "createdAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data da criação do membro do condomínio"
                     }
                   }
@@ -2943,11 +3035,6 @@
                 "communityInfo": {
                   "type": "object",
                   "properties": {
-                    "memberId": {
-                      "type": "string",
-                      "format": "UUID",
-                      "description": "Número de identificação do membro do condomínio"
-                    },
                     "apartmentNumber": {
                       "type": "integer",
                       "description": "Número do apartamento do membro"
@@ -2958,113 +3045,10 @@
                     },
                     "updatedAt": {
                       "type": "string",
-                      "format": "datetime",
+                      "format": "date",
                       "description": "Data da última atualização das informações de comunidade do membro do condomínio"
                     }
                   }
-                }
-              }
-            }
-          }
-        }
-      },
-      "resGetByEnterpriseMemberSection": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "UUID",
-            "description": "Número de identificação do membro do condomínio"
-          },
-          "uniqueRegistryId": {
-            "type": "string",
-            "format": "UUID",
-            "description": "Número de identificação do registro único"
-          },
-          "name": {
-            "type": "string",
-            "description": "Nome completo do usuário",
-            "example": "John Doe"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "format": "tel",
-            "description": "Número de telefone do usuário"
-          },
-          "tfa": {
-            "type": "boolean",
-            "description": "Indica se o usuário esta com a autenticação de dois fatores ativa"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "datetime",
-            "description": "Data de criação do usuário"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "datetime",
-            "description": "Data da última atualização dos dados do usuário"
-          },
-          "uniqueRegistry": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "format": "UUID",
-                "description": "Número de identificação do registro único"
-              },
-              "email": {
-                "type": "string",
-                "format": "email",
-                "description": "Email do usuário",
-                "example": "johndoe@email.com"
-              },
-              "CPF": {
-                "type": "string",
-                "format": "CEP",
-                "description": "CPF do usuário"
-              }
-            }
-          },
-          "employeeRelations": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "UUID",
-                  "description": "Número de identificação do membro do condomínio"
-                },
-                "condominiumId": {
-                  "type": "string",
-                  "format": "UUID",
-                  "description": "Número de identificação do condomínio"
-                },
-                "uniqueRegistryId": {
-                  "type": "string",
-                  "format": "UUID",
-                  "description": "Número de identificação do registro único"
-                },
-                "userId": {
-                  "type": "string",
-                  "format": "UUID",
-                  "description": "Número de identificação do membro do condomínio"
-                },
-                "role": {
-                  "type": "integer",
-                  "description": "Indica o nível de permissividade do usuário para com o condomínio",
-                  "example": 1
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "format": "datetime",
-                  "description": "Data da última atualização do membro do condomínio"
-                },
-                "createdAt": {
-                  "type": "string",
-                  "format": "datetime",
-                  "description": "Data da criação do membro do condomínio"
                 }
               }
             }
