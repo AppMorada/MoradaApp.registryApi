@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
 import { UUID } from '@app/entities/VO';
-import { CondominiumRepoWriteOps } from '@app/repositories/condominium/write';
+import { CondominiumWriteOps } from '@app/repositories/condominium/write';
 
 interface IProps {
 	id: UUID;
@@ -9,9 +9,11 @@ interface IProps {
 
 @Injectable()
 export class DeleteCondominiumService implements IService {
-	constructor(private readonly condominiumRepo: CondominiumRepoWriteOps) {}
+	constructor(
+		private readonly condominiumRepoRemove: CondominiumWriteOps.Remove,
+	) {}
 
 	async exec(input: IProps): Promise<void> {
-		return await this.condominiumRepo.remove(input);
+		return await this.condominiumRepoRemove.exec(input);
 	}
 }

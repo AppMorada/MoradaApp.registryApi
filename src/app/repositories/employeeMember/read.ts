@@ -43,14 +43,20 @@ export namespace EmployeeMemberRepoReadOpsInterfaces {
 	}
 }
 
-export abstract class EmployeeMemberRepoReadOps {
-	abstract getByUserId(
-		input: EmployeeMemberRepoReadOpsInterfaces.getByUserId,
-	): Promise<
-		EmployeeMemberRepoReadOpsInterfaces.getByUserIdReturn | undefined
-	>;
+export namespace EmployeeMemberReadOps {
+	export abstract class GetByUserId {
+		abstract exec(
+			input: EmployeeMemberRepoReadOpsInterfaces.getByUserId,
+		): Promise<
+			EmployeeMemberRepoReadOpsInterfaces.getByUserIdReturn | undefined
+		>;
+	}
 
-	abstract getGroupCondominiumId(
-		input: EmployeeMemberRepoReadOpsInterfaces.getByCondominiumId,
-	): Promise<EmployeeMemberRepoReadOpsInterfaces.getByCondominiumIdReturn[]>;
+	export abstract class GetGroupByCondominiumId {
+		abstract exec(
+			input: EmployeeMemberRepoReadOpsInterfaces.getByCondominiumId,
+		): Promise<
+			EmployeeMemberRepoReadOpsInterfaces.getByCondominiumIdReturn[]
+		>;
+	}
 }

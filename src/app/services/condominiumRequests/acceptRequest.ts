@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
-import { CondominiumRequestRepoWriteOps } from '@app/repositories/condominiumRequest/write';
+import { CondominiumRequestWriteOps } from '@app/repositories/condominiumRequest/write';
 import { UUID } from '@app/entities/VO';
 
 interface IProps {
@@ -11,11 +11,11 @@ interface IProps {
 @Injectable()
 export class AcceptCondominiumRequestService implements IService {
 	constructor(
-		private readonly condominiumRequest: CondominiumRequestRepoWriteOps,
+		private readonly condominiumRequestAccept: CondominiumRequestWriteOps.AcceptRequest,
 	) {}
 
 	async exec(input: IProps) {
-		await this.condominiumRequest.acceptRequest({
+		await this.condominiumRequestAccept.exec({
 			userId: new UUID(input.userId),
 			condominiumId: new UUID(input.condominiumId),
 		});

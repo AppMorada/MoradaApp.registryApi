@@ -1,5 +1,4 @@
 import { JwtService } from '@nestjs/jwt';
-import { InMemoryUserWriteOps } from '@tests/inMemoryDatabase/user/write';
 import { CreateTokenService } from '../../login/createToken.service';
 import { userFactory } from '@tests/factories/user';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
@@ -17,11 +16,9 @@ describe('Create token test', () => {
 
 	let inMemoryContainer: InMemoryContainer;
 	let keyRepo: InMemoryKey;
-	let userRepo: InMemoryUserWriteOps;
 
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUserWriteOps(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
 		tokenService = new JwtService();
 
@@ -53,8 +50,6 @@ describe('Create token test', () => {
 	it('should be able to create token', async () => {
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
 
 		const accessKey = await keyRepo.getSignature(KeysEnum.ACCESS_TOKEN_KEY);
 		const refreshKey = await keyRepo.getSignature(

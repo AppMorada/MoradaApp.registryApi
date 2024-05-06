@@ -11,22 +11,22 @@ import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
-import { CondominiumRepoReadOps } from '@app/repositories/condominium/read';
-import { EmployeeMemberRepoReadOps } from '@app/repositories/employeeMember/read';
-import { UserRepoReadOps } from '@app/repositories/user/read';
+import { CondominiumReadOps } from '@app/repositories/condominium/read';
+import { EmployeeMemberReadOps } from '@app/repositories/employeeMember/read';
+import { UserReadOps } from '@app/repositories/user/read';
 
 @Injectable()
 export class AdminJwt implements CanActivate {
 	constructor(
 		private readonly validateToken: ValidateTokenService,
-		private readonly userRepo: UserRepoReadOps,
-		private readonly memberRepo: EmployeeMemberRepoReadOps,
-		private readonly condominiumRepo: CondominiumRepoReadOps,
+		private readonly readUserRepo: UserReadOps.Read,
+		private readonly readMemberRepo: EmployeeMemberReadOps.GetByUserId,
+		private readonly readCondominiumRepo: CondominiumReadOps.Search,
 	) {}
 
 	private async getEntities(sub: string, condominiumId: string) {
-		const userContent = await this.userRepo
-			.find({
+		const userContent = await this.readUserRepo
+			.exec({
 				key: new UUID(sub),
 				safeSearch: true,
 			})
@@ -36,8 +36,8 @@ export class AdminJwt implements CanActivate {
 				});
 			});
 
-		const condominium = await this.condominiumRepo
-			.find({
+		const condominium = await this.readCondominiumRepo
+			.exec({
 				key: new UUID(condominiumId),
 				safeSearch: true,
 			})
@@ -79,7 +79,7 @@ export class AdminJwt implements CanActivate {
 			condominiumId,
 		);
 
-		const member = await this.memberRepo.getByUserId({
+		const member = await this.readMemberRepo.exec({
 			id: userContent.user.id,
 		});
 

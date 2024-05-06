@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
-import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { UserWriteOps } from '@app/repositories/user/write';
 import { Name, Password, PhoneNumber, UUID } from '@app/entities/VO';
 import { CryptAdapter } from '@app/adapters/crypt';
 
@@ -14,7 +14,7 @@ interface IProps {
 @Injectable()
 export class UpdateUserService implements IService {
 	constructor(
-		private readonly userRepo: UserRepoWriteOps,
+		private readonly userRepoUpdate: UserWriteOps.Update,
 		private readonly crypt: CryptAdapter,
 	) {}
 
@@ -37,7 +37,7 @@ export class UpdateUserService implements IService {
 
 		if (!name && !phoneNumber && !password) return returnableContent;
 
-		await this.userRepo.update({
+		await this.userRepoUpdate.exec({
 			id: new UUID(input.id),
 			name,
 			phoneNumber,

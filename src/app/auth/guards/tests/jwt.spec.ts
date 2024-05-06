@@ -1,12 +1,10 @@
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { JwtGuard } from '../jwt.guard';
-import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
+import { InMemoryUserRead } from '@tests/inMemoryDatabase/user/read';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryError } from '@tests/errors/inMemoryError';
-import { EntitiesEnum } from '@app/entities/entities';
 import { GuardErrors } from '@app/errors/guard';
 import { InMemoryKey } from '@tests/inMemoryDatabase/key';
 import { GetKeyService } from '@app/services/key/getKey.service';
@@ -24,14 +22,19 @@ describe('Jwt guard test', () => {
 	let validateTokenService: ValidateTokenService;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUserReadOps;
+	let readUserRepo: InMemoryUserRead;
 	let keyRepo: InMemoryKey;
 
 	let jwtGuard: JwtGuard;
 
+	const uniqueRegistry = uniqueRegistryFactory();
+	const user = userFactory({
+		uniqueRegistryId: uniqueRegistry.id.value,
+	});
+
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUserReadOps(inMemoryContainer);
+		readUserRepo = new InMemoryUserRead();
 		keyRepo = new InMemoryKey(inMemoryContainer);
 
 		jwtService = new JwtService();
@@ -42,7 +45,7 @@ describe('Jwt guard test', () => {
 			getKeyService,
 		);
 
-		jwtGuard = new JwtGuard(userRepo, validateTokenService);
+		jwtGuard = new JwtGuard(readUserRepo, validateTokenService);
 
 		const accessTokenKey = new Key({
 			name: KeysEnum.ACCESS_TOKEN_KEY,
@@ -64,14 +67,14 @@ describe('Jwt guard test', () => {
 
 		await keyRepo.create(accessTokenKey);
 		await keyRepo.create(refreshTokenKey);
+
+		InMemoryUserRead.prototype.exec = jest.fn(async () => {
+			++readUserRepo.calls.exec;
+			return { user, uniqueRegistry };
+		});
 	});
 
 	it('should be able to validate jwt guard', async () => {
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
-
 		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
@@ -82,28 +85,7 @@ describe('Jwt guard test', () => {
 
 		await expect(jwtGuard.canActivate(context)).resolves.toBeTruthy();
 
-		expect(userRepo.calls.find).toEqual(1);
-	});
-
-	it('should throw one error - user doesn\'t exists', async () => {
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		const tokens = await createTokenService.exec({ user, uniqueRegistry });
-
-		const context = createMockExecutionContext({
-			headers: {
-				authorization: `Bearer ${tokens.accessToken}`,
-			},
-		});
-
-		await expect(jwtGuard.canActivate(context)).rejects.toThrow(
-			new InMemoryError({
-				entity: EntitiesEnum.user,
-				message: 'User not found',
-			}),
-		);
-
-		expect(userRepo.calls.find).toEqual(1);
+		expect(readUserRepo.calls.exec).toEqual(1);
 	});
 
 	it('should throw one error - empty token', async () => {

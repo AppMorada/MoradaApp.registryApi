@@ -1,10 +1,10 @@
 import { CryptSpy } from '@tests/adapters/cryptSpy';
 import { GenTFAService } from '../../login/genTFA.service';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
+import { InMemoryUserRead } from '@tests/inMemoryDatabase/user/read';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserRepoReadOps } from '@app/repositories/user/read';
+import { UserReadOps } from '@app/repositories/user/read';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { EVENT_ID } from '@infra/events/ids';
@@ -22,7 +22,6 @@ describe('Gen TFA Service', () => {
 	let sut: GenTFAService;
 	let app: TestingModule;
 	let cryptAdapter: CryptSpy;
-	let userRepo: InMemoryUserReadOps;
 	let eventEmitter: EventEmitter2;
 
 	beforeEach(async () => {
@@ -50,8 +49,8 @@ describe('Gen TFA Service', () => {
 					useValue: new LoggerSpy(),
 				},
 				{
-					provide: UserRepoReadOps,
-					useValue: new InMemoryUserReadOps(container),
+					provide: UserReadOps.Read,
+					useValue: new InMemoryUserRead(),
 				},
 				{
 					provide: KeyRepo,
@@ -68,7 +67,6 @@ describe('Gen TFA Service', () => {
 		}).compile();
 
 		cryptAdapter = app.get(CryptAdapter);
-		userRepo = app.get(UserRepoReadOps);
 		sut = app.get(GenTFAService);
 		eventEmitter = app.get(EventEmitter2);
 
@@ -95,18 +93,14 @@ describe('Gen TFA Service', () => {
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
 
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
-
 		await sut.exec({
-			searchUserKey: user.id,
+			existentUserContent: {
+				user,
+				uniqueRegistry,
+			},
 		});
 
-		await sut.exec({
-			searchUserKey: uniqueRegistry.email,
-		});
-
-		expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
-		expect(cryptAdapter.calls.hashWithHmac).toEqual(2);
+		expect(eventEmitter.emit).toHaveBeenCalledTimes(1);
+		expect(cryptAdapter.calls.hashWithHmac).toEqual(1);
 	});
 });

@@ -1,7 +1,7 @@
 import { CryptAdapter } from '@app/adapters/crypt';
 import { Email, UUID } from '@app/entities/VO';
 import { Injectable } from '@nestjs/common';
-import { UserRepoReadOps } from '@app/repositories/user/read';
+import { UserReadOps } from '@app/repositories/user/read';
 import { generateStringCodeContentBasedOnUser } from '@utils/generateStringCodeContent';
 import { IService } from '../_IService';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -29,7 +29,7 @@ type IProps = INonCachedProps | ICachedProps;
 @Injectable()
 export class GenTFAService implements IService {
 	constructor(
-		private readonly userRepo: UserRepoReadOps,
+		private readonly userRepoRead: UserReadOps.Read,
 		private readonly crypt: CryptAdapter,
 		private readonly eventEmitter: EventEmitter2,
 		private readonly getKey: GetKeyService,
@@ -37,7 +37,7 @@ export class GenTFAService implements IService {
 	) {}
 
 	private async searchUser(input: UUID | Email) {
-		const user = await this.userRepo.find({
+		const user = await this.userRepoRead.exec({
 			key: input,
 			safeSearch: true,
 		});

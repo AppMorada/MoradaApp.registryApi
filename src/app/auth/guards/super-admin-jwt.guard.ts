@@ -11,20 +11,20 @@ import { GuardErrors } from '@app/errors/guard';
 import { Request } from 'express';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
-import { UserRepoReadOps } from '@app/repositories/user/read';
-import { CondominiumRepoReadOps } from '@app/repositories/condominium/read';
+import { UserReadOps } from '@app/repositories/user/read';
+import { CondominiumReadOps } from '@app/repositories/condominium/read';
 
 @Injectable()
 export class SuperAdminJwt implements CanActivate {
 	constructor(
 		private readonly validateToken: ValidateTokenService,
-		private readonly userRepo: UserRepoReadOps,
-		private readonly condominiumRepo: CondominiumRepoReadOps,
+		private readonly readUserRepo: UserReadOps.Read,
+		private readonly readCondominiumRepo: CondominiumReadOps.Search,
 	) {}
 
 	private async getEntities(sub: string, condominiumId: string) {
-		const userContent = await this.userRepo
-			.find({
+		const userContent = await this.readUserRepo
+			.exec({
 				key: new UUID(sub),
 				safeSearch: true,
 			})
@@ -34,8 +34,8 @@ export class SuperAdminJwt implements CanActivate {
 				});
 			});
 
-		const condominium = await this.condominiumRepo
-			.find({
+		const condominium = await this.readCondominiumRepo
+			.exec({
 				key: new UUID(condominiumId),
 				safeSearch: true,
 			})

@@ -1,27 +1,18 @@
 import { condominiumFactory } from '@tests/factories/condominium';
-import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
-import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
+import { InMemoryCondominiumUpdate } from '@tests/inMemoryDatabase/condominium/write/update';
 import { UpdateCondominiumService } from '@app/services/condominium/update.service';
-import { userFactory } from '@tests/factories/user';
 
 describe('Update condominium service test', () => {
 	let sut: UpdateCondominiumService;
-
-	let inMemoryContainer: InMemoryContainer;
-	let condominiumRepo: InMemoryCondominiumWriteOps;
+	let updateCondominiumRepo: InMemoryCondominiumUpdate;
 
 	beforeEach(() => {
-		inMemoryContainer = new InMemoryContainer();
-		condominiumRepo = new InMemoryCondominiumWriteOps(inMemoryContainer);
-
-		sut = new UpdateCondominiumService(condominiumRepo);
+		updateCondominiumRepo = new InMemoryCondominiumUpdate();
+		sut = new UpdateCondominiumService(updateCondominiumRepo);
 	});
 
 	it('should be able to update a condominium', async () => {
-		const user = userFactory();
-		const condominium = condominiumFactory({ ownerId: user.id.value });
-
-		await condominiumRepo.create({ condominium, user });
+		const condominium = condominiumFactory();
 		await sut.exec({
 			CEP: condominium.CEP.value,
 			name: condominium.name.value,
@@ -29,6 +20,6 @@ describe('Update condominium service test', () => {
 			num: condominium.num.value,
 		});
 
-		expect(condominiumRepo.calls.update).toEqual(1);
+		expect(updateCondominiumRepo.calls.exec).toEqual(1);
 	});
 });

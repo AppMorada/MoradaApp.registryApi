@@ -17,14 +17,22 @@ export namespace CondominiumRequestRepoWriteOpsInterfaces {
 	}
 }
 
-export abstract class CondominiumRequestRepoWriteOps {
-	abstract acceptRequest(
-		input: CondominiumRequestRepoWriteOpsInterfaces.accept,
-	): Promise<void>;
-	abstract create(
-		input: CondominiumRequestRepoWriteOpsInterfaces.create,
-	): Promise<void>;
-	abstract removeByUserIdAndCondominiumId(
-		input: CondominiumRequestRepoWriteOpsInterfaces.remove,
-	): Promise<void>;
+export namespace CondominiumRequestWriteOps {
+	export abstract class AcceptRequest {
+		abstract exec(
+			input: CondominiumRequestRepoWriteOpsInterfaces.accept,
+		): Promise<void>;
+	}
+
+	export abstract class Create {
+		abstract exec(
+			input: CondominiumRequestRepoWriteOpsInterfaces.create,
+		): Promise<void>;
+	}
+
+	export abstract class RemoveByUserIdAndCondominiumId {
+		abstract exec(
+			input: CondominiumRequestRepoWriteOpsInterfaces.remove,
+		): Promise<void>;
+	}
 }
