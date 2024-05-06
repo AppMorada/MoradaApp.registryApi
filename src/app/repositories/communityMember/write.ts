@@ -24,16 +24,22 @@ export namespace CommunityMemberRepoWriteOpsInterfaces {
 	}
 }
 
-export abstract class CommunityMemberWriteOpsRepo {
-	abstract createMany(
-		input: CommunityMemberRepoWriteOpsInterfaces.createMany,
-	): Promise<void>;
+export namespace CommunityMemberWriteOps {
+	export abstract class CreateMany {
+		abstract exec(
+			input: CommunityMemberRepoWriteOpsInterfaces.createMany,
+		): Promise<void>;
+	}
 
-	abstract update(
-		input: CommunityMemberRepoWriteOpsInterfaces.update,
-	): Promise<void>;
+	export abstract class Update {
+		abstract exec(
+			input: CommunityMemberRepoWriteOpsInterfaces.update,
+		): Promise<void>;
+	}
 
-	abstract remove(
-		input: CommunityMemberRepoWriteOpsInterfaces.remove,
-	): Promise<void>;
+	export abstract class Remove {
+		abstract exec(
+			input: CommunityMemberRepoWriteOpsInterfaces.remove,
+		): Promise<void>;
+	}
 }

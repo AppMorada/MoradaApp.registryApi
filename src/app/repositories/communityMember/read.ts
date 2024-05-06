@@ -62,23 +62,35 @@ export namespace CommunityMemberRepoReadOpsInterfaces {
 	}
 }
 
-export abstract class CommunityMemberRepoReadOps {
-	abstract getByUserId(
-		input: CommunityMemberRepoReadOpsInterfaces.getByUserId,
-	): Promise<CommunityMemberRepoReadOpsInterfaces.getByUserIdReturn[]>;
+export namespace CommunityMemberReadOps {
+	export abstract class GetByCondominiumId {
+		abstract exec(
+			input: CommunityMemberRepoReadOpsInterfaces.getByCondominiumId,
+		): Promise<
+			CommunityMemberRepoReadOpsInterfaces.getByCondominiumIdReturn[]
+		>;
+	}
 
-	abstract getById(
-		input: CommunityMemberRepoReadOpsInterfaces.getById,
-	): Promise<CommunityMemberRepoReadOpsInterfaces.getByIdReturn | undefined>;
+	export abstract class GetByUserIdAndCondominiumId {
+		abstract exec(
+			input: CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumId,
+		): Promise<
+			| CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumIdReturn
+			| undefined
+		>;
+	}
 
-	abstract getGroupCondominiumId(
-		input: CommunityMemberRepoReadOpsInterfaces.getByCondominiumId,
-	): Promise<CommunityMemberRepoReadOpsInterfaces.getByCondominiumIdReturn[]>;
+	export abstract class GetById {
+		abstract exec(
+			input: CommunityMemberRepoReadOpsInterfaces.getById,
+		): Promise<
+			CommunityMemberRepoReadOpsInterfaces.getByIdReturn | undefined
+		>;
+	}
 
-	abstract getByUserAndCondominiumId(
-		input: CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumId,
-	): Promise<
-		| CommunityMemberRepoReadOpsInterfaces.getByUserIdAndCondominiumIdReturn
-		| undefined
-	>;
+	export abstract class GetByUserId {
+		abstract exec(
+			input: CommunityMemberRepoReadOpsInterfaces.getByUserId,
+		): Promise<CommunityMemberRepoReadOpsInterfaces.getByUserIdReturn[]>;
+	}
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
-import { CondominiumRequestRepoWriteOps } from '@app/repositories/condominiumRequest/write';
+import { CondominiumRequestWriteOps } from '@app/repositories/condominiumRequest/write';
 import { CondominiumRequest } from '@app/entities/condominiumRequest';
-import { CondominiumRepoReadOps } from '@app/repositories/condominium/read';
+import { CondominiumReadOps } from '@app/repositories/condominium/read';
 
 interface IProps {
 	userId: string;
@@ -14,15 +14,17 @@ interface IProps {
 @Injectable()
 export class MakeCondominiumRequestService implements IService {
 	constructor(
-		private readonly condominiumRequestRepo: CondominiumRequestRepoWriteOps,
-		private readonly condominiumRepo: CondominiumRepoReadOps,
+		private readonly condominiumRequestRepoCreate: CondominiumRequestWriteOps.Create,
+		private readonly condominiumRepoGetByHumanReadableId: CondominiumReadOps.GetByHumanReadableId,
 	) {}
 
 	async exec(input: IProps) {
-		const condominium = await this.condominiumRepo.getByHumanReadableId({
-			id: input.condominiumHumanReadableId,
-			safeSearch: true,
-		});
+		const condominium = await this.condominiumRepoGetByHumanReadableId.exec(
+			{
+				id: input.condominiumHumanReadableId,
+				safeSearch: true,
+			},
+		);
 		const request = new CondominiumRequest({
 			userId: input.userId,
 			uniqueRegistryId: input.uniqueRegistryId,
@@ -30,6 +32,6 @@ export class MakeCondominiumRequestService implements IService {
 			condominiumId: condominium.id.value,
 		});
 
-		await this.condominiumRequestRepo.create({ request, condominium });
+		await this.condominiumRequestRepoCreate.exec({ request, condominium });
 	}
 }

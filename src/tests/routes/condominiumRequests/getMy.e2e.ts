@@ -4,13 +4,13 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import request from 'supertest';
-import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { UserWriteOps } from '@app/repositories/user/write';
 import { GenTFAService } from '@app/services/login/genTFA.service';
 import { KeysEnum } from '@app/repositories/key';
 
 describe('Get my condominium request', () => {
 	let app: INestApplication;
-	let userRepo: UserRepoWriteOps;
+	let createUserRepo: UserWriteOps.Create;
 	let genTFA: GenTFAService;
 
 	const endpoints = {
@@ -25,7 +25,7 @@ describe('Get my condominium request', () => {
 
 	beforeAll(async () => {
 		app = await startApplication();
-		userRepo = app.get(UserRepoWriteOps);
+		createUserRepo = app.get(UserWriteOps.Create);
 		genTFA = app.get(GenTFAService);
 	});
 
@@ -33,7 +33,7 @@ describe('Get my condominium request', () => {
 		const condominium = condominiumFactory();
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
-		await userRepo.create({ user, uniqueRegistry });
+		await createUserRepo.exec({ user, uniqueRegistry });
 
 		const { code } = await genTFA.exec({
 			existentUserContent: { uniqueRegistry, user },

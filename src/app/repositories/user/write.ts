@@ -21,10 +21,18 @@ export namespace UserRepoWriteOpsInterfaces {
 	}
 }
 
-export abstract class UserRepoWriteOps {
-	abstract create(
-		input: UserRepoWriteOpsInterfaces.create,
-	): Promise<UserRepoWriteOpsInterfaces.createReturn>;
-	abstract delete(input: UserRepoWriteOpsInterfaces.remove): Promise<void>;
-	abstract update(input: UserRepoWriteOpsInterfaces.update): Promise<void>;
+export namespace UserWriteOps {
+	export abstract class Create {
+		abstract exec(
+			input: UserRepoWriteOpsInterfaces.create,
+		): Promise<UserRepoWriteOpsInterfaces.createReturn>;
+	}
+
+	export abstract class Delete {
+		abstract exec(input: UserRepoWriteOpsInterfaces.remove): Promise<void>;
+	}
+
+	export abstract class Update {
+		abstract exec(input: UserRepoWriteOpsInterfaces.update): Promise<void>;
+	}
 }

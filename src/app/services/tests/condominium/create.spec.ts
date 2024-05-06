@@ -1,23 +1,20 @@
 import { CreateCondominiumService } from '../../condominium/create.service';
 import { condominiumFactory } from '@tests/factories/condominium';
-import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
+import { InMemoryCondominiumCreate } from '@tests/inMemoryDatabase/condominium/write/create';
 import { CepGatewaySpy } from '@tests/gateways/CEP.gateway';
-import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
 import { userFactory } from '@tests/factories/user';
 
 describe('Create condominium service test', () => {
 	let sut: CreateCondominiumService;
 
-	let inMemoryContainer: InMemoryContainer;
-	let condominiumRepo: InMemoryCondominiumWriteOps;
+	let createCondominiumRepo: InMemoryCondominiumCreate;
 	let cepGateway: CepGatewaySpy;
 
 	beforeEach(() => {
-		inMemoryContainer = new InMemoryContainer();
-		condominiumRepo = new InMemoryCondominiumWriteOps(inMemoryContainer);
+		createCondominiumRepo = new InMemoryCondominiumCreate();
 		cepGateway = new CepGatewaySpy();
 
-		sut = new CreateCondominiumService(condominiumRepo, cepGateway);
+		sut = new CreateCondominiumService(createCondominiumRepo, cepGateway);
 	});
 
 	it('should be able to create a condominium', async () => {
@@ -38,6 +35,6 @@ describe('Create condominium service test', () => {
 		});
 
 		expect(cepGateway.calls.check).toEqual(1);
-		expect(condominiumRepo.calls.create).toEqual(1);
+		expect(createCondominiumRepo.calls.exec).toEqual(1);
 	});
 });

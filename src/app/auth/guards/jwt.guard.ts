@@ -5,12 +5,12 @@ import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
-import { UserRepoReadOps } from '@app/repositories/user/read';
+import { UserReadOps } from '@app/repositories/user/read';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
 	constructor(
-		private readonly userRepo: UserRepoReadOps,
+		private readonly readUserRepo: UserReadOps.Read,
 		private readonly validateToken: ValidateTokenService,
 	) {}
 
@@ -31,8 +31,8 @@ export class JwtGuard implements CanActivate {
 
 		const tokenData = (await this.checkToken(token)) as IAccessTokenBody;
 
-		const userContent = await this.userRepo
-			.find({
+		const userContent = await this.readUserRepo
+			.exec({
 				key: new UUID(tokenData.sub),
 				safeSearch: true,
 			})

@@ -4,14 +4,14 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTFAService } from '@app/services/login/validateTFA.service';
-import { UserRepoReadOps } from '@app/repositories/user/read';
+import { UserReadOps } from '@app/repositories/user/read';
 import { Reflector } from '@nestjs/core';
 import { guardMetadataValues } from './_metadata';
 
 @Injectable()
 export class CheckTFACodeGuard implements CanActivate {
 	constructor(
-		private readonly userRepo: UserRepoReadOps,
+		private readonly readUserRepo: UserReadOps.Read,
 		private readonly validateTFA: ValidateTFAService,
 		private readonly reflector: Reflector,
 	) {}
@@ -47,8 +47,8 @@ export class CheckTFACodeGuard implements CanActivate {
 				message: 'Código de dois fatores não contém o campo "sub"',
 			});
 
-		const userContent = await this.userRepo
-			.find({
+		const userContent = await this.readUserRepo
+			.exec({
 				key: new Email(decodedData.sub),
 				safeSearch: true,
 			})
