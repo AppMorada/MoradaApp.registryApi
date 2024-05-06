@@ -16,6 +16,7 @@ export function condominiumFactory(input: TOverride = {}, id?: string) {
 			state: 'Some state',
 			reference: 'Some reference',
 			complement: 'Some complement',
+			humanReadableId: 'NNNNNN',
 			...input,
 		},
 		id,

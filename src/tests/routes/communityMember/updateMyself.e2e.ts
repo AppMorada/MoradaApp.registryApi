@@ -8,11 +8,11 @@ import { communityInfosFactory } from '@tests/factories/communityInfos';
 import { KeysEnum } from '@app/repositories/key';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 import { GenTFAService } from '@app/services/login/genTFA.service';
-import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { UserWriteOps } from '@app/repositories/user/write';
 
 describe('Update my community member data E2E', () => {
 	let app: INestApplication;
-	let userRepo: UserRepoWriteOps;
+	let createUserRepo: UserWriteOps.Create;
 	let genTFA: GenTFAService;
 	let genTokens: CreateTokenService;
 
@@ -32,7 +32,7 @@ describe('Update my community member data E2E', () => {
 
 	beforeAll(async () => {
 		app = await startApplication();
-		userRepo = app.get(UserRepoWriteOps);
+		createUserRepo = app.get(UserWriteOps.Create);
 		genTFA = app.get(GenTFAService);
 		genTokens = app.get(CreateTokenService);
 	});
@@ -41,7 +41,7 @@ describe('Update my community member data E2E', () => {
 		const condominium = condominiumFactory();
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
-		await userRepo.create({ user, uniqueRegistry });
+		await createUserRepo.exec({ user, uniqueRegistry });
 
 		const { code } = await genTFA.exec({
 			existentUserContent: { user, uniqueRegistry },

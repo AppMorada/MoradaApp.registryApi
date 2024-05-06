@@ -2,23 +2,19 @@ import { UUID } from '@app/entities/VO';
 import { CreateEmployeeUserService } from '@app/services/members/employee/create.service';
 import { CryptSpy } from '@tests/adapters/cryptSpy';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryEmployeeMembersWriteOps } from '@tests/inMemoryDatabase/employeeMember/write';
-import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
+import { InMemoryEmployeeMembersCreate } from '@tests/inMemoryDatabase/employeeMember/write/create';
 
 describe('Get employee member by user id', () => {
-	let container: InMemoryContainer;
-	let memberRepo: InMemoryEmployeeMembersWriteOps;
-
+	let createMemberRepo: InMemoryEmployeeMembersCreate;
 	let crypyAdapter: CryptSpy;
 
 	let sut: CreateEmployeeUserService;
 
 	beforeEach(() => {
-		container = new InMemoryContainer();
-		memberRepo = new InMemoryEmployeeMembersWriteOps(container);
+		createMemberRepo = new InMemoryEmployeeMembersCreate();
 		crypyAdapter = new CryptSpy();
 
-		sut = new CreateEmployeeUserService(crypyAdapter, memberRepo);
+		sut = new CreateEmployeeUserService(crypyAdapter, createMemberRepo);
 	});
 
 	it('should be able to get a member', async () => {
@@ -31,10 +27,7 @@ describe('Get employee member by user id', () => {
 				email: 'johndoe@email.com',
 			},
 		});
-		expect(memberRepo.calls.create === 1).toEqual(true);
-
-		user.uniqueRegistryId = memberRepo.users[0]!.uniqueRegistryId;
-		expect(memberRepo.users[0].equalTo(user)).toBe(true);
+		expect(createMemberRepo.calls.exec).toEqual(1);
 		expect(crypyAdapter.calls.hash === 1).toEqual(true);
 	});
 });

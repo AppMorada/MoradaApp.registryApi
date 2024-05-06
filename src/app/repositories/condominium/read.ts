@@ -27,23 +27,29 @@ export namespace CondominiumReadOpsInterfaces {
 	}
 }
 
-export abstract class CondominiumRepoReadOps {
-	abstract find(
-		input: CondominiumReadOpsInterfaces.safeSearch,
-	): Promise<Condominium>;
+export namespace CondominiumReadOps {
+	export abstract class GetByHumanReadableId {
+		abstract exec(
+			input: CondominiumReadOpsInterfaces.getByHumanReadableIdAsSafeSearch,
+		): Promise<Condominium>;
+		abstract exec(
+			input: CondominiumReadOpsInterfaces.getByHumanReadableId,
+		): Promise<Condominium | undefined>;
+	}
 
-	abstract find(
-		input: CondominiumReadOpsInterfaces.search,
-	): Promise<Condominium | undefined>;
+	export abstract class GetByOwnerId {
+		abstract exec(
+			input: CondominiumReadOpsInterfaces.getCondominiumsByOwnerId,
+		): Promise<TCondominiumInObject[]>;
+	}
 
-	abstract getByHumanReadableId(
-		input: CondominiumReadOpsInterfaces.getByHumanReadableIdAsSafeSearch,
-	): Promise<Condominium>;
-	abstract getByHumanReadableId(
-		input: CondominiumReadOpsInterfaces.getByHumanReadableId,
-	): Promise<Condominium | undefined>;
+	export abstract class Search {
+		abstract exec(
+			input: CondominiumReadOpsInterfaces.safeSearch,
+		): Promise<Condominium>;
 
-	abstract getCondominiumsByOwnerId(
-		input: CondominiumReadOpsInterfaces.getCondominiumsByOwnerId,
-	): Promise<TCondominiumInObject[]>;
+		abstract exec(
+			input: CondominiumReadOpsInterfaces.search,
+		): Promise<Condominium | undefined>;
+	}
 }

@@ -4,13 +4,13 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
-import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { UserWriteOps } from '@app/repositories/user/write';
 import { GenTFAService } from '@app/services/login/genTFA.service';
 import { KeysEnum } from '@app/repositories/key';
 
 describe('Create condominium E2E', () => {
 	let app: INestApplication;
-	let userRepo: UserRepoWriteOps;
+	let createUserRepo: UserWriteOps.Create;
 	let genTFA: GenTFAService;
 
 	const endpoints = {
@@ -20,7 +20,7 @@ describe('Create condominium E2E', () => {
 
 	beforeAll(async () => {
 		app = await startApplication();
-		userRepo = app.get(UserRepoWriteOps);
+		createUserRepo = app.get(UserWriteOps.Create);
 		genTFA = app.get(GenTFAService);
 	});
 
@@ -31,7 +31,7 @@ describe('Create condominium E2E', () => {
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
 
-		await userRepo.create({ user, uniqueRegistry });
+		await createUserRepo.exec({ user, uniqueRegistry });
 		const { code } = await genTFA.exec({
 			existentUserContent: { user, uniqueRegistry },
 			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
@@ -94,7 +94,7 @@ describe('Create condominium E2E', () => {
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
 
-		await userRepo.create({ user, uniqueRegistry });
+		await createUserRepo.exec({ user, uniqueRegistry });
 		const { code } = await genTFA.exec({
 			existentUserContent: { user, uniqueRegistry },
 			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,
@@ -125,7 +125,7 @@ describe('Create condominium E2E', () => {
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
 
-		await userRepo.create({ user, uniqueRegistry });
+		await createUserRepo.exec({ user, uniqueRegistry });
 		const { code } = await genTFA.exec({
 			existentUserContent: { user, uniqueRegistry },
 			keyName: KeysEnum.CONDOMINIUM_VALIDATION_KEY,

@@ -17,11 +17,13 @@ export namespace UserRepoReadOpsInterfaces {
 	}
 }
 
-export abstract class UserRepoReadOps {
-	abstract find(
-		input: UserRepoReadOpsInterfaces.search,
-	): Promise<UserRepoReadOpsInterfaces.searchReturnableData | undefined>;
-	abstract find(
-		input: UserRepoReadOpsInterfaces.safeSearch,
-	): Promise<UserRepoReadOpsInterfaces.searchReturnableData>;
+export namespace UserReadOps {
+	export abstract class Read {
+		abstract exec(
+			input: UserRepoReadOpsInterfaces.search,
+		): Promise<UserRepoReadOpsInterfaces.searchReturnableData | undefined>;
+		abstract exec(
+			input: UserRepoReadOpsInterfaces.safeSearch,
+		): Promise<UserRepoReadOpsInterfaces.searchReturnableData>;
+	}
 }

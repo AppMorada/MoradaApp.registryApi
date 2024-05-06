@@ -7,14 +7,14 @@ import { Email } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
 import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
-import { UserRepoReadOps } from '@app/repositories/user/read';
+import { UserReadOps } from '@app/repositories/user/read';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
 	constructor(
 		private readonly cookieAdapter: CookieAdapter,
 		private readonly validateToken: ValidateTokenService,
-		private readonly userRepo: UserRepoReadOps,
+		private readonly readUserRepo: UserReadOps.Read,
 		private readonly getEnv: GetEnvService,
 	) {}
 
@@ -59,8 +59,8 @@ export class RefreshTokenGuard implements CanActivate {
 
 		const parsedToken = await this.checkCookie(token);
 		const data = await this.checkToken(parsedToken);
-		const userContent = await this.userRepo
-			.find({
+		const userContent = await this.readUserRepo
+			.exec({
 				key: new Email(data.email),
 				safeSearch: true,
 			})

@@ -25,14 +25,22 @@ export namespace EmployeeMemberRepoWriteOpsInterfaces {
 	}
 }
 
-export abstract class EmployeeMemberRepoWriteOps {
-	abstract create(
-		input: EmployeeMemberRepoWriteOpsInterfaces.create,
-	): Promise<void>;
-	abstract update(
-		input: EmployeeMemberRepoWriteOpsInterfaces.update,
-	): Promise<void>;
-	abstract remove(
-		input: EmployeeMemberRepoWriteOpsInterfaces.remove,
-	): Promise<void>;
+export namespace EmployeeMemberWriteOps {
+	export abstract class Create {
+		abstract exec(
+			input: EmployeeMemberRepoWriteOpsInterfaces.create,
+		): Promise<void>;
+	}
+
+	export abstract class Update {
+		abstract exec(
+			input: EmployeeMemberRepoWriteOpsInterfaces.update,
+		): Promise<void>;
+	}
+
+	export abstract class Remove {
+		abstract exec(
+			input: EmployeeMemberRepoWriteOpsInterfaces.remove,
+		): Promise<void>;
+	}
 }

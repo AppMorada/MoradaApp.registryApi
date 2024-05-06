@@ -1,54 +1,22 @@
+import { UUID } from '@app/entities/VO';
 import { RemoveEmployeeMemberService } from '@app/services/members/employee/removeMember.service';
-import { condominiumFactory } from '@tests/factories/condominium';
-import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
-import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
-import { userFactory } from '@tests/factories/user';
-import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
-import { InMemoryEmployeeMembersWriteOps } from '@tests/inMemoryDatabase/employeeMember/write';
-import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
+import { InMemoryEmployeeMembersRemove } from '@tests/inMemoryDatabase/employeeMember/write/delete';
 
 describe('Get employee member by user id', () => {
-	let container: InMemoryContainer;
-	let memberRepo: InMemoryEmployeeMembersWriteOps;
-	let condominiumRepo: InMemoryCondominiumWriteOps;
+	let removeMemberRepo: InMemoryEmployeeMembersRemove;
 
 	let sut: RemoveEmployeeMemberService;
 
 	beforeEach(() => {
-		container = new InMemoryContainer();
-		memberRepo = new InMemoryEmployeeMembersWriteOps(container);
-		condominiumRepo = new InMemoryCondominiumWriteOps(container);
-
-		sut = new RemoveEmployeeMemberService(memberRepo);
+		removeMemberRepo = new InMemoryEmployeeMembersRemove();
+		sut = new RemoveEmployeeMemberService(removeMemberRepo);
 	});
 
 	it('should be able to get a member', async () => {
-		const owner = userFactory();
-		const condominium = condominiumFactory({ ownerId: owner.id.value });
-		await condominiumRepo.create({ condominium, user: owner });
-
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		const member = condominiumMemberFactory({
-			userId: user.id.value,
-			condominiumId: condominium.id.value,
-			role: 1,
-		});
-
-		await memberRepo.create({
-			user,
-			member,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
-		});
-
 		await sut.exec({
-			userId: user.id.value,
-			condominiumId: condominium.id.value,
+			userId: UUID.genV4().value,
+			condominiumId: UUID.genV4().value,
 		});
-		expect(memberRepo.calls.remove === 1).toEqual(true);
-		expect(memberRepo.users.length === 0).toEqual(true);
+		expect(removeMemberRepo.calls.exec).toEqual(1);
 	});
 });

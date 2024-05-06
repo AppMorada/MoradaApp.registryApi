@@ -1,5 +1,5 @@
 import { UUID } from '@app/entities/VO';
-import { EmployeeMemberRepoReadOps } from '@app/repositories/employeeMember/read';
+import { EmployeeMemberReadOps } from '@app/repositories/employeeMember/read';
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
 
@@ -9,10 +9,12 @@ interface IProps {
 
 @Injectable()
 export class GetEmployeeMemberGroupByCondominiumIdService implements IService {
-	constructor(private readonly memberRepo: EmployeeMemberRepoReadOps) {}
+	constructor(
+		private readonly memberRepoGetGroupCondominiumId: EmployeeMemberReadOps.GetGroupByCondominiumId,
+	) {}
 
 	async exec(input: IProps) {
-		const data = await this.memberRepo.getGroupCondominiumId({
+		const data = await this.memberRepoGetGroupCondominiumId.exec({
 			condominiumId: new UUID(input.id),
 		});
 		return data;

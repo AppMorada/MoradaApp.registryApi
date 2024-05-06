@@ -35,8 +35,22 @@ export namespace CondominiumWriteOpsInterfaces {
 	}
 }
 
-export abstract class CondominiumRepoWriteOps {
-	abstract create(input: CondominiumWriteOpsInterfaces.create): Promise<void>;
-	abstract update(input: CondominiumWriteOpsInterfaces.update): Promise<void>;
-	abstract remove(input: CondominiumWriteOpsInterfaces.remove): Promise<void>;
+export namespace CondominiumWriteOps {
+	export abstract class Remove {
+		abstract exec(
+			input: CondominiumWriteOpsInterfaces.remove,
+		): Promise<void>;
+	}
+
+	export abstract class Create {
+		abstract exec(
+			input: CondominiumWriteOpsInterfaces.create,
+		): Promise<void>;
+	}
+
+	export abstract class Update {
+		abstract exec(
+			input: CondominiumWriteOpsInterfaces.update,
+		): Promise<void>;
+	}
 }

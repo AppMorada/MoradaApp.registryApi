@@ -1,8 +1,8 @@
 import { UUID } from '@app/entities/VO';
 import { ICondominiumMemberInObject } from '@app/mapper/condominiumMember';
 import { UserMapper } from '@app/mapper/user';
-import { CommunityMemberRepoReadOps } from '@app/repositories/communityMember/read';
-import { UserRepoReadOps } from '@app/repositories/user/read';
+import { CommunityMemberReadOps } from '@app/repositories/communityMember/read';
+import { UserReadOps } from '@app/repositories/user/read';
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
 
@@ -26,12 +26,12 @@ interface IProps {
 @Injectable()
 export class GetCommunityMemberByIdService implements IService {
 	constructor(
-		private readonly memberRepo: CommunityMemberRepoReadOps,
-		private readonly userRepo: UserRepoReadOps,
+		private readonly memberRepoGetById: CommunityMemberReadOps.GetById,
+		private readonly userRepoRead: UserReadOps.Read,
 	) {}
 
 	private async getUserData(userId: string) {
-		const { user } = await this.userRepo.find({
+		const { user } = await this.userRepoRead.exec({
 			key: new UUID(userId),
 			safeSearch: true,
 		});
@@ -44,7 +44,9 @@ export class GetCommunityMemberByIdService implements IService {
 		return userRef;
 	}
 	private async getMemberData(memberId: UUID, pruneSensitiveData?: boolean) {
-		const searchedData = await this.memberRepo.getById({ id: memberId });
+		const searchedData = await this.memberRepoGetById.exec({
+			id: memberId,
+		});
 		if (!searchedData) return null;
 		if (pruneSensitiveData) delete searchedData.uniqueRegistry.CPF;
 

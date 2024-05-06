@@ -3,7 +3,7 @@ import { Password } from '@app/entities/VO';
 import { User } from '@app/entities/user';
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
-import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { UserWriteOps } from '@app/repositories/user/write';
 import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 interface IProps {
@@ -14,7 +14,7 @@ interface IProps {
 @Injectable()
 export class CreateUserService implements IService {
 	constructor(
-		private readonly userRepo: UserRepoWriteOps,
+		private readonly userRepoCreate: UserWriteOps.Create,
 		private readonly crypt: CryptAdapter,
 	) {}
 
@@ -24,7 +24,7 @@ export class CreateUserService implements IService {
 		const userCopy = user.dereference();
 		userCopy.password = new Password(hashPass);
 
-		const result = await this.userRepo.create({
+		const result = await this.userRepoCreate.exec({
 			user: userCopy,
 			uniqueRegistry,
 		});

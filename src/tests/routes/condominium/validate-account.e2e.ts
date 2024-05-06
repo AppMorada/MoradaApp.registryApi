@@ -3,12 +3,12 @@ import { startApplication } from '../app';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
-import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { UserWriteOps } from '@app/repositories/user/write';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 
 describe('Validate condominium account E2E', () => {
 	let app: INestApplication;
-	let userRepo: UserRepoWriteOps;
+	let createUserRepo: UserWriteOps.Create;
 	let genTokens: CreateTokenService;
 
 	const endpoints = {
@@ -18,7 +18,7 @@ describe('Validate condominium account E2E', () => {
 
 	beforeAll(async () => {
 		app = await startApplication();
-		userRepo = app.get(UserRepoWriteOps);
+		createUserRepo = app.get(UserWriteOps.Create);
 		genTokens = app.get(CreateTokenService);
 	});
 
@@ -28,7 +28,7 @@ describe('Validate condominium account E2E', () => {
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
 
-		await userRepo.create({ user, uniqueRegistry });
+		await createUserRepo.exec({ user, uniqueRegistry });
 		const { accessToken } = await genTokens.exec({ user, uniqueRegistry });
 
 		const response = await request(app.getHttpServer())

@@ -1,7 +1,7 @@
 import { BcryptAdapter } from '@app/adapters/bcrypt/bcryptAdapter';
 import { CryptAdapter } from '@app/adapters/crypt';
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
+import { InMemoryUserRead } from '@tests/inMemoryDatabase/user/read';
 import { CheckTFACodeGuard } from '../checkTFACode.guard';
 import { userFactory } from '@tests/factories/user';
 import { generateStringCodeContentBasedOnUser } from '@utils/generateStringCodeContent';
@@ -22,13 +22,16 @@ jest.mock('nodemailer');
 
 describe('Check TFA Code guard test', () => {
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUserReadOps;
+	let readUserRepo: InMemoryUserRead;
 	let keyRepo: InMemoryKey;
 	let getKeyService: GetKeyService;
 	let cryptAdapter: CryptAdapter;
 	let validateTFAService: ValidateTFAService;
 
 	let checkTFACodeGuard: CheckTFACodeGuard;
+
+	const user = userFactory();
+	const uniqueRegistry = uniqueRegistryFactory();
 
 	async function genCode(
 		user: User,
@@ -60,7 +63,7 @@ describe('Check TFA Code guard test', () => {
 
 	beforeEach(async () => {
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUserReadOps(inMemoryContainer);
+		readUserRepo = new InMemoryUserRead();
 		keyRepo = new InMemoryKey(inMemoryContainer);
 
 		getKeyService = new GetKeyService(keyRepo);
@@ -73,7 +76,7 @@ describe('Check TFA Code guard test', () => {
 
 		const reflector = new Reflector();
 		checkTFACodeGuard = new CheckTFACodeGuard(
-			userRepo,
+			readUserRepo,
 			validateTFAService,
 			reflector,
 		);
@@ -88,14 +91,15 @@ describe('Check TFA Code guard test', () => {
 		});
 
 		await keyRepo.create(tfaKey);
+
+		InMemoryUserRead.prototype.exec = jest.fn(async () => {
+			++readUserRepo.calls.exec;
+			return { user, uniqueRegistry };
+		});
 	});
 
 	it('should be able to validate the CheckTFACodeGuard', async () => {
 		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
 
 		const key = await keyRepo.getSignature(KeysEnum.TFA_TOKEN_KEY);
 
@@ -113,7 +117,7 @@ describe('Check TFA Code guard test', () => {
 			checkTFACodeGuard.canActivate(context),
 		).resolves.toBeTruthy();
 
-		expect(userRepo.calls.find).toEqual(1);
+		expect(readUserRepo.calls.exec).toEqual(1);
 	});
 
 	it('should throw one error - invalid code', async () => {
@@ -125,16 +129,10 @@ describe('Check TFA Code guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.find).toEqual(0);
+		expect(readUserRepo.calls.exec).toEqual(0);
 	});
 
 	it('should throw one error - invalid code', async () => {
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
-
 		const context = createMockExecutionContext({
 			headers: {
 				authorization: `Bearer ${btoa(
@@ -152,6 +150,6 @@ describe('Check TFA Code guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.find).toEqual(0);
+		expect(readUserRepo.calls.exec).toEqual(0);
 	});
 });
