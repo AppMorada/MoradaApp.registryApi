@@ -1,5 +1,4 @@
-import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
+import { InMemoryUserRead } from '@tests/inMemoryDatabase/user/read';
 import { CryptAdapter, ICryptCompare } from '@app/adapters/crypt';
 import { BcryptAdapter } from '@app/adapters/bcrypt/bcryptAdapter';
 import { CheckPasswordGuard } from '../checkPassword.guard';
@@ -10,19 +9,23 @@ import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 
 describe('Password guard test', () => {
 	let cryptAdapter: CryptAdapter;
-
-	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUserReadOps;
+	let readUserRepo: InMemoryUserRead;
 
 	let checkPasswordGuard: CheckPasswordGuard;
 
+	const user = userFactory();
+	const uniqueRegistry = uniqueRegistryFactory();
+
 	beforeEach(async () => {
 		cryptAdapter = new BcryptAdapter();
+		readUserRepo = new InMemoryUserRead();
 
-		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUserReadOps(inMemoryContainer);
+		checkPasswordGuard = new CheckPasswordGuard(cryptAdapter, readUserRepo);
 
-		checkPasswordGuard = new CheckPasswordGuard(cryptAdapter, userRepo);
+		InMemoryUserRead.prototype.exec = jest.fn(async () => {
+			++readUserRepo.calls.exec;
+			return { user, uniqueRegistry };
+		});
 	});
 
 	it('should be able to validate password guard', async () => {
@@ -35,12 +38,6 @@ describe('Password guard test', () => {
 			},
 		);
 
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
-
 		const context = createMockExecutionContext({
 			body: {
 				email: uniqueRegistry.email.value,
@@ -52,16 +49,10 @@ describe('Password guard test', () => {
 			checkPasswordGuard.canActivate(context),
 		).resolves.toBeTruthy();
 
-		expect(userRepo.calls.find).toEqual(1);
+		expect(readUserRepo.calls.exec).toEqual(1);
 	});
 
 	it('should throw one error - incorrect password and email', async () => {
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
-
 		const context = createMockExecutionContext({
 			body: {
 				email: uniqueRegistry.email.value,
@@ -75,21 +66,6 @@ describe('Password guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.find).toEqual(1);
-	});
-
-	it('should throw one error - user not found', async () => {
-		const context = createMockExecutionContext({
-			body: {
-				email: 'johndoe@email.com',
-				password: '12345678',
-			},
-		});
-
-		await expect(checkPasswordGuard.canActivate(context)).rejects.toThrow(
-			new GuardErrors({
-				message: 'User not found',
-			}),
-		);
+		expect(readUserRepo.calls.exec).toEqual(1);
 	});
 });

@@ -11,7 +11,7 @@ import {
 	State,
 	UUID,
 } from '@app/entities/VO';
-import { CondominiumRepoWriteOps } from '@app/repositories/condominium/write';
+import { CondominiumWriteOps } from '@app/repositories/condominium/write';
 
 interface IProps {
 	id: string;
@@ -27,10 +27,12 @@ interface IProps {
 
 @Injectable()
 export class UpdateCondominiumService implements IService {
-	constructor(private readonly condominiumRepo: CondominiumRepoWriteOps) {}
+	constructor(
+		private readonly condominiumRepoUpdate: CondominiumWriteOps.Update,
+	) {}
 
 	async exec(input: IProps): Promise<void> {
-		return await this.condominiumRepo.update({
+		return await this.condominiumRepoUpdate.exec({
 			id: new UUID(input.id),
 			name: input.name ? new Name(input.name) : undefined,
 			CEP: input.CEP ? new CEP(input.CEP) : undefined,

@@ -1,5 +1,5 @@
 import { UUID } from '@app/entities/VO';
-import { CommunityMemberWriteOpsRepo } from '@app/repositories/communityMember/write';
+import { CommunityMemberWriteOps } from '@app/repositories/communityMember/write';
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
 
@@ -9,9 +9,11 @@ interface IProps {
 
 @Injectable()
 export class RemoveCommunityMemberService implements IService {
-	constructor(private readonly memberRepo: CommunityMemberWriteOpsRepo) {}
+	constructor(
+		private readonly memberRepoRemove: CommunityMemberWriteOps.Remove,
+	) {}
 
 	async exec(input: IProps) {
-		await this.memberRepo.remove({ id: new UUID(input.id) });
+		await this.memberRepoRemove.exec({ id: new UUID(input.id) });
 	}
 }

@@ -11,22 +11,22 @@ import { Request } from 'express';
 import { UUID } from '@app/entities/VO';
 import { KeysEnum } from '@app/repositories/key';
 import { ValidateTokenService } from '@app/services/login/validateToken.service';
-import { UserRepoReadOps } from '@app/repositories/user/read';
-import { CommunityMemberRepoReadOps } from '@app/repositories/communityMember/read';
-import { CondominiumRepoReadOps } from '@app/repositories/condominium/read';
+import { UserReadOps } from '@app/repositories/user/read';
+import { CommunityMemberReadOps } from '@app/repositories/communityMember/read';
+import { CondominiumReadOps } from '@app/repositories/condominium/read';
 
 @Injectable()
 export class CondominiumMemberGuard implements CanActivate {
 	constructor(
 		private readonly validateToken: ValidateTokenService,
-		private readonly userRepo: UserRepoReadOps,
-		private readonly condominiumMemberRepo: CommunityMemberRepoReadOps,
-		private readonly condominiumRepo: CondominiumRepoReadOps,
+		private readonly readUserRepo: UserReadOps.Read,
+		private readonly readCondominiumMemberRepo: CommunityMemberReadOps.GetByUserIdAndCondominiumId,
+		private readonly readCondominiumRepo: CondominiumReadOps.Search,
 	) {}
 
 	private async pushDatabaseContent(userId: string, condominiumId: string) {
-		const userContent = await this.userRepo
-			.find({
+		const userContent = await this.readUserRepo
+			.exec({
 				key: new UUID(userId),
 				safeSearch: true,
 			})
@@ -36,8 +36,8 @@ export class CondominiumMemberGuard implements CanActivate {
 				});
 			});
 
-		const condominium = await this.condominiumRepo
-			.find({
+		const condominium = await this.readCondominiumRepo
+			.exec({
 				key: new UUID(condominiumId),
 				safeSearch: true,
 			})
@@ -79,11 +79,10 @@ export class CondominiumMemberGuard implements CanActivate {
 			condominiumId,
 		);
 
-		const result =
-			await this.condominiumMemberRepo.getByUserAndCondominiumId({
-				userId: userContent.user.id,
-				condominiumId: new UUID(condominiumId),
-			});
+		const result = await this.readCondominiumMemberRepo.exec({
+			userId: userContent.user.id,
+			condominiumId: new UUID(condominiumId),
+		});
 
 		if (!result)
 			throw new GuardErrors({

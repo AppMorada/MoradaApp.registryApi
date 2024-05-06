@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IService } from '../_IService';
 import { UUID } from '@app/entities/VO';
-import { CondominiumRequestRepoReadOps } from '@app/repositories/condominiumRequest/read';
+import { CondominiumRequestReadOps } from '@app/repositories/condominiumRequest/read';
 
 interface IProps {
 	userId: string;
@@ -10,11 +10,11 @@ interface IProps {
 @Injectable()
 export class ShowAllUserCondominiumRequestsService implements IService {
 	constructor(
-		private readonly condominiumRequest: CondominiumRequestRepoReadOps,
+		private readonly condominiumRequestFindByUserId: CondominiumRequestReadOps.FindByUserId,
 	) {}
 
 	async exec(input: IProps) {
-		const result = await this.condominiumRequest.findByUserId({
+		const result = await this.condominiumRequestFindByUserId.exec({
 			id: new UUID(input.userId),
 		});
 

@@ -1,5 +1,5 @@
 import { ApartmentNumber, Block, UUID } from '@app/entities/VO';
-import { CommunityMemberWriteOpsRepo } from '@app/repositories/communityMember/write';
+import { CommunityMemberWriteOps } from '@app/repositories/communityMember/write';
 import { IService } from '@app/services/_IService';
 import { Injectable } from '@nestjs/common';
 
@@ -11,10 +11,12 @@ interface IProps {
 
 @Injectable()
 export class UpdateCommunityMemberService implements IService {
-	constructor(private readonly memberRepo: CommunityMemberWriteOpsRepo) {}
+	constructor(
+		private readonly memberRepoUpdate: CommunityMemberWriteOps.Update,
+	) {}
 
 	async exec(input: IProps) {
-		await this.memberRepo.update({
+		await this.memberRepoUpdate.exec({
 			id: new UUID(input.id),
 			apartmentNumber: input.apartmentNumber
 				? new ApartmentNumber(input.apartmentNumber)

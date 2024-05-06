@@ -1,5 +1,5 @@
 import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
+import { InMemoryUserRead } from '@tests/inMemoryDatabase/user/read';
 import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { CreateTokenService } from '@app/services/login/createToken.service';
@@ -33,15 +33,21 @@ describe('Refresh token guard test', () => {
 	let cookieAdapter: CookieAdapter;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUserReadOps;
+	let readUserRepo: InMemoryUserRead;
 	let keyRepo: InMemoryKey;
+
+	const uniqueRegistry = uniqueRegistryFactory();
+	const user = userFactory({
+		uniqueRegistryId: uniqueRegistry.id.value,
+	});
 
 	beforeEach(async () => {
 		cookieAdapter = new CookieParserAdapter();
 		loggerAdapter = new LoggerSpy();
 
+		readUserRepo = new InMemoryUserRead();
+
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUserReadOps(inMemoryContainer);
 		keyRepo = new InMemoryKey(inMemoryContainer);
 
 		jwtService = new JwtService();
@@ -56,7 +62,7 @@ describe('Refresh token guard test', () => {
 		refreshTokenGuard = new RefreshTokenGuard(
 			cookieAdapter,
 			validateTokenService,
-			userRepo,
+			readUserRepo,
 			getEnvService,
 		);
 
@@ -80,14 +86,14 @@ describe('Refresh token guard test', () => {
 
 		await keyRepo.create(accessTokenKey);
 		await keyRepo.create(refreshTokenKey);
+
+		InMemoryUserRead.prototype.exec = jest.fn(async () => {
+			++readUserRepo.calls.exec;
+			return { user, uniqueRegistry };
+		});
 	});
 
 	it('should be able to validate refresh token guard', async () => {
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		userRepo.uniqueRegistries.push(uniqueRegistry);
-		userRepo.users.push(user);
-
 		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
@@ -100,13 +106,10 @@ describe('Refresh token guard test', () => {
 			refreshTokenGuard.canActivate(context),
 		).resolves.toBeTruthy();
 
-		expect(userRepo.calls.find).toEqual(1);
+		expect(readUserRepo.calls.exec).toEqual(1);
 	});
 
 	it('should throw one error - wrong cookie', async () => {
-		const user = userFactory();
-		userRepo.users.push(user);
-
 		const context = createMockExecutionContext({
 			headers: {
 				cookie: 'refresh-token=wrongcookie',
@@ -119,7 +122,7 @@ describe('Refresh token guard test', () => {
 				tag: ServiceErrorsTags.unauthorized,
 			}),
 		);
-		expect(userRepo.calls.find).toEqual(0);
+		expect(readUserRepo.calls.exec).toEqual(0);
 	});
 
 	it('should throw one error - should provide cookies', async () => {
@@ -133,6 +136,6 @@ describe('Refresh token guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.find).toEqual(0);
+		expect(readUserRepo.calls.exec).toEqual(0);
 	});
 });

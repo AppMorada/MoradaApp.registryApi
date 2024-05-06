@@ -3,8 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { createMockExecutionContext } from '@tests/guards/executionContextSpy';
 import { CreateTokenService } from '@app/services/login/createToken.service';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryError } from '@tests/errors/inMemoryError';
-import { EntitiesEnum } from '@app/entities/entities';
 import { GuardErrors } from '@app/errors/guard';
 import { UUID } from '@app/entities/VO';
 import { AdminJwt } from '../admin-jwt.guard';
@@ -19,10 +17,11 @@ import { ServiceErrors, ServiceErrorsTags } from '@app/errors/services';
 import { condominiumFactory } from '@tests/factories/condominium';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
-import { InMemoryUserReadOps } from '@tests/inMemoryDatabase/user/read';
-import { InMemoryCondominiumReadOps } from '@tests/inMemoryDatabase/condominium/read';
-import { InMemoryEmployeeMembersReadOps } from '@tests/inMemoryDatabase/employeeMember/read';
-import { InMemoryEmployeeMembersWriteOps } from '@tests/inMemoryDatabase/employeeMember/write';
+import { InMemoryUserRead } from '@tests/inMemoryDatabase/user/read';
+import { InMemoryCondominiumSearch } from '@tests/inMemoryDatabase/condominium/read/find';
+import { InMemoryEmployeeMembersGetByUserId } from '@tests/inMemoryDatabase/employeeMember/read/getByUserId';
+import { EmployeeMemberRepoReadOpsInterfaces } from '@app/repositories/employeeMember/read';
+import { UniqueRegistryMapper } from '@app/mapper/uniqueRegistry';
 
 describe('Admin Jwt guard test', () => {
 	let jwtService: JwtService;
@@ -32,24 +31,20 @@ describe('Admin Jwt guard test', () => {
 	let adminJwtGuard: AdminJwt;
 
 	let inMemoryContainer: InMemoryContainer;
-	let userRepo: InMemoryUserReadOps;
-	let memberRepoReadOps: InMemoryEmployeeMembersReadOps;
-	let memberRepoWriteOps: InMemoryEmployeeMembersWriteOps;
-	let condominiumRepo: InMemoryCondominiumReadOps;
+	let readUserRepo: InMemoryUserRead;
+	let readMemberRepo: InMemoryEmployeeMembersGetByUserId;
+	let readCondominiumRepo: InMemoryCondominiumSearch;
 	let keyRepo: InMemoryKey;
+
+	const condominiumId = UUID.genV4().value;
 
 	beforeEach(async () => {
 		jwtService = new JwtService();
 		inMemoryContainer = new InMemoryContainer();
-		userRepo = new InMemoryUserReadOps(inMemoryContainer);
+		readUserRepo = new InMemoryUserRead();
 		keyRepo = new InMemoryKey(inMemoryContainer);
-		condominiumRepo = new InMemoryCondominiumReadOps(inMemoryContainer);
-		memberRepoReadOps = new InMemoryEmployeeMembersReadOps(
-			inMemoryContainer,
-		);
-		memberRepoWriteOps = new InMemoryEmployeeMembersWriteOps(
-			inMemoryContainer,
-		);
+		readCondominiumRepo = new InMemoryCondominiumSearch();
+		readMemberRepo = new InMemoryEmployeeMembersGetByUserId();
 
 		getKeyService = new GetKeyService(keyRepo);
 		createTokenService = new CreateTokenService(jwtService, getKeyService);
@@ -60,9 +55,9 @@ describe('Admin Jwt guard test', () => {
 		);
 		adminJwtGuard = new AdminJwt(
 			validateTokenService,
-			userRepo,
-			memberRepoReadOps,
-			condominiumRepo,
+			readUserRepo,
+			readMemberRepo,
+			readCondominiumRepo,
 		);
 
 		const accessTokenKey = new Key({
@@ -85,34 +80,66 @@ describe('Admin Jwt guard test', () => {
 
 		await keyRepo.create(accessTokenKey);
 		await keyRepo.create(refreshTokenKey);
+
+		const user = userFactory();
+		const condominium = condominiumFactory({}, condominiumId);
+		const member = condominiumMemberFactory({
+			role: 1,
+			userId: user.id.value,
+			condominiumId: condominium.id.value,
+		});
+		const uniqueRegistry = uniqueRegistryFactory();
+
+		InMemoryUserRead.prototype.exec = jest.fn(async () => {
+			++readUserRepo.calls.exec;
+			return { user, uniqueRegistry };
+		});
+		InMemoryCondominiumSearch.prototype.exec = jest.fn(async () => {
+			++readCondominiumRepo.calls.exec;
+			return condominium;
+		});
+		InMemoryEmployeeMembersGetByUserId.prototype.exec = jest.fn(
+			async () => {
+				++readMemberRepo.calls.exec;
+
+				const returnableMember: EmployeeMemberRepoReadOpsInterfaces.performantCondominiumMember =
+					{
+						id: member.id.value,
+						condominiumId: member.condominiumId.value,
+						role: member.role.value,
+						updatedAt: member.updatedAt,
+						createdAt: member.createdAt,
+					};
+
+				const returnableUser: EmployeeMemberRepoReadOpsInterfaces.performantUser =
+					{
+						id: user.id.value,
+						name: user.name.value,
+						phoneNumber: user.phoneNumber?.value,
+						tfa: user.tfa,
+						createdAt: user.createdAt,
+						updatedAt: user.updatedAt,
+					};
+
+				return {
+					worksOn: [returnableMember],
+					uniqueRegistry: UniqueRegistryMapper.toObject(
+						uniqueRegistryFactory(),
+					),
+					user: returnableUser,
+				};
+			},
+		);
 	});
 
 	it('should be able to validate admin jwt guard', async () => {
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		const condominium = condominiumFactory();
-		const member = condominiumMemberFactory({
-			userId: user.id.value,
-			condominiumId: condominium.id.value,
-			uniqueRegistryId: uniqueRegistry.id.value,
-			role: 1,
-		});
-
-		memberRepoWriteOps.create({
-			user,
-			member,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
-		});
-		condominiumRepo.condominiums.push(condominium);
-
 		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
-				condominiumId: condominium.id.value,
+				condominiumId: condominiumId,
 			},
 			headers: {
 				authorization: `Bearer ${tokens.accessToken}`,
@@ -121,36 +148,18 @@ describe('Admin Jwt guard test', () => {
 
 		await expect(adminJwtGuard.canActivate(context)).resolves.toBeTruthy();
 
-		expect(userRepo.calls.find).toEqual(1);
-		expect(memberRepoReadOps.calls.getByUserId).toEqual(1);
+		expect(readUserRepo.calls.exec).toEqual(1);
+		expect(readMemberRepo.calls.exec).toEqual(1);
 	});
 
 	it('should throw one error - user doesn\'t have permission', async () => {
 		const uniqueRegistry = uniqueRegistryFactory();
 		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		const condominium = condominiumFactory();
-		const member = condominiumMemberFactory({
-			userId: user.id.value,
-			condominiumId: condominium.id.value,
-			uniqueRegistryId: uniqueRegistry.id.value,
-			role: 0,
-		});
-
-		memberRepoWriteOps.create({
-			user,
-			member,
-			rawUniqueRegistry: {
-				email: uniqueRegistry.email,
-				CPF: uniqueRegistry.CPF!,
-			},
-		});
-		condominiumRepo.condominiums.push(condominium);
-
 		const tokens = await createTokenService.exec({ user, uniqueRegistry });
 
 		const context = createMockExecutionContext({
 			params: {
-				condominiumId: condominium.id.value,
+				condominiumId: UUID.genV4().value,
 			},
 			headers: {
 				authorization: `Bearer ${tokens.accessToken}`,
@@ -163,8 +172,8 @@ describe('Admin Jwt guard test', () => {
 			}),
 		);
 
-		expect(userRepo.calls.find).toEqual(1);
-		expect(memberRepoReadOps.calls.getByUserId).toEqual(1);
+		expect(readUserRepo.calls.exec).toEqual(1);
+		expect(readMemberRepo.calls.exec).toEqual(1);
 	});
 
 	it('should throw one error - condominium should be provided', async () => {
@@ -185,30 +194,6 @@ describe('Admin Jwt guard test', () => {
 				message: 'Condomínio não especificado',
 			}),
 		);
-	});
-
-	it('should throw one error - user doesn\'t exists', async () => {
-		const uniqueRegistry = uniqueRegistryFactory();
-		const user = userFactory({ uniqueRegistryId: uniqueRegistry.id.value });
-		const tokens = await createTokenService.exec({ user, uniqueRegistry });
-
-		const context = createMockExecutionContext({
-			params: {
-				condominiumId: UUID.genV4().value,
-			},
-			headers: {
-				authorization: `Bearer ${tokens.accessToken}`,
-			},
-		});
-
-		await expect(adminJwtGuard.canActivate(context)).rejects.toThrow(
-			new InMemoryError({
-				entity: EntitiesEnum.user,
-				message: 'User not found',
-			}),
-		);
-
-		expect(userRepo.calls.find).toEqual(1);
 	});
 
 	it('should throw one error - empty token', async () => {

@@ -19,15 +19,21 @@ export namespace CondominiumRequestRepoReadOpsInterfaces {
 	}
 }
 
-export abstract class CondominiumRequestRepoReadOps {
-	abstract findByUserId(
-		input: CondominiumRequestRepoReadOpsInterfaces.search,
-	): Promise<
-		CondominiumRequestRepoReadOpsInterfaces.findByUserIdResult | undefined
-	>;
-	abstract findByCondominiumId(
-		input: CondominiumRequestRepoReadOpsInterfaces.search,
-	): Promise<
-		CondominiumRequestRepoReadOpsInterfaces.findByCondominiumIdResult[]
-	>;
+export namespace CondominiumRequestReadOps {
+	export abstract class FindByUserId {
+		abstract exec(
+			input: CondominiumRequestRepoReadOpsInterfaces.search,
+		): Promise<
+			| CondominiumRequestRepoReadOpsInterfaces.findByUserIdResult
+			| undefined
+		>;
+	}
+
+	export abstract class FindByCondominiumId {
+		abstract exec(
+			input: CondominiumRequestRepoReadOpsInterfaces.search,
+		): Promise<
+			CondominiumRequestRepoReadOpsInterfaces.findByCondominiumIdResult[]
+		>;
+	}
 }

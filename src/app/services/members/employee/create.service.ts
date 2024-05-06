@@ -3,7 +3,7 @@ import { CPF, Email, Password } from '@app/entities/VO';
 import { User } from '@app/entities/user';
 import { Injectable } from '@nestjs/common';
 import { IService } from '../../_IService';
-import { EmployeeMemberRepoWriteOps } from '@app/repositories/employeeMember/write';
+import { EmployeeMemberWriteOps } from '@app/repositories/employeeMember/write';
 import { CondominiumMember } from '@app/entities/condominiumMember';
 
 interface IProps {
@@ -19,7 +19,7 @@ interface IProps {
 export class CreateEmployeeUserService implements IService {
 	constructor(
 		private readonly crypt: CryptAdapter,
-		private readonly enterpriseMemberRepo: EmployeeMemberRepoWriteOps,
+		private readonly enterpriseMemberRepoCreate: EmployeeMemberWriteOps.Create,
 	) {}
 
 	async exec({ user, condominiumId, flatAndRawUniqueRegistry }: IProps) {
@@ -34,7 +34,7 @@ export class CreateEmployeeUserService implements IService {
 			role: 1,
 		});
 
-		await this.enterpriseMemberRepo.create({
+		await this.enterpriseMemberRepoCreate.exec({
 			member,
 			user: userCopy,
 			rawUniqueRegistry: {

@@ -4,16 +4,16 @@ import { condominiumFactory } from '@tests/factories/condominium';
 import request from 'supertest';
 import { userFactory } from '@tests/factories/user';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
-import { CommunityMemberWriteOpsRepo } from '@app/repositories/communityMember/write';
+import { CommunityMemberWriteOps } from '@app/repositories/communityMember/write';
 import { condominiumMemberFactory } from '@tests/factories/condominiumMember';
 import { communityInfosFactory } from '@tests/factories/communityInfos';
-import { UserRepoWriteOps } from '@app/repositories/user/write';
+import { UserWriteOps } from '@app/repositories/user/write';
 import { GenTFAService } from '@app/services/login/genTFA.service';
 import { KeysEnum } from '@app/repositories/key';
 
 describe('Get user with enterprise member section E2E', () => {
 	let app: INestApplication;
-	let userRepo: UserRepoWriteOps;
+	let createUserRepo: UserWriteOps.Create;
 	let genTFA: GenTFAService;
 
 	const endpoints = {
@@ -23,12 +23,12 @@ describe('Get user with enterprise member section E2E', () => {
 	};
 
 	let condominiumInfos: any;
-	let memberRepo: CommunityMemberWriteOpsRepo;
+	let createManyMemberRepo: CommunityMemberWriteOps.CreateMany;
 
 	beforeAll(async () => {
 		app = await startApplication();
-		memberRepo = app.get(CommunityMemberWriteOpsRepo);
-		userRepo = app.get(UserRepoWriteOps);
+		createManyMemberRepo = app.get(CommunityMemberWriteOps.CreateMany);
+		createUserRepo = app.get(UserWriteOps.Create);
 		genTFA = app.get(GenTFAService);
 	});
 
@@ -36,7 +36,7 @@ describe('Get user with enterprise member section E2E', () => {
 		const condominium = condominiumFactory();
 		const user = userFactory();
 		const uniqueRegistry = uniqueRegistryFactory();
-		await userRepo.create({ user, uniqueRegistry });
+		await createUserRepo.exec({ user, uniqueRegistry });
 
 		const { code } = await genTFA.exec({
 			existentUserContent: { uniqueRegistry, user },
@@ -80,7 +80,7 @@ describe('Get user with enterprise member section E2E', () => {
 			memberId: member.id.value,
 		});
 
-		await memberRepo.createMany({
+		await createManyMemberRepo.exec({
 			members: [
 				{
 					content: member,

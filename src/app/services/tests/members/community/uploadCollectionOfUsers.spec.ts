@@ -2,23 +2,23 @@ import { SendInviteService } from '@app/services/invites/sendInvite.service';
 import { UploadCollectionOfMembersService } from '@app/services/members/community/uploadCollectionOfUsers';
 import { condominiumFactory } from '@tests/factories/condominium';
 import { userFactory } from '@tests/factories/user';
-import { InMemoryCommunityMembersWriteOps } from '@tests/inMemoryDatabase/communityMember/write';
-import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
+import { InMemoryCommunityMembersCreateMany } from '@tests/inMemoryDatabase/communityMember/write/createMany';
 import { SendInviteServiceSpy } from '@tests/services/genInviteService';
 
 describe('Upload collection of users', () => {
-	let container: InMemoryContainer;
-	let memberRepo: InMemoryCommunityMembersWriteOps;
+	let createManyMemberRepo: InMemoryCommunityMembersCreateMany;
 	let genInvite: SendInviteService;
 
 	let sut: UploadCollectionOfMembersService;
 
 	beforeEach(() => {
-		container = new InMemoryContainer();
-		memberRepo = new InMemoryCommunityMembersWriteOps(container);
+		createManyMemberRepo = new InMemoryCommunityMembersCreateMany();
 		genInvite = new SendInviteServiceSpy() as unknown as SendInviteService;
 
-		sut = new UploadCollectionOfMembersService(memberRepo, genInvite);
+		sut = new UploadCollectionOfMembersService(
+			createManyMemberRepo,
+			genInvite,
+		);
 	});
 
 	it('should be able to upload new collection of users', async () => {
@@ -39,6 +39,6 @@ describe('Upload collection of users', () => {
 		];
 
 		await sut.exec({ condominium, user: author, members });
-		expect(memberRepo.calls.createMany === 1).toEqual(true);
+		expect(createManyMemberRepo.calls.exec).toEqual(1);
 	});
 });

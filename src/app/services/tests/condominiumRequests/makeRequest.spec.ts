@@ -1,58 +1,38 @@
-import { InMemoryContainer } from '@tests/inMemoryDatabase/inMemoryContainer';
-import { InMemoryCondominiumRequestWriteOps } from '@tests/inMemoryDatabase/condominiumRequest/write';
+import { InMemoryCondominiumRequestCreate } from '@tests/inMemoryDatabase/condominiumRequest/write/create';
 import { MakeCondominiumRequestService } from '@app/services/condominiumRequests/makeRequest';
-import { InMemoryCondominiumReadOps } from '@tests/inMemoryDatabase/condominium/read';
-import { InMemoryCondominiumWriteOps } from '@tests/inMemoryDatabase/condominium/write';
-import { InMemoryUserWriteOps } from '@tests/inMemoryDatabase/user/write';
+import { InMemoryCondominiumGetByHumanReadableId } from '@tests/inMemoryDatabase/condominium/read/getByHumanReadableId';
 import { condominiumFactory } from '@tests/factories/condominium';
-import { userFactory } from '@tests/factories/user';
-import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
+import { UUID } from '@app/entities/VO';
 
 describe('Create request test', () => {
 	let sut: MakeCondominiumRequestService;
-	let inMemoryContainer: InMemoryContainer;
-	let condominiumRequestRepoWriteOps: InMemoryCondominiumRequestWriteOps;
-	let condominiumRepoReadOps: InMemoryCondominiumReadOps;
-	let condominiumRepoWriteOps: InMemoryCondominiumWriteOps;
-	let userRepoWriteOps: InMemoryUserWriteOps;
+	let createCondominiumRequestRepo: InMemoryCondominiumRequestCreate;
+	let getCondominiumRepo: InMemoryCondominiumGetByHumanReadableId;
 
 	beforeEach(() => {
-		inMemoryContainer = new InMemoryContainer();
-		condominiumRepoWriteOps = new InMemoryCondominiumWriteOps(
-			inMemoryContainer,
-		);
-		userRepoWriteOps = new InMemoryUserWriteOps(inMemoryContainer);
-		condominiumRequestRepoWriteOps = new InMemoryCondominiumRequestWriteOps(
-			inMemoryContainer,
-		);
-		condominiumRepoReadOps = new InMemoryCondominiumReadOps(
-			inMemoryContainer,
-		);
+		createCondominiumRequestRepo = new InMemoryCondominiumRequestCreate();
+		getCondominiumRepo = new InMemoryCondominiumGetByHumanReadableId();
 		sut = new MakeCondominiumRequestService(
-			condominiumRequestRepoWriteOps,
-			condominiumRepoReadOps,
+			createCondominiumRequestRepo,
+			getCondominiumRepo,
 		);
 	});
 
 	it('should be able to create a condominium request', async () => {
-		const owner = userFactory();
-		const condominium = condominiumFactory({ ownerId: owner.id.value });
-		await condominiumRepoWriteOps.create({ condominium, user: owner });
+		const condominium = condominiumFactory();
 
-		const uniqueRegistry = uniqueRegistryFactory({
-			email: 'randomuser@email.com',
-		});
-		const user = userFactory();
-		await userRepoWriteOps.create({ user, uniqueRegistry });
-
+		InMemoryCondominiumGetByHumanReadableId.prototype.exec = jest.fn(
+			async () => {
+				++getCondominiumRepo.calls.exec;
+				return condominium;
+			},
+		);
 		await sut.exec({
-			userId: user.id.value,
-			uniqueRegistryId: uniqueRegistry.id.value,
+			userId: UUID.genV4().value,
+			uniqueRegistryId: UUID.genV4().value,
 			condominiumHumanReadableId: condominium.humanReadableId,
 		});
-		expect(condominiumRequestRepoWriteOps.calls.create).toEqual(1);
-		expect(condominiumRepoReadOps.calls.getCondominiumsByOwnerId).toEqual(
-			1,
-		);
+		expect(createCondominiumRequestRepo.calls.exec).toEqual(1);
+		expect(getCondominiumRepo.calls.exec).toEqual(1);
 	});
 });

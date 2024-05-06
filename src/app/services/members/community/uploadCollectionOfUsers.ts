@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IService } from '../../_IService';
 import { CondominiumMember } from '@app/entities/condominiumMember';
 import {
-	CommunityMemberWriteOpsRepo,
+	CommunityMemberWriteOps,
 	CommunityMemberRepoWriteOpsInterfaces,
 } from '@app/repositories/communityMember/write';
 import { Condominium } from '@app/entities/condominium';
@@ -31,7 +31,7 @@ interface IProps {
 @Injectable()
 export class UploadCollectionOfMembersService implements IService {
 	constructor(
-		private readonly condominiumMemberRepo: CommunityMemberWriteOpsRepo,
+		private readonly condominiumMemberRepoCreateMany: CommunityMemberWriteOps.CreateMany,
 		private readonly sendInvite: SendInviteService,
 	) {}
 
@@ -85,7 +85,7 @@ export class UploadCollectionOfMembersService implements IService {
 			);
 		}
 
-		await this.condominiumMemberRepo.createMany({ ...membersInfo });
+		await this.condominiumMemberRepoCreateMany.exec({ ...membersInfo });
 		for (const emailHandler of sendEmailForMember) {
 			await emailHandler();
 		}
