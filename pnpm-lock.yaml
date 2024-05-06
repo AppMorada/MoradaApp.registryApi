@@ -54,8 +54,8 @@ dependencies:
     specifier: ^0.49.1
     version: 0.49.1(@opentelemetry/api@1.8.0)
   '@opentelemetry/instrumentation-nestjs-core':
-    specifier: ^0.35.0
-    version: 0.35.0(@opentelemetry/api@1.8.0)
+    specifier: ^0.37.1
+    version: 0.37.1(@opentelemetry/api@1.8.0)
   '@opentelemetry/resources':
     specifier: ^1.22.0
     version: 1.22.0(@opentelemetry/api@1.8.0)
@@ -2911,14 +2911,14 @@ packages:
       - supports-color
     dev: false
 
-  /@opentelemetry/instrumentation-nestjs-core@0.35.0(@opentelemetry/api@1.8.0):
-    resolution: {integrity: sha512-INKA7CIOteTSRVxP7SQaFby11AYU3uezI93xDaDRGY4TloXNVoyw5n6UmcVJU4yDn6xY2r7zZ2SVHvblUc21/g==}
+  /@opentelemetry/instrumentation-nestjs-core@0.37.1(@opentelemetry/api@1.8.0):
+    resolution: {integrity: sha512-ebYQjHZEmGHWEALwwDGhSQVLBaurFnuLIkZD5igPXrt7ohfF4lc5/4al1LO+vKc0NHk8SJWStuRueT86ISA8Vg==}
     engines: {node: '>=14'}
     peerDependencies:
       '@opentelemetry/api': ^1.3.0
     dependencies:
       '@opentelemetry/api': 1.8.0
-      '@opentelemetry/instrumentation': 0.49.1(@opentelemetry/api@1.8.0)
+      '@opentelemetry/instrumentation': 0.51.0(@opentelemetry/api@1.8.0)
       '@opentelemetry/semantic-conventions': 1.22.0
     transitivePeerDependencies:
       - supports-color
@@ -8815,15 +8815,9 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /lru-cache@10.1.0:
-    resolution: {integrity: sha512-/1clY/ui8CzjKFyjdvwPWJUYKiFVXG2I2cY0ssG7h4+hwk+XOIX7ZSG9Q7TW8TW3Kp3BUSqgFWBLgL4PJ+Blag==}
-    engines: {node: 14 || >=16.14}
-    dev: true
-
   /lru-cache@10.2.2:
     resolution: {integrity: sha512-9hp3Vp2/hFQUiIwKo8XCeFVnrg8Pk3TYNPIR7tJADKi5YfcF7vEaK7avFHTlSy3kOKYaJQaalfEo6YuXdceBOQ==}
     engines: {node: 14 || >=16.14}
-    dev: false
 
   /lru-cache@4.0.2:
     resolution: {integrity: sha512-uQw9OqphAGiZhkuPlpFGmdTU2tEuhxTourM/19qGJrxBPHAr/f8BT1a0i/lOclESnGatdJG/UCkP9kZB/Lh1iw==}
@@ -9703,7 +9697,7 @@ packages:
     resolution: {integrity: sha512-MkhCqzzBEpPvxxQ71Md0b1Kk51W01lrYvlMzSUaIzNsODdd7mqhiimSZlr+VegAz5Z6Vzt9Xg2ttE//XBhH3EQ==}
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
-      lru-cache: 10.1.0
+      lru-cache: 10.2.2
       minipass: 7.0.4
     dev: true
 
