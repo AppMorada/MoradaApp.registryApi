@@ -48,7 +48,7 @@ jobs:
         id: git-clone
         name: Cloning repository
 
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         id: install-pnpm
         name: Installing PNPM
         with:
@@ -92,7 +92,7 @@ jobs:
         id: git-clone
         name: Cloning repository
 
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         id: install-pnpm
         name: Installing PNPM
         with:
@@ -128,7 +128,7 @@ jobs:
         id: git-clone
         name: Cloning repository
 
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         id: install-pnpm
         name: Installing PNPM
         with:
