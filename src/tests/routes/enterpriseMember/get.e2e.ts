@@ -53,8 +53,6 @@ describe('Get a enterprise member E2E', () => {
 			.set('authorization', `Bearer ${code}`)
 			.send({
 				name: condominium.name.value,
-				email: uniqueRegistry.email.value,
-				password: user.password.value,
 				CEP: condominium.CEP.value,
 				num: condominium.num.value,
 				CNPJ: condominium.CNPJ.value,

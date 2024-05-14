@@ -13,8 +13,9 @@ interface IProps {
 export async function checkClassValidatorErrors(data: IProps) {
 	const errors = await validate(data.body, {
 		transform: true,
-		forbidNonWhitelisted: true,
 		whitelist: true,
+		forbidNonWhitelisted: true,
+		forbidUnknownValues: true,
 	});
 
 	const errorMessages = errors.flatMap(({ constraints }) =>
