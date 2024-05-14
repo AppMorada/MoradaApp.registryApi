@@ -9,7 +9,7 @@ export function condominiumFactory(input: TOverride = {}, id?: string) {
 			ownerId: UUID.genV4().value,
 			name: 'My condominium',
 			CEP: '97507040',
-			CNPJ: '95185265000118',
+			CNPJ: '38.767.810/0001-40',
 			num: 32768,
 			district: 'Some district',
 			city: 'Some city',
