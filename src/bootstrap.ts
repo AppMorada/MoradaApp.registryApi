@@ -79,6 +79,8 @@ export class RegistryAPIBootstrap {
 		this.app.useGlobalPipes(
 			new ValidationPipe({
 				transform: true,
+				forbidNonWhitelisted: true,
+				whitelist: true,
 			}),
 		);
 	}

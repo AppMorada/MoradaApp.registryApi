@@ -55,7 +55,7 @@ export class StartLoginController {
 	})
 	@UseGuards(CheckPasswordGuard)
 	@Post()
-	async launchTFA(
+	async start(
 		@Req() req: Request,
 		@Res() res: Response,
 		/* eslint-disable @typescript-eslint/no-unused-vars */

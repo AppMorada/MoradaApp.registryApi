@@ -11,7 +11,11 @@ interface IProps {
  * @param data - Deve conter o corpo da requisição a ser validado
  **/
 export async function checkClassValidatorErrors(data: IProps) {
-	const errors = await validate(data.body);
+	const errors = await validate(data.body, {
+		transform: true,
+		forbidNonWhitelisted: true,
+		whitelist: true,
+	});
 
 	const errorMessages = errors.flatMap(({ constraints }) =>
 		Object.values(constraints!),
