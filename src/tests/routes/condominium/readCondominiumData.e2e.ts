@@ -53,8 +53,6 @@ describe('Read condominium data E2E', () => {
 			.set('authorization', `Bearer ${code}`)
 			.send({
 				name: condominiumInputInfos.name.value,
-				email: uniqueRegistry.email.value,
-				password: user.password.value,
 				CEP: condominiumInputInfos.CEP.value,
 				num: condominiumInputInfos.num.value,
 				CNPJ: condominiumInputInfos.CNPJ.value,
