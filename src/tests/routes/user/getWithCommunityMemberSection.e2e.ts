@@ -49,8 +49,6 @@ describe('Get user with enterprise member section E2E', () => {
 			.set('authorization', `Bearer ${code}`)
 			.send({
 				name: condominium.name.value,
-				email: uniqueRegistry.email.value,
-				password: user.password.value,
 				CEP: condominium.CEP.value,
 				num: condominium.num.value,
 				CNPJ: condominium.CNPJ.value,
@@ -99,7 +97,6 @@ describe('Get user with enterprise member section E2E', () => {
 				name: 'New User',
 				email: uniqueRegistry.email.value,
 				password: '12345678',
-				code: condominiumInfos?.humanReadableId,
 			});
 
 		expect(createUserResponse.statusCode).toEqual(201);
