@@ -54,8 +54,8 @@ dependencies:
     specifier: ^0.51.1
     version: 0.51.1(@opentelemetry/api@1.8.0)
   '@opentelemetry/instrumentation-nestjs-core':
-    specifier: ^0.35.0
-    version: 0.35.0(@opentelemetry/api@1.8.0)
+    specifier: ^0.37.1
+    version: 0.37.1(@opentelemetry/api@1.8.0)
   '@opentelemetry/resources':
     specifier: ^1.22.0
     version: 1.22.0(@opentelemetry/api@1.8.0)
@@ -2928,14 +2928,14 @@ packages:
       - supports-color
     dev: false
 
-  /@opentelemetry/instrumentation-nestjs-core@0.35.0(@opentelemetry/api@1.8.0):
-    resolution: {integrity: sha512-INKA7CIOteTSRVxP7SQaFby11AYU3uezI93xDaDRGY4TloXNVoyw5n6UmcVJU4yDn6xY2r7zZ2SVHvblUc21/g==}
+  /@opentelemetry/instrumentation-nestjs-core@0.37.1(@opentelemetry/api@1.8.0):
+    resolution: {integrity: sha512-ebYQjHZEmGHWEALwwDGhSQVLBaurFnuLIkZD5igPXrt7ohfF4lc5/4al1LO+vKc0NHk8SJWStuRueT86ISA8Vg==}
     engines: {node: '>=14'}
     peerDependencies:
       '@opentelemetry/api': ^1.3.0
     dependencies:
       '@opentelemetry/api': 1.8.0
-      '@opentelemetry/instrumentation': 0.49.1(@opentelemetry/api@1.8.0)
+      '@opentelemetry/instrumentation': 0.51.0(@opentelemetry/api@1.8.0)
       '@opentelemetry/semantic-conventions': 1.22.0
     transitivePeerDependencies:
       - supports-color
