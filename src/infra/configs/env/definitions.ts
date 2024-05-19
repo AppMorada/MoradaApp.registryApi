@@ -6,6 +6,10 @@ export interface IEnvMetadata {
 type TEnv = Record<string, IEnvMetadata>;
 
 export const environmentVariablesMetadata: TEnv = {
+	FIRESTORE_DATABASE_ID: {
+		name: 'FIRESTORE_DATABASE_ID',
+		isOptional: true,
+	},
 	PING_URL: {
 		name: 'PING_URL',
 		isOptional: false,

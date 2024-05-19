@@ -6,6 +6,7 @@ import { LayersEnum, LoggerAdapter } from '@app/adapters/logger';
 import { fatalErrorHandler } from '@utils/fatalErrorHandler';
 
 export enum EnvEnum {
+	FIRESTORE_DATABASE_ID = 'FIRESTORE_DATABASE_ID',
 	PING_URL = 'PING_URL',
 	TYPEORM_TIMEOUT = 'TYPEORM_TIMEOUT',
 	ZIPKIN_TRACE_URL = 'ZIPKIN_TRACE_URL',
