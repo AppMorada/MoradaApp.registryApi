@@ -33,6 +33,7 @@ implements OnModuleDestroy, OnApplicationShutdown
 				this._instance = admin.firestore();
 				this._instance.settings({
 					ignoreUndefinedProperties: true,
+					databaseId: process.env.FIRESTORE_DATABASE_ID,
 				});
 			});
 	}
