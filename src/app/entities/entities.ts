@@ -38,10 +38,7 @@ export abstract class ValueObject<T, O> {
 		return c1 === c2;
 	}
 
-	static build<T>(
-		constructor: IClass<T>,
-		internalValue?: ConstructorParameters<IClass<T>> | null,
-	) {
+	static build<T>(constructor: IClass<T>, internalValue?: any | null) {
 		const orStatement = <A>(
 			alternativeValue: A,
 		): { exec: () => InstanceType<IClass<T>> | A } => {
