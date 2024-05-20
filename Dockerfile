@@ -12,6 +12,7 @@ RUN apk add --no-cache \
 	npm i pnpm@8.15.5 firebase-tools@13.5.2 -g && \
 	rm -rf /var/lib/apt/lists/* && \
 	gcloud components install pubsub-emulator --quiet && \
+	gcloud components install beta --quiet && \
 	gcloud components update --quiet
 
 COPY ./package.json .

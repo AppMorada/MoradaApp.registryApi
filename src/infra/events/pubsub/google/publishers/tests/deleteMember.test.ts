@@ -1,5 +1,7 @@
+import { AdaptersModule } from '@app/adapters/adapter.module';
 import { UniqueRegistryMapper } from '@app/mapper/uniqueRegistry';
 import { DeleteMemberPublisher } from '@app/publishers/deleteMember';
+import { ConfigModule } from '@infra/configs/config.module';
 import { PubSubModule } from '@infra/events/pubsub/pubsub.module';
 import { TestingModule, Test } from '@nestjs/testing';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
@@ -10,7 +12,7 @@ describe('Delete member google publisher test', () => {
 
 	beforeAll(async () => {
 		app = await Test.createTestingModule({
-			imports: [PubSubModule],
+			imports: [PubSubModule, ConfigModule, AdaptersModule],
 		}).compile();
 
 		sut = app.get(DeleteMemberPublisher);

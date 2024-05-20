@@ -3,6 +3,8 @@ import { PubSubModule } from '@infra/events/pubsub/pubsub.module';
 import { TestingModule, Test } from '@nestjs/testing';
 import { uniqueRegistryFactory } from '@tests/factories/uniqueRegistry';
 import { userFactory } from '@tests/factories/user';
+import { ConfigModule } from '@infra/configs/config.module';
+import { AdaptersModule } from '@app/adapters/adapter.module';
 
 describe('Delete user google publisher test', () => {
 	let app: TestingModule;
@@ -10,7 +12,7 @@ describe('Delete user google publisher test', () => {
 
 	beforeAll(async () => {
 		app = await Test.createTestingModule({
-			imports: [PubSubModule],
+			imports: [PubSubModule, ConfigModule, AdaptersModule],
 		}).compile();
 
 		sut = app.get(DeleteUserPublisher);

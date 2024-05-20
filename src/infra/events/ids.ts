@@ -27,4 +27,8 @@ export const EVENT_ID = {
 		DELETE_MEMBER: Symbol.for('delete_member'),
 		DELETE_CONDOMINIUM: Symbol.for('delete_condominium'),
 	},
+	TRACE: {
+		INTERNALS: 'Internal event',
+		PUBSUB: 'Pubsub event',
+	},
 };
