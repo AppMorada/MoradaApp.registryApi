@@ -25,6 +25,7 @@
 		"format": "prettier --write",
 		"test": "dotenv -e .env.test -- jest -c jest.unit.config.ts",
 		"test:e2e": "dotenv -e .env.prod -- jest --detectOpenHandles ----runInBand -c jest.e2e.config.ts",
+		"test:integration": "dotenv -e .env.prod -- jest --detectOpenHandles ----runInBand -c jest.integration.config.ts",
 		"test:all:cov": "dotenv -e .env.prod -- jest -c jest.config.ts --detectOpenHandles --coverage",
 		"set-hooks": "husky install",
 		"pre-commit": "lint-staged --allow-empty",
