@@ -69,6 +69,51 @@ jobs:
         id: unit-tests
         run: pnpm run test
 
+  integration-tests:
+    runs-on: ubuntu-latest
+    container: google/cloud-sdk:slim
+    steps:
+      - uses: actions/checkout@v4
+        id: git-clone
+        name: Cloning repository
+
+      - uses: pnpm/action-setup@v4
+        id: install-pnpm
+        name: Installing PNPM
+        with:
+          version: 8
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        id: set-nodejs
+        with:
+          node-version: 20.x
+          cache: "pnpm"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Google auth
+        uses: google-github-actions/auth@v2
+        id: gcp-auth
+        with:
+          credentials_json: '${{ secrets.SA_GITHUB }}'
+
+      - name: Set gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: 'beta,pubsub-emulator'
+
+      - name: Install dependencies
+        id: set-deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Run integrationt tests
+        id: integration-tests
+        run: |
+          sh -c "export NODE_ENV=production && ./tools/tests/pubsub/createAllTopics.sh"
 
   e2e-test:
     runs-on: ubuntu-latest
@@ -105,6 +150,12 @@ jobs:
           node-version: 20.x
           cache: "pnpm"
 
+      - name: Google auth
+        uses: google-github-actions/auth@v2
+        id: gcp-auth
+        with:
+          credentials_json: '${{ secrets.SA_GITHUB }}'
+
       - name: Install dependencies
         id: set-deps
         run: pnpm install --frozen-lockfile
@@ -115,8 +166,10 @@ jobs:
 
       - name: Run E2E tests
         id: e2e-tests
-        run: |
-          sh -c "export NODE_ENV=production && pnpm run test:e2e"
+        env:
+          NODE_ENV: production
+          GOOGLE_CLOUD_PROJECT: ${{secrets.FIRESTORE_GCP_PROJECT}}
+        run: pnpm run test:e2e
 
   eslint:
     runs-on: ${{ matrix.os }}

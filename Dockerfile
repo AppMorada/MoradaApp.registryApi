@@ -1,4 +1,4 @@
-FROM node:lts-bullseye-slim
+FROM google/cloud-sdk:alpine
 LABEL maintainer="Nícolas Basilio"
 
 ENV PNPM_HOME="/pnpm"
@@ -6,15 +6,13 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 WORKDIR /home/node/app
 
-RUN apt-get update -y && apt-get upgrade -y && \
-	apt-get install -y \
-		default-jre=2:1.11-72 \
-		musl-dev=1.2.2-1 \
-		procps=2:3.3.17-5 \
-		--no-install-recommends && \
-	ln -s /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1 && \
+RUN apk add --no-cache \
+		npm=10.2.5-r0 nodejs=20.12.1-r0 \
+		openjdk8-jre=8.402.06-r0 && \
 	npm i pnpm@8.15.5 firebase-tools@13.5.2 -g && \
-	apt-get clean && rm -rf /var/lib/apt/lists/*
+	rm -rf /var/lib/apt/lists/* && \
+	gcloud components install pubsub-emulator --quiet && \
+	gcloud components update --quiet
 
 COPY ./package.json .
 COPY ./pnpm-lock.yaml .
