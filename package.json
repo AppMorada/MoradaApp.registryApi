@@ -93,7 +93,7 @@
 		"@compodoc/compodoc": "^1.1.24",
 		"@nestjs/cli": "^10.3.2",
 		"@nestjs/testing": "^10.3.8",
-		"@swc/cli": "^0.1.65",
+		"@swc/cli": "^0.3.12",
 		"@swc/core": "^1.5.7",
 		"@types/bcrypt": "^5.0.2",
 		"@types/cookie-parser": "^1.4.7",
