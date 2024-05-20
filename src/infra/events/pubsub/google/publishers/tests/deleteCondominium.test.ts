@@ -1,4 +1,6 @@
+import { AdaptersModule } from '@app/adapters/adapter.module';
 import { DeleteCondominiumPublisher } from '@app/publishers/deleteCondominium';
+import { ConfigModule } from '@infra/configs/config.module';
 import { PubSubModule } from '@infra/events/pubsub/pubsub.module';
 import { TestingModule, Test } from '@nestjs/testing';
 import { condominiumFactory } from '@tests/factories/condominium';
@@ -9,7 +11,7 @@ describe('Delete condominium google publisher test', () => {
 
 	beforeAll(async () => {
 		app = await Test.createTestingModule({
-			imports: [PubSubModule],
+			imports: [PubSubModule, ConfigModule, AdaptersModule],
 		}).compile();
 
 		sut = app.get(DeleteCondominiumPublisher);
