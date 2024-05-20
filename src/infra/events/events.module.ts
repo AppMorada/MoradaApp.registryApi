@@ -1,11 +1,9 @@
 import { Global, Module } from '@nestjs/common';
-import { AdaptersModule } from '@app/adapters/adapter.module';
-import { EmailEvents } from './emails.service';
+import { InternalEventsModule } from './internals/internals.module';
+import { PubSubModule } from './pubsub/pubsub.module';
 
 @Global()
 @Module({
-	imports: [AdaptersModule],
-	providers: [EmailEvents],
-	exports: [EmailEvents],
+	imports: [InternalEventsModule, PubSubModule],
 })
 export class EventsModule {}

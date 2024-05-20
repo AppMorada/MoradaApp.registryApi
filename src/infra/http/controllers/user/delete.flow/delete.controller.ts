@@ -5,6 +5,7 @@ import { Throttle } from '@nestjs/throttler';
 import { JwtGuard } from '@app/auth/guards/jwt.guard';
 import { DeleteUserService } from '@app/services/user/delete.service';
 import { USER_PREFIX } from '../consts';
+import { UniqueRegistry } from '@app/entities/uniqueRegistry';
 
 @Controller(USER_PREFIX)
 export class DeleteUserController {
@@ -21,6 +22,8 @@ export class DeleteUserController {
 	@HttpCode(204)
 	async deleteAccount(@Req() req: Request) {
 		const user = req.inMemoryData.user as User;
-		await this.deleteUserService.exec({ id: user.id.value });
+		const uniqueRegistry = req.inMemoryData
+			.uniqueRegistry as UniqueRegistry;
+		await this.deleteUserService.exec({ user, uniqueRegistry });
 	}
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EmailAdapter } from '@app/adapters/email';
-import { EVENT_ID, EventsTypes } from './ids';
+import { EVENT_ID, EventsTypes } from '../ids';
 import { EnvEnum, GetEnvService } from '@infra/configs/env/getEnv.service';
 
 @Injectable()

@@ -57,6 +57,7 @@ services:
       - .:/home/node/app
       - firebase-cache:/root/.cache/firebase
       - firebase-configs:/root/.config
+      - gcloud:/root/.config/gcloud
     ports:
       - 8081:8081 # Cloud Firestore
       - 4001:4001 # Emulator Suite UI
@@ -71,4 +72,6 @@ volumes:
   firebase-cache:
     driver: local
   firebase-configs:
+    driver: local
+  gcloud:
     driver: local
