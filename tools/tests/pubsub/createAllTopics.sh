@@ -5,6 +5,8 @@ RESET_COLOR='\033[0m'
 
 INFO_FLAG="[${CYAN}INFO${RESET_COLOR}]"
 
+ONLY_BUILD_TOPICS=$1
+
 export GOOGLE_CLOUD_PROJECT=link-manager-f612c
 export PUBSUB_EMULATOR_HOST=0.0.0.0:8085
 
@@ -34,6 +36,11 @@ for topic in "${TOPICS[@]}"; do
 		/bin/echo -e "${INFO_FLAG} Could not create topics. Received: ${EXIT_CODE} as exit code"
 	fi
 done
+
+if [ "${ONLY_BUILD_TOPICS}" == "--only-build-topics" ]; then
+	/bin/echo -e "${INFO_FLAG} Done."
+	exit 0
+fi
 
 /bin/echo -e "${INFO_FLAG} Starting intergration tests..."
 pnpm test:integration
