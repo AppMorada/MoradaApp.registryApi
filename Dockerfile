@@ -6,7 +6,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 WORKDIR /home/node/app
 
-RUN echo "deb http://deb.debian.org/debian testing main\ndeb http://deb.debian.org/debian unstable main" > /etc/apt/sources.list && \
+RUN printf "deb http://deb.debian.org/debian testing main\ndeb http://deb.debian.org/debian unstable main" > /etc/apt/sources.list && \
 	apt-get update -y && apt-get upgrade -y && \
 	apt-get install -y \
 		nodejs=20.13.1+dfsg-2 \
