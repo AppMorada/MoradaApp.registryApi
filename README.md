@@ -13,28 +13,24 @@ Adiante, nossos servidores back-end devem contar com as seguintes dependências 
 6. **Zipkin**: é um servidor dedicado a monitorar a perfomance da aplicação em ambiente de desenvolvimento por meio de traces, atuando na RegistryApi em conjunto com o OpenTelemetry
 
 ### Preparação
-- **Docker**
-    1. [Linux](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
-    2. [Windows]()
+- **Docker**: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04
 
-- **Docker Compose**
-    1. [Linux](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04)
-    2. [Windows]()
+- **Docker Compose** https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04
 
 - **PNPM**: execute ```npm i pnpm -g```
 
 - **Mailtrap**:
-    1. Crie uma conta na plataforma por [aqui](https://mailtrap.io/).
-    2. Acesse o menu da lateral a esquerda
-    3. Entre em **Email Testing** > **Inboxes** > **[Seu usuário]**
-    4. Copie e cole o arquivo .env.example em .env
+    1. Copie e cole o arquivo .env.example em .env
+    2. Crie uma conta na plataforma por [aqui](https://mailtrap.io/).
+    3. Acesse o menu da lateral a esquerda
+    4. Entre em **Email Testing** > **Inboxes** > **[Seu usuário]**
     5. Ao lado direito, na opção 'Integrations', troque para o nodemailer
-    7. Copie e cole as credenciais no .env para visualizar os dados
-    8. Insira em HOST_SENDER o valor 'sandbox.smtp.mailtrap.io'
-    9. Insira em HOST_PORT_SENDER o valor 2525
-    10. Coloque qualquer nome em NAME_SENDER
-    11. Insira auth.user em EMAIL_SENDER
-    12. Insira auth.pass em PASS_SENDER
+    6. Copie e cole as credenciais no .env para visualizar os dados
+    7. Insira em HOST_SENDER o valor 'sandbox.smtp.mailtrap.io'
+    8. Insira em HOST_PORT_SENDER o valor 2525
+    9. Coloque qualquer nome em NAME_SENDER
+    10. Insira auth.user em EMAIL_SENDER
+    11. Insira auth.pass em PASS_SENDER
 
 ## Como usar
 
@@ -71,5 +67,15 @@ Se a instalação ocorreu com êxito, abra outro terminal e **FORA DO CONTÊINER
 pnpm set-hooks
 ```
 
-Pronto, agora execute somente ```pnpm commit``` sempre que quiser salvar suas alterações no repositório. No mais, basta verificar quais comandos estão disponíveis dentro do package.json.
+Não esqueça de conferir se os hooks do husky estão realmente ativos com ```git config core.hookspath```, o resultado deve ser ```.husky```.
 
+
+## Documentação
+
+## Diagrama de entidades
+
+O módelo de diagrama de entidades representa todas as entidades presentes neste módulo e suas respectivas relações, confira [aqui](docs/dbdocs/database.md) para conseguir visualizar este documento.
+
+## Swagger
+
+Toda a API foi construida se baseando na documentação do swagger, confira [aqui](docs/openapi/openapi.json) para ter acesso ao arquivo, ou entre na pasta ```/swagger```, instale as dependencias e execute ```pnpm start:docs```.
