@@ -8,6 +8,12 @@ services:
     ports:
       - "7846:5432"
 
+  tracing:
+    hostname: tracer
+    image: openzipkin/zipkin:latest
+    ports:
+      - "9411:9411"
+
   app:
     env_file: ../.env
     image: moradaapp/registry-api-alpha
