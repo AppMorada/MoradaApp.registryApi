@@ -1,5 +1,5 @@
 import * as swaggerui from 'swagger-ui-express'
-import oas from '../docs/openapi/openapi.json' assert { type: 'json' }
+import oas from '../openapi.json' assert { type: 'json' }
 import express from 'express'
 
 const app = express()

@@ -77,4 +77,5 @@ Não esqueça de conferir se os hooks do husky estão realmente ativos com ```gi
 | Contrato | Contrato baseado no swagger para documentar os endpoints da aplicação | [Arquivo markdown](swagger/openapi/swagger/swagger.md) |
 | Diagrama de entidades | Documento referente as entidades e seus respectivos relacionamentos | [Arquivo markdown](docs/dbdocs/database.md) |
 | Diagram de infraestrutura | Documento referente a infraestrutura do módulo | [Arquivo markdown](docs/infra/infra.md) |
+| Componentes do sistema | Documento dedicado a indicar as relações dos componentes internos, como classes e funções dentro do módulo | [Site](https://appmorada.github.io/MoradaApp.registryApi/docs/compodoc/) |
 
