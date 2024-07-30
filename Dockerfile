@@ -9,11 +9,11 @@ WORKDIR /home/node/app
 RUN printf "deb http://deb.debian.org/debian testing main\ndeb http://deb.debian.org/debian unstable main" > /etc/apt/sources.list && \
 	apt-get update -y && apt-get upgrade -y && \
 	apt-get install -y \
-		nodejs=20.13.1+dfsg-2 \
-		npm=9.2.0~ds1-2 \
-		procps=2:4.0.4-4 \
+		nodejs \
+		npm \
+		procps \
 		--no-install-recommends && \
-	npm i pnpm@8.15.5 firebase-tools@13.5.2 -g && \
+	npm i pnpm firebase-tools@13.5.2 -g && \
 	apt-get clean && rm -rf /var/lib/apt/lists/* 
 
 COPY ./package.json .
