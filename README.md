@@ -47,19 +47,14 @@ Feito isso, se você tiver optado por utilizar o diretório /example, o tutorial
 docker compose exec app bash
 ```
 
+Agora instale as dependências do sistema com:
+```
+pnpm install
+```
+
 Dentro do contêiner, execute as migrations do TypeOrm:
 ```
 pnpm migrate:run
-```
-
-Agora, realize o login na sua conta do firebase **DENTRO DO CONTÊINER**:
-```
-firebase login --no-localhost
-```
-
-Logo em seguida, instale os emuladores requisitados para um bom funcionamento da aplicação:
-```
-firebase init emulators
 ```
 
 Se a instalação ocorreu com êxito, abra outro terminal e **FORA DO CONTÊINER** execute o comando abaixo. Por quê? Ele vai definir os hooks do git necessários para que você consiga automatizar processos de lint, formatação e testes locais toda vez que fazer commit:
