@@ -1,25 +1,33 @@
-FROM google/cloud-sdk:475.0.0-emulators
+FROM node:20.16.0-alpine3.20
 LABEL maintainer="Nícolas Basilio"
 
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PATH="/home/node/app/google-cloud-sdk/bin:$PNPM_HOME:$PATH"
 
 WORKDIR /home/node/app
 
-RUN printf "deb http://deb.debian.org/debian testing main\ndeb http://deb.debian.org/debian unstable main" > /etc/apt/sources.list && \
-	apt-get update -y && apt-get upgrade -y && \
-	apt-get install -y \
-		nodejs \
-		npm \
-		procps \
-		--no-install-recommends && \
-	npm i pnpm firebase-tools@13.5.2 -g && \
-	apt-get clean && rm -rf /var/lib/apt/lists/* 
+RUN apk add \
+		bash=5.2.26-r0 \
+		python3=3.12.3-r1 \
+		py3-pip=24.0-r2 \
+		curl=8.9.0-r0 \
+		--no-cache && \
+	curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz && \
+	tar -xf ./google-cloud-cli-linux-x86_64.tar.gz && \
+	./google-cloud-sdk/install.sh \
+                --usage-reporting false \
+                --command-completion false \
+                --path-update false \
+                --rc-path ~/.bashrc && \
+	yes | ./google-cloud-sdk/bin/gcloud components install pubsub-emulator && \
+    yes | ./google-cloud-sdk/bin/gcloud components install beta && \
+    corepack enable pnpm && \
+	corepack use pnpm@latest-9 && \
+	npm install firebase-tools@13.5.2 -g && \
+	rm -rf /var/cache/apk/* 
 
 COPY ./package.json .
 COPY ./pnpm-lock.yaml .
-
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY . .
 

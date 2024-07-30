@@ -99,7 +99,9 @@ export class GenTFAService implements IService {
 		const payload: EventsTypes.Email.ISendProps = {
 			to: userContainer.uniqueRegistry.email.value,
 			subject: `${PROJECT_NAME} - Confirmação de conta`,
-			body: `<p>Não compartilhe este código com ninguém</p>
+			body: `<h1>Autenticação de dois fatores - ação necessária</h1>
+				<p>Acesso o link abaixo para prosseguir!</p>
+				<p><i>Não compartilhe este código com ninguém</i></p>
 				<a href="${FRONT_END_AUTH_URL}${code}">${FRONT_END_AUTH_URL}${code}</a>`,
 		};
 		this.eventEmitter.emit(EVENT_ID.EMAIL.SEND, payload);
