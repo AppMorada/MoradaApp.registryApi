@@ -1,0 +1,54 @@
+@startuml
+!theme metal
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!define GCPPuml https://raw.githubusercontent.com/davidholsgrove/gcp-icons-for-plantuml/master/dist
+
+!includeurl GCPPuml/GCPCommon.puml
+!includeurl GCPPuml/DataAnalytics/CloudPubSub.puml
+
+
+!include DEVICONS/react_original.puml
+!include DEVICONS/nestjs.puml
+!include DEVICONS/firebase.puml
+
+!include FONTAWESOME/users.puml
+
+
+AddRelTag("async", $lineStyle = DashedLine())
+
+Person(users, "Moradores", "Moradores dos condomínios", $sprite="users")
+Person(admins, "Administradores", "Administradores dos condomínios", $sprite="users")
+
+
+Container(web, "Aplicação web", "Next.js", "Sistema de interface gráfica para usuários dos navegadores", $sprite="react_original")
+Container(mobile, "Aplicação Mobile", "React Native", "Sistema de interface gráfica para usuários mobile", $sprite="react_original")
+
+Rel(admins, web, "Gerenciam o condomínio por")
+Rel(users, mobile, "Utilizam")
+
+
+System_Boundary(registry_module, "Módulo de registro - Local") {
+   Container(zipkin, "Analisador de traces", "Zipkin", "Container responsável por coletar os traces gerados pelo módulo")
+   Container(registry_api, "API de registro", "Nest.js", "API responsável por registrar a autenticar contas de usuários e condomínios", $sprite="nestjs")
+
+   ContainerDb(registry_db, "Repositório de usuários e condomínios", "PostgresDB", "Banco de dados que armazena informações de registro do condomínio e dos usuários")
+   ContainerQueue(delete_member_topic, "Cloud pub/sub", "Tópico: delete member", "Remoção de membros do condomínio", $sprite="CloudPubSub,scale=0.35")
+   ContainerQueue(delete_condominium_topic, "Cloud pub/sub", "Tópico: delete condominium", "Remoção do condomínio", $sprite="CloudPubSub,scale=0.35")
+   ContainerQueue(delete_user_topic, "Cloud pub/sub", "Tópico: delete user", "Remoção do usuário", $sprite="CloudPubSub,scale=0.35")
+
+   Rel(web, registry_api, "Registra ou autentica os usuários por", "HTTP/JSON")
+   Rel(mobile, registry_api, "Registra ou autentica os usuários por", "HTTP/JSON")
+
+   Rel(registry_api, zipkin, "Armazena os trace em", "HTTP")
+   Rel(registry_api, registry_db, "Armazena os registros do condomínio e usuários em", "SSL")
+
+   Rel(registry_api, delete_member_topic, "Evento informativo de deleção de membros do registro do condomínio", "JSON", $tags = "async")
+   Rel(registry_api, delete_condominium_topic, "Evento informativo de deleção do condomínio", "JSON", $tags = "async")
+   Rel(registry_api, delete_user_topic, "Evento informativo de deleção do usuário", "JSON", $tags = "async")
+}
+
+@enduml
