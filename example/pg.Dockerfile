@@ -5,7 +5,7 @@ ENV PG_USER=postgres
 ENV POSTGRES_PASSWORD=password
 ENV PGDATA=/data
 
-COPY ./init.sql /docker-entrypoint-initdb.d/
+COPY ./dump.sql /docker-entrypoint-initdb.d/
 
 RUN sed -i "s/exec \"\$@\"/echo \"skipping...\"/" "/usr/local/bin/docker-entrypoint.sh" && \
     /usr/local/bin/docker-entrypoint.sh postgres
