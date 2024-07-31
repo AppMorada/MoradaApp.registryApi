@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
-        node: [ 16, 18, 20 ]
+        node: [ 18, 20, 21 ]
     steps:
       - uses: actions/checkout@v4
         id: git-clone
@@ -52,7 +52,7 @@ jobs:
         id: install-pnpm
         name: Installing PNPM
         with:
-          version: 8
+          version: 9.6.0
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -80,7 +80,7 @@ jobs:
         id: install-pnpm
         name: Installing PNPM
         with:
-          version: 8
+          version: 9.6.0
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -140,7 +140,7 @@ jobs:
         id: install-pnpm
         name: Installing PNPM
         with:
-          version: 8
+          version: 9.6.0
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -184,7 +184,7 @@ jobs:
         id: install-pnpm
         name: Installing PNPM
         with:
-          version: 8
+          version: 9.6.0
 
       - name: Install Node.js
         uses: actions/setup-node@v4
