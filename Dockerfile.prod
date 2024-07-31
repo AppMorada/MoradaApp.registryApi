@@ -22,12 +22,12 @@ RUN npm install -g pnpm@9.6.0
 
 #---------- prod deps ------------
 FROM mid_stage AS prod_deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile --ignore-scripts
 
 #--------- build stage -----------
 FROM mid_stage AS builder
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 COPY @types ./@types
 COPY tsconfig.json .
