@@ -6,7 +6,7 @@
     "start:docs": "node ."
   },
   "dependencies": {
-    "express": "^4.19.2",
+    "express": "^4.20.0",
     "swagger-ui-express": "^5.0.0"
   }
 }
